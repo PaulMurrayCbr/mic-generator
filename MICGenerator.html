@@ -2938,6 +2938,8 @@
 	item[25].addStaticRow(51, 58, "M145", "Vest of the archmagi");
 	item[25].addStaticRow(59, 88, "M282", "+10 weapon");
 	item[25].addStaticRow(89, 100, "D245", "Staff of power");
+	
+	
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2957,13 +2959,13 @@
 	
 	armour_or_shield.picker.validate();
 	
-	for(var i = 1; i<=5; i++) {
+/* 	for(var i = 1; i<=5; i++) {
 		wprop_table[i].rangedPicker.validate();
 		wprop_table[i].meleePicker.validate();
 		asprop_table[i].armourPicker.validate();
 		asprop_table[i].shieldPicker.validate();
 	}
-	
+ */	
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// OK. Now the web page arifacts ////////////////////////////////////////////////////////////////////////
@@ -3056,11 +3058,11 @@
 		var gemgp = 0;
 		for(var i = 0; i< gems.length; i++) {
 			var g = gems[i];
-			s = s + ", " + g.gold.gpValue() + "gp ("+g.gen.s+")";
+			s = s + ", " + g.gen.s + " ("+g.gold.gpValue() +"gp)";
 			gemgp += g.gold.gpValue();
 		}
 		
-		s = s + ". TOTAL " + gold.gpValue() + " gold + " + gemgp + " gems = " +(gold.gpValue()+gemgp) +"gp.";
+		s = s + ". TOTAL coins (" + gold.gpValue() + "gp) + gems (" + gemgp + "gp) = " +(gold.gpValue()+gemgp) +"gp.";
 		s = s + " <button onclick='controller(this).reroll()'>reroll</button>";
 		
 		this.genArea.innerHTML = s;
