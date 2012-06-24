@@ -348,8 +348,8 @@
 	
 	ASPropertyTable.prototype.add = function(arm_a, arm_b, shld_a, shld_b, page, text, caveats) {
 		row = new ASPropertyTableRow(this, page, text, caveats);
-		armourPicker.add(arm_a, arm_b);
-		shieldPicker.add(shld_a, shld_b);
+		armourPicker.add(arm_a, arm_b, row);
+		shieldPicker.add(shld_a, shld_b, row);
 	}
 	
 	function ASPropertyTableRow(tbl, page, text, caveats) {
@@ -397,8 +397,8 @@
 	
 	WPropertyTable.prototype.add = function(arm_a, arm_b, shld_a, shld_b, page, text, caveats) {
 		row = new WPropertyTableRow(this, page, text. caveats);
-		meleePicker.add(arm_a, arm_b);
-		rangedPicker.add(shld_a, shld_b);
+		meleePicker.add(arm_a, arm_b, row);
+		rangedPicker.add(shld_a, shld_b, row);
 	}
 	
 	function WPropertyTableRow(tbl, page, text, caveats) {
@@ -425,7 +425,46 @@
 			return ex.toString();
 		}
 	}
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+	
+	function BonusTable(lvl) {
+		this.lvl = lvl;
+		this.picker = new D100Picker(this);
+	}
+
+	BonusTable.prototype.add = function(a, b, enhancment, props) {
+		var row = new BonusTableRow(a, b, enhancment, props);
+		this.picker.add(a,b,row);
+		return row;
+	}
+
+	BonusTable.prototype.toString = function() {return "Bonus Table" + this.lvl;}
+
+	function BonusTableRow (a, b, enhancment, props) {
+		this.a = a;
+		this.b = b;
+		this.enhancment = enhancment;
+		this.props = props;
+	}
+	
+	ASTableRow.prototype.gen = function() {
+		var props = [];
+		for(var i = 0; i < this.props.length; i++) {
+			props[i] = this.props[i].gen();
+		}
+		return new GeneratedBonus(this, props);
+	}
+	
+	function GeneratedBonus(gen, props) {
+		this.gen = gen;
+		this.encancement = gen.enhancement;
+		this.props = props;
+	}
+	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -436,9 +475,7 @@
 
 	ASTable.prototype.add = function(a, b, text, isMetal, isLight, isTower) {
 		var r = new ASTableRow(a, b, text, isMetal, isLight, isTower);
-		for(var i = a ; i <= b; i++) {
-			this[i] = r;
-		}
+		this.picker.add(a,b,r);
 		return r;
 	}
 
@@ -448,7 +485,7 @@
 		this.a = a;
 		this.b = b;
 		this.text = text;
-		this.isMeatl = isMetal;
+		this.isMetal = isMetal;
 		this.isLight = isLight;
 		if(isTower) { // catches "undefined"
 			this.isTower = true;
@@ -458,6 +495,9 @@
 		}
 	}
 	
+	ASTableRow.prototype.gen = function() {
+		return this;
+	}
 	
 	ASTable.prototype.caveat1 = function(a) {
 		return a.isMetal;
@@ -481,9 +521,7 @@
 
 	WeaponTable.prototype.add = function(a, b, text, type) {
 		var r = new WeaponTableRow(a,b,text,type);
-		for(var i = a ; i <= b; i++) {
-			this[i] = r;
-		}
+		this.picker.add(a,b,r);
 		return r;
 	}
 
@@ -517,6 +555,10 @@
 		
 	}
 
+	WeaponTableRow.prototype.gen = function() {
+		return this;
+	}
+	
 	WeaponTableRow.prototype.toString = function() {
 		return "WeaponTable " + a + "-" + b + " " + text;
 	}
@@ -651,6 +693,8 @@
 	var item = [];
 	var wprop_table = [];
 	var asprop_table = [];
+	var wbonus_table = [];
+	var asbonus_table = [];
 	
 	var weapons = new WeaponTable();
 	var armour_or_shield = new ASTable();
@@ -659,6 +703,12 @@
 	for ( var i = 1; i <= 20; i++) {
 		treasure_table[i] = new TreasureTable(i);
 	}
+
+	for ( var i = 1; i <= 10; i++) {
+		wbonus_table[i] = new BonusTable(i);
+		asbonus_table[i] = new BonusTable(i);
+	}
+
 
 	for ( var i = 0; i <= 25; i++) {
 		item[i] = new ItemTable(i);
@@ -1161,6 +1211,76 @@
 			[ item[24] ]); // 96-99 2d12x100 pp I, H, G 24
 	treasure_table[20].addrow(99, 100, 2, 12, 100, pp, [ gem.I, gem.I ],
 			[ item[25] ]); // 99-100 2d12x100 pp I, I 25
+	
+	wbonus_table[1].add(1, 100, 1, []);		
+	wbonus_table[2].add(01, 62, 2, []);
+	wbonus_table[2].add(63, 100, 1, [wprop_table[1]]);
+	wbonus_table[3].add(01, 44, 3, []);	 
+	wbonus_table[3].add(45, 79, 2 , [wprop_table[1]]);
+	wbonus_table[3].add(80, 91, 1 , [wprop_table[2]]);
+	wbonus_table[3].add(92, 100, 1 , [wprop_table[1],wprop_table[1]]);
+	wbonus_table[4].add(01, 44, 4, []);	 
+	wbonus_table[4].add(45, 79, 3 , [wprop_table[1]]);
+	wbonus_table[4].add(80, 91, 2 , [wprop_table[2]]);
+	wbonus_table[4].add(92, 100, 1 , [wprop_table[3]]);
+	wbonus_table[5].add(01, 40, 5, []);	 
+	wbonus_table[5].add(41, 75, 4 , [wprop_table[1]]);
+	wbonus_table[5].add(76, 88, 3 , [wprop_table[2]]);
+	wbonus_table[5].add(89, 95, 2 , [wprop_table[3]]);
+	wbonus_table[5].add(96, 100, 1 , [wprop_table[4]]);
+	wbonus_table[6].add(01, 43, 5 , [wprop_table[1]]);
+	wbonus_table[6].add(44, 77, 4 , [wprop_table[2]]);
+	wbonus_table[6].add(78, 89, 3 , [wprop_table[3]]);
+	wbonus_table[6].add(90, 95, 2 , [wprop_table[4]]);
+	wbonus_table[6].add(96, 100, 1 , [wprop_table[5]]);
+	wbonus_table[7].add(01, 47, 5 , [wprop_table[2]]);
+	wbonus_table[7].add(48, 79, 4 , [wprop_table[3]]);
+	wbonus_table[7].add(80, 92, 3 , [wprop_table[4]]);
+	wbonus_table[7].add(93, 100, 2 , [wprop_table[5]]);
+	wbonus_table[8].add(01, 52, 5 , [wprop_table[3]]);
+	wbonus_table[8].add(53, 85, 4 , [wprop_table[4]]);
+	wbonus_table[8].add(86, 100, 3 , [wprop_table[5]]);
+	wbonus_table[9].add(01, 52, 5 , [wprop_table[4]]);
+	wbonus_table[9].add(53, 85, 4 , [wprop_table[3],wprop_table[2]]);
+	wbonus_table[9].add(86, 100, 4 , [wprop_table[5]]);
+	wbonus_table[10].add(01, 50, 5 , [wprop_table[3],wprop_table[2]]);
+	wbonus_table[10].add(51, 85, 5 , [wprop_table[5]]);
+	wbonus_table[10].add(86, 100, 4 , [wprop_table[3],wprop_table[3]]);
+	
+	asbonus_table[1].add(1, 100, 1, []);		
+	asbonus_table[2].add(01, 62, 2, []);
+	asbonus_table[2].add(63, 100, 1, [asprop_table[1]]);
+	asbonus_table[3].add(01, 44, 3, []);	 
+	asbonus_table[3].add(45, 79, 2 , [asprop_table[1]]);
+	asbonus_table[3].add(80, 91, 1 , [asprop_table[2]]);
+	asbonus_table[3].add(92, 100, 1 , [asprop_table[1],asprop_table[1]]);
+	asbonus_table[4].add(01, 44, 4, []);	 
+	asbonus_table[4].add(45, 79, 3 , [asprop_table[1]]);
+	asbonus_table[4].add(80, 91, 2 , [asprop_table[2]]);
+	asbonus_table[4].add(92, 100, 1 , [asprop_table[3]]);
+	asbonus_table[5].add(01, 40, 5, []);	 
+	asbonus_table[5].add(41, 75, 4 , [asprop_table[1]]);
+	asbonus_table[5].add(76, 88, 3 , [asprop_table[2]]);
+	asbonus_table[5].add(89, 95, 2 , [asprop_table[3]]);
+	asbonus_table[5].add(96, 100, 1 , [asprop_table[4]]);
+	asbonus_table[6].add(01, 43, 5 , [asprop_table[1]]);
+	asbonus_table[6].add(44, 77, 4 , [asprop_table[2]]);
+	asbonus_table[6].add(78, 89, 3 , [asprop_table[3]]);
+	asbonus_table[6].add(90, 95, 2 , [asprop_table[4]]);
+	asbonus_table[6].add(96, 100, 1 , [asprop_table[5]]);
+	asbonus_table[7].add(01, 47, 5 , [asprop_table[2]]);
+	asbonus_table[7].add(48, 79, 4 , [asprop_table[3]]);
+	asbonus_table[7].add(80, 92, 3 , [asprop_table[4]]);
+	asbonus_table[7].add(93, 100, 2 , [asprop_table[5]]);
+	asbonus_table[8].add(01, 52, 5 , [asprop_table[3]]);
+	asbonus_table[8].add(53, 85, 4 , [asprop_table[4]]);
+	asbonus_table[8].add(86, 100, 3 , [asprop_table[5]]);
+	asbonus_table[9].add(01, 52, 5 , [asprop_table[4]]);
+	asbonus_table[9].add(53, 85, 4 , [asprop_table[3],asprop_table[2]]);
+	asbonus_table[9].add(86, 100, 4 , [asprop_table[5]]);
+	asbonus_table[10].add(01, 50, 5 , [asprop_table[3],asprop_table[2]]);
+	asbonus_table[10].add(51, 85, 5 , [asprop_table[5]]);
+	asbonus_table[10].add(86, 100, 4 , [asprop_table[3],asprop_table[3]]);
 
 	item[0].addStaticRow(01, 01, "P128", "Acid");
 	item[0].addStaticRow(02, 03, "P126", "Lantern, bullseye");
@@ -2967,7 +3087,12 @@
 	}
  */	
 	
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+ 	for(var i = 1; i<=10; i++) {
+		wbonus_table[i].picker.validate();
+		asbonus_table[i].picker.validate();
+	}
+
+ /////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// OK. Now the web page arifacts ////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
