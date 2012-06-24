@@ -1,0 +1,243 @@
+//([0-9]+)-([0-9]+) ([0-9]+)d([0-9]+)x([0-9]+) ([gem.csgp]p) ([-ABDCEFGHI](, [gem.ABCDEFGHI])*) ((-|[0-9]+)(, [0-9]+)*)
+//treasure_table[1].addrow(\1,\2,	\3,\4,\5,\6,	[\7],		[\9]);		// \0
+
+// 1 
+treasure_table[1].addrow(01,07,	0,1,1,cp,	[],		[]);		// 01-07 - - -
+treasure_table[1].addrow(08,10,	1,3,1000,cp,	[],		[]);		// 08-10 1d3x1000 cp - -
+treasure_table[1].addrow(11,21,	1,3,100,sp,	[],		[item[0]]);		// 11-21 1d3x100 sp - 0
+treasure_table[1].addrow(22,44,	3,6,100,sp,	[gem.A],		[item[1]]);		// 22-44 3d6x100 sp A 1
+treasure_table[1].addrow(45,60,	4,4,100,sp,	[gem.B],		[item[1]]);		// 45-60 4d4x100 sp B 1
+treasure_table[1].addrow(61,78,	2,8,10,gp,	[gem.A],		[item[1], item[0]]);		// 61-78 2d8x10 gp A 1, 0
+treasure_table[1].addrow(79,83,	2,4,100,gp,	[gem.A],		[]);		// 79-83 2d4x100 gp A -
+treasure_table[1].addrow(84,91,	1,6,100,gp,	[gem.B],		[item[1]]);		// 84-91 1d6x100 gp B 1
+treasure_table[1].addrow(92,99,	2,4,100,gp,	[gem.A],		[item[1], item[0]]);		// 92-99 2d4x100 gp A 1, 0
+treasure_table[1].addrow(100,100,	1,12,10,pp,	[gem.B],		[item[1], item[0]]);		// 100-100 1d12x10 pp B 1, 0
+
+// 2 
+treasure_table[2].addrow(01,07,	2,12,1000,cp,	[],		[]);		// 01-07 2d12x1000 cp - -
+treasure_table[2].addrow(08,10,	3,6,100,sp,	[gem.A, gem.A],		[]);		// 08-10 3d6x100 sp A, A -
+treasure_table[2].addrow(11,21,	2,4,100,sp,	[],		[item[1]]);		// 11-21 2d4x100 sp - 1
+treasure_table[2].addrow(22,44,	1,6,1000,sp,	[],		[item[1], item[0]]);		// 22-44 1d6x1000 sp - 1, 0
+treasure_table[2].addrow(45,60,	1,4,1000,sp,	[gem.A, gem.B],		[item[1], item[1]]);		// 45-60 1d4x1000 sp A, B 1, 1
+treasure_table[2].addrow(61,78,	1,4,100,gp,	[gem.B],		[item[1], item[0]]);		// 61-78 1d4x100 gp B 1, 1, 0
+treasure_table[2].addrow(79,83,	1,10,100,gp,	[gem.B],		[item[1], item[0]]);		// 79-83 1d10x100 gp B 1, 0
+treasure_table[2].addrow(84,91,	1,10,100,gp,	[gem.A, gem.A],		[item[1], item[1]]);		// 84-91 1d10x100 gp A, A 1, 1
+treasure_table[2].addrow(92,99,	1,12,100,gp,	[gem.B],		[item[2]]);		// 92-99 1d12x100 gp B 2
+treasure_table[2].addrow(100,100,	2,8,10,pp,	[gem.B],		[item[2]]);		// 100-100 2d8x10 pp B 2
+
+// 3 
+treasure_table[3].addrow(01,07,	1,4,1000,sp,	[],		[item[1]]);		// 01-07 1d4x1000 sp - 1
+treasure_table[3].addrow(08,10,	1,4,1000,sp,	[gem.B],		[item[1]]);		// 08-10 1d4x1000 sp B 1
+treasure_table[3].addrow(11,21,	1,4,1000,sp,	[],		[item[2]]);		// 11-21 1d4x1000 sp - 2
+treasure_table[3].addrow(22,44,	1,8,1000,sp,	[gem.C],		[item[2]]);		// 22-44 1d8x1000 sp C 2
+treasure_table[3].addrow(45,60,	1,6,1000,sp,	[gem.C, gem.C],		[item[2]]);		// 45-60 1d6x1000 sp C, C 2
+treasure_table[3].addrow(61,78,	1,8,100,gp,	[gem.B, gem.B],		[item[2], item[1]]);		// 61-78 1d8x100 gp B, B 2, 1
+treasure_table[3].addrow(79,83,	1,12,100,gp,	[gem.C, gem.C],		[item[2], item[0]]);		// 79-83 1d12x100 gp C, C 2, 0
+treasure_table[3].addrow(84,91,	1,12,100,gp,	[gem.C, gem.C],		[item[2], item[1]]);		// 84-91 1d12x100 gp C, C 2, 1
+treasure_table[3].addrow(92,99,	1,12,100,gp,	[gem.C, gem.B, gem.B],		[item[3]]);		// 92-99 1d12x100 gp C, B, B 3
+treasure_table[3].addrow(100,100,	1,12,10,pp,	[gem.D, gem.B],		[item[3]]);		// 100-100 1d12x10 pp D, B 3
+
+// 4 
+treasure_table[4].addrow(01,07,	1,8,1000,sp,	[],		[item[1], item[0]]);		// 01-07 1d8x1000 sp - 1, 0
+treasure_table[4].addrow(08,10,	1,6,1000,sp,	[gem.C],		[item[1], item[1]]);		// 08-10 1d6x1000 sp C 1, 1
+treasure_table[4].addrow(11,21,	1,8,1000,sp,	[],		[item[2], item[1]]);		// 11-21 1d8x1000 sp - 2, 1
+treasure_table[4].addrow(22,44,	1,10,1000,sp,	[gem.B, gem.C],		[item[2], item[1]]);		// 22-44 1d10x1000 sp B, C 2, 1
+treasure_table[4].addrow(45,60,	1,8,1000,sp,	[gem.B, gem.D],		[item[2], item[1]]);		// 45-60 1d8x1000 sp B, D 2, 1
+treasure_table[4].addrow(61,78,	1,8,100,gp,	[gem.B, gem.C],		[item[3]]);		// 61-78 1d8x100 gp B, C 3
+treasure_table[4].addrow(79,83,	1,12,100,gp,	[gem.B, gem.D],		[item[2], item[1]]);		// 79-83 1d12x100 gp B, D 2, 1
+treasure_table[4].addrow(84,91,	1,12,100,gp,	[gem.D],		[item[3]]);		// 84-91 1d12x100 gp D 3
+treasure_table[4].addrow(92,99,	1,12,100,gp,	[gem.C, gem.C, gem.C],		[item[3], item[1]]);		// 92-99 1d12x100 gp C, C, C 3, 1
+treasure_table[4].addrow(100,100,	1,12,10,pp,	[gem.C, gem.D],		[item[4]]);		// 100-100 1d12x10 pp C, D 4
+
+// 5 
+treasure_table[5].addrow(01,07,	1,12,1000,sp,	[],		[item[2]]);		// 01-07 1d12x1000 sp - 2
+treasure_table[5].addrow(08,10,	1,8,1000,sp,	[gem.D],		[item[2]]);		// 08-10 1d8x1000 sp D 2
+treasure_table[5].addrow(11,21,	1,10,1000,sp,	[],		[item[3]]);		// 11-21 1d10x1000 sp - 3
+treasure_table[5].addrow(22,44,	1,12,1000,sp,	[gem.B, gem.D],		[item[3]]);		// 22-44 1d12x1000 sp B, D 3
+treasure_table[5].addrow(45,60,	1,6,1000,sp,	[gem.C, gem.E],		[item[3]]);		// 45-60 1d6x1000 sp C, E 3
+treasure_table[5].addrow(61,78,	1,6,100,gp,	[gem.B, gem.D],		[item[4]]);		// 61-78 1d6x100 gp B, D 4
+treasure_table[5].addrow(79,83,	1,12,100,gp,	[gem.C, gem.E],		[item[3]]);		// 79-83 1d12x100 gp C, E 3
+treasure_table[5].addrow(84,91,	1,12,100,gp,	[gem.B, gem.C, gem.D],		[item[4]]);		// 84-91 1d12x100 gp B, C, D 4
+treasure_table[5].addrow(92,99,	1,6,100,gp,	[gem.B, gem.B, gem.E],		[item[5]]);		// 92-99 1d6x100 gp B, B, E 5
+treasure_table[5].addrow(100,100,	1,12,10,pp,	[gem.C, gem.E],		[item[5]]);		// 100-100 1d12x10 pp C, E 55
+
+// 6 
+treasure_table[6].addrow(01,07,	1,10,1000,sp,	[],		[item[3]]);		// 01-07 1d10x1000 sp - 3
+treasure_table[6].addrow(08,10,	1,8,1000,sp,	[gem.D, gem.B],		[item[3]]);		// 08-10 1d8x1000 sp D, B 3
+treasure_table[6].addrow(11,21,	1,12,1000,sp,	[gem.C, gem.C],		[item[3], item[1]]);		// 11-21 1d12x1000 sp C, C 3, 1
+treasure_table[6].addrow(22,44,	1,12,100,gp,	[gem.C, gem.D],		[item[3], item[1]]);		// 22-44 1d12x100 gp C, D 3, 1
+treasure_table[6].addrow(45,60,	1,8,100,gp,	[gem.B, gem.D, gem.E],		[item[3], item[1]]);		// 45-60 1d8x100 gp B, D, E 3, 1
+treasure_table[6].addrow(61,78,	2,6,100,gp,	[gem.C, gem.D],		[item[4]]);		// 61-78 2d6x100 gp C, D 4
+treasure_table[6].addrow(79,83,	2,6,100,gp,	[gem.E, gem.F],		[item[3], item[1]]);		// 79-83 2d6x100 gp E, F 3, 1
+treasure_table[6].addrow(84,91,	2,8,100,gp,	[gem.D, gem.E],		[item[4], item[2]]);		// 84-91 2d8x100 gp D, E 4, 2
+treasure_table[6].addrow(92,99,	1,12,100,gp,	[gem.E, gem.F],		[item[5]]);		// 92-99 1d12x100 gp E, F 5
+treasure_table[6].addrow(100,100,	1,12,10,pp,	[gem.B, gem.D, gem.E],		[item[6]]);		// 100-100 1d12x10 pp B, D, E 6
+
+// 7
+treasure_table[7].addrow(01,07,	2,8,1000,sp,	[],		[item[3]]);		// 01-07 2d8x1000 sp - 3
+treasure_table[7].addrow(08,10,	2,6,1000,sp,	[gem.D, gem.C],		[item[3]]);		// 08-10 2d6x1000 sp D, C 3
+treasure_table[7].addrow(11,21,	2,8,1000,sp,	[gem.D],		[item[3], item[1]]);		// 11-21 2d8x1000 sp D 3, 1
+treasure_table[7].addrow(22,44,	2,8,100,gp,	[gem.E],		[item[4]]);		// 22-44 2d8x100 gp E 4
+treasure_table[7].addrow(45,60,	3,4,100,gp,	[gem.E, gem.D, gem.C],		[item[4]]);		// 45-60 3d4x100 gp E, D, C 4
+treasure_table[7].addrow(61,78,	2,8,100,gp,	[gem.E],		[item[4], item[2]]);		// 61-78 2d8x100 gp E 4, 2
+treasure_table[7].addrow(79,83,	2,8,100,gp,	[gem.E, gem.D],		[item[4], item[2]]);		// 79-83 2d8x100 gp E, D 4, 2
+treasure_table[7].addrow(84,91,	2,8,100,gp,	[gem.E],		[item[5], item[1]]);		// 84-91 2d8x100 gp E 5, 1
+treasure_table[7].addrow(92,99,	3,4,100,gp,	[gem.E, gem.D],		[item[6]]);		// 92-99 3d4x100 gp E, D 6
+treasure_table[7].addrow(100,100,	2,8,10,pp,	[gem.E, gem.D],		[item[7]]);		// 100-100 2d8x10 pp E, D 77
+
+// 8 
+treasure_table[8].addrow(01,07,	2,10,1000,sp,	[gem.D],		[item[4]]);		// 01-07 2d10x1000 sp D 4
+treasure_table[8].addrow(08,10,	2,8,1000,sp,	[gem.E],		[item[4]]);		// 08-10 2d8x1000 sp E 4
+treasure_table[8].addrow(11,21,	2,8,100,gp,	[gem.D, gem.C],		[item[4], item[1]]);		// 11-21 2d8x100 gp D, C 4, 1
+treasure_table[8].addrow(22,44,	2,10,100,gp,	[gem.E, gem.C],		[item[5]]);		// 22-44 2d10x100 gp E, C 5
+treasure_table[8].addrow(45,60,	4,4,100,gp,	[gem.E, gem.D, gem.D],		[item[5]]);		// 45-60 4d4x100 gp E, D, D 5
+treasure_table[8].addrow(61,78,	4,4,100,gp,	[gem.E, gem.C],		[item[6]]);		// 61-78 4d4x100 gp E, C 6
+treasure_table[8].addrow(79,83,	4,4,100,gp,	[gem.F, gem.C],		[item[6]]);		// 79-83 4d4x100 gp F, C 6
+treasure_table[8].addrow(84,91,	2,10,100,gp,	[gem.F],		[item[6], item[3]]);		// 84-91 2d10x100 gp F 6, 3
+treasure_table[8].addrow(92,99,	2,10,10,pp,	[gem.F, gem.C],		[item[7]]);		// 92-99 2d10x10 pp F, C 7
+treasure_table[8].addrow(100,100,	2,10,10,pp,	[gem.F, gem.C],		[item[8]]);		// 100-100 2d10x10 pp F, C 8
+
+// 9 
+treasure_table[9].addrow(01,07,	2,12,1000,sp,	[gem.D, gem.C],		[item[4]]);		// 01-07 2d12x1000 sp D, C 4
+treasure_table[9].addrow(08,10,	2,10,1000,sp,	[gem.E, gem.C],		[item[4], item[1]]);		// 08-10 2d10x1000 sp E, C 4, 1
+treasure_table[9].addrow(11,21,	2,10,100,gp,	[gem.E],		[item[5]]);		// 11-21 2d10x100 gp E 5
+treasure_table[9].addrow(22,44,	4,6,100,gp,	[gem.F],		[item[5]]);		// 22-44 4d6x100 gp F 5
+treasure_table[9].addrow(45,60,	2,12,100,gp,	[gem.F, gem.D],		[item[6]]);		// 45-60 2d12x100 gp F, D 6
+treasure_table[9].addrow(61,78,	2,12,100,gp,	[gem.F],		[item[6], item[3]]);		// 61-78 2d12x100 gp F 6, 3
+treasure_table[9].addrow(79,83,	3,10,100,gp,	[gem.F, gem.D],		[item[6], item[2]]);		// 79-83 3d10x100 gp F, D 6, 2
+treasure_table[9].addrow(84,91,	3,10,100,gp,	[gem.F],		[item[7]]);		// 84-91 3d10x100 gp F 7
+treasure_table[9].addrow(92,99,	4,6,10,pp,	[gem.F, gem.D],		[item[8]]);		// 92-99 4d6x10 pp F, D 8
+treasure_table[9].addrow(100,100,	2,12,10,pp,	[gem.F, gem.D],		[item[9]]);		// 100-100 2d12x10 pp F, D 9
+
+// 10 
+treasure_table[10].addrow(01,07,	3,8,1000,sp,	[gem.E],		[item[5]]);		// 01-07 3d8x1000 sp E 5
+treasure_table[10].addrow(08,10,	2,12,1000,sp,	[gem.F],		[item[5]]);		// 08-10 2d12x1000 sp F 5
+treasure_table[10].addrow(11,21,	3,8,100,gp,	[gem.E, gem.D],		[item[6]]);		// 11-21 3d8x100 gp E, D 6
+treasure_table[10].addrow(22,44,	6,4,100,gp,	[gem.F, gem.E],		[item[6], item[1]]);		// 22-44 6d4x100 gp F, E 6, 1
+treasure_table[10].addrow(45,60,	4,6,100,gp,	[gem.F, gem.F],		[item[6], item[2]]);		// 45-60 4d6x100 gp F, F 6, 2
+treasure_table[10].addrow(61,78,	4,6,100,gp,	[gem.F, gem.E, gem.D],		[item[7]]);		// 61-78 4d6x100 gp F, E, D 7
+treasure_table[10].addrow(79,83,	3,10,100,gp,	[gem.F, gem.F, gem.D],		[item[7]]);		// 79-83 3d10x100 gp F, F, D 7
+treasure_table[10].addrow(84,91,	3,10,10,pp,	[gem.F, gem.F],		[item[8]]);		// 84-91 3d10x10 pp F, F 8
+treasure_table[10].addrow(92,99,	6,4,10,pp,	[gem.F, gem.F, gem.D],		[item[9]]);		// 92-99 6d4x10 pp F, F, D 9
+treasure_table[10].addrow(100,100,	3,10,10,pp,	[gem.F, gem.F, gem.D],		[item[10]]);		// 100-100 3d10x10 pp F, F, D 10
+
+// 11 
+treasure_table[11].addrow(01,07,	6,4,1000,sp,	[gem.F],		[item[6]]);		// 01-07 6d4x1000 sp F 6
+treasure_table[11].addrow(08,10,	4,6,1000,sp,	[gem.F, gem.E],		[item[6]]);		// 08-10 4d6x1000 sp F, E 6
+treasure_table[11].addrow(11,21,	4,6,100,gp,	[gem.F],		[item[7]]);		// 11-21 4d6x100 gp F 7
+treasure_table[11].addrow(22,44,	4,8,100,gp,	[gem.F, gem.F],		[item[7]]);		// 22-44 4d8x100 gp F, F 7
+treasure_table[11].addrow(45,60,	6,4,100,gp,	[gem.G],		[item[7], item[2]]);		// 45-60 6d4x100 gp G 7, 2
+treasure_table[11].addrow(61,78,	6,4,100,gp,	[gem.F, gem.F, gem.D],		[item[8]]);		// 61-78 6d4x100 gp F, F, D 8
+treasure_table[11].addrow(79,83,	4,10,100,gp,	[gem.G, gem.F],		[item[8]]);		// 79-83 4d10x100 gp G, F 8
+treasure_table[11].addrow(84,91,	4,10,10,pp,	[gem.G, gem.E],		[item[9]]);		// 84-91 4d10x10 pp G, E 9
+treasure_table[11].addrow(92,99,	3,10,10,pp,	[gem.G, gem.F],		[item[10]]);		// 92-99 3d10x10 pp G, F 10
+treasure_table[11].addrow(100,100,	4,10,10,pp,	[gem.G, gem.F],		[item[11]]);		// 100-100 4d10x10 pp G, F 11
+
+// 12 
+treasure_table[12].addrow(01,07,	3,12,1000,sp,	[gem.F],		[item[7]]);		// 01-07 3d12x1000 sp F 7
+treasure_table[12].addrow(08,10,	4,8,1000,sp,	[gem.F, gem.D, gem.C],		[item[7]]);		// 08-10 4d8x1000 sp F, D, C 7
+treasure_table[12].addrow(11,21,	3,12,1000,sp,	[gem.F],		[item[8]]);		// 11-21 3d12x1000 sp F 8
+treasure_table[12].addrow(22,44,	3,12,100,gp,	[gem.G],		[item[8]]);		// 22-44 3d12x100 gp G 8
+treasure_table[12].addrow(45,60,	1,4,1000,gp,	[gem.G, gem.E],		[item[8]]);		// 45-60 1d4x1000 gp G, E 8
+treasure_table[12].addrow(61,78,	1,4,1000,gp,	[gem.G],		[item[9]]);		// 61-78 1d4x1000 gp G 9
+treasure_table[12].addrow(79,83,	1,6,1000,gp,	[gem.H],		[item[9]]);		// 79-83 1d6x1000 gp H 9
+treasure_table[12].addrow(84,91,	1,6,100,pp,	[gem.G, gem.F, gem.F],		[item[10]]);		// 84-91 1d6x100 pp G, F, F 10
+treasure_table[12].addrow(92,99,	1,4,100,pp,	[gem.H],		[item[11]]);		// 92-99 1d4x100 pp H 11
+treasure_table[12].addrow(100,100,	1,6,100,pp,	[gem.H],		[item[12]]);		// 100-100 1d6x100 pp H 12
+
+// 13 
+treasure_table[13].addrow(01,07,	4,12,100,gp,	[gem.F],		[item[8]]);		// 01-07 4d12x100 gp F 8
+treasure_table[13].addrow(08,10,	1,4,1000,gp,	[gem.F, gem.E, gem.C],		[item[8]]);		// 08-10 1d4x1000 gp F, E, C 8
+treasure_table[13].addrow(11,21,	1,4,1000,gp,	[gem.F, gem.C],		[item[9]]);		// 11-21 1d4x1000 gp F, C 9
+treasure_table[13].addrow(22,44,	1,8,1000,gp,	[gem.G, gem.D],		[item[9]]);		// 22-44 1d8x1000 gp G, D 9
+treasure_table[13].addrow(45,60,	1,6,1000,gp,	[gem.G, gem.F],		[item[10]]);		// 45-60 1d6x1000 gp G, F 10
+treasure_table[13].addrow(61,78,	1,6,1000,gp,	[gem.G, gem.E],		[item[10], item[5]]);		// 61-78 1d6x1000 gp G, E 10, 5
+treasure_table[13].addrow(79,83,	1,8,1000,gp,	[gem.H, gem.E],		[item[11]]);		// 79-83 1d8x1000 gp H, E 11
+treasure_table[13].addrow(84,91,	1,8,100,pp,	[gem.H],		[item[11], item[5]]);		// 84-91 1d8x100 pp H 11, 5
+treasure_table[13].addrow(92,99,	1,6,100,pp,	[gem.H, gem.F],		[item[12]]);		// 92-99 1d6x100 pp H, F 12
+treasure_table[13].addrow(100,100,	1,8,100,pp,	[gem.H, gem.F],		[item[13]]);		// 100-100 1d8x100 pp H, F 133
+
+// 14 
+treasure_table[14].addrow(01,07,	1,6,1000,gp,	[gem.F, gem.D],		[item[9]]);		// 01-07 1d6x1000 gp F, D 9
+treasure_table[14].addrow(08,10,	1,6,1000,gp,	[gem.F, gem.E],		[item[9]]);		// 08-10 1d6x1000 gp F, E 9
+treasure_table[14].addrow(11,21,	1,6,1000,gp,	[gem.F, gem.D],		[item[10]]);		// 11-21 1d6x1000 gp F, D 10
+treasure_table[14].addrow(22,44,	2,4,1000,gp,	[gem.G, gem.F],		[item[10], item[5]]);		// 22-44 2d4x1000 gp G, F 10, 5
+treasure_table[14].addrow(45,60,	1,8,1000,gp,	[gem.H],		[item[11]]);		// 45-60 1d8x1000 gp H 11
+treasure_table[14].addrow(61,78,	1,8,1000,gp,	[gem.G, gem.F],		[item[11], item[6]]);		// 61-78 1d8x1000 gp G, F 11, 6
+treasure_table[14].addrow(79,83,	2,4,1000,gp,	[gem.H, gem.F],		[item[12]]);		// 79-83 2d4x1000 gp H, F 12
+treasure_table[14].addrow(84,91,	2,4,100,pp,	[gem.H],		[item[12], item[5]]);		// 84-91 2d4x100 pp H 12, 5
+treasure_table[14].addrow(92,99,	1,8,100,pp,	[gem.H, gem.G],		[item[13]]);		// 92-99 1d8x100 pp H, G 13
+treasure_table[14].addrow(100,100,	2,4,100,pp,	[gem.H, gem.G],		[item[14]]);		// 100-100 2d4x100 pp H, G 144
+
+// 15 
+treasure_table[15].addrow(01,07,	2,4,1000,gp,	[gem.G],		[item[10]]);		// 01-07 2d4x1000 gp G 10
+treasure_table[15].addrow(08,10,	1,8,1000,gp,	[gem.G, gem.F],		[item[10]]);		// 08-10 1d8x1000 gp G, F 10
+treasure_table[15].addrow(11,21,	1,8,1000,gp,	[gem.G, gem.E],		[item[11]]);		// 11-21 1d8x1000 gp G, E 11
+treasure_table[15].addrow(22,44,	1,12,1000,gp,	[gem.H, gem.F],		[item[11]]);		// 22-44 1d12x1000 gp H, F 11
+treasure_table[15].addrow(45,60,	1,10,1000,gp,	[gem.H, gem.G],		[item[12]]);		// 45-60 1d10x1000 gp H, G 12
+treasure_table[15].addrow(61,78,	1,10,1000,gp,	[gem.H, gem.F],		[item[12], item[8]]);		// 61-78 1d10x1000 gp H, F 12, 8
+treasure_table[15].addrow(79,83,	2,6,100,pp,	[gem.H, gem.G, gem.E],		[item[13]]);		// 79-83 2d6x100 pp H, G, E 13
+treasure_table[15].addrow(84,91,	2,6,100,pp,	[gem.H, gem.G],		[item[13], item[6]]);		// 84-91 2d6x100 pp H, G 13, 6
+treasure_table[15].addrow(92,99,	1,12,100,pp,	[gem.H, gem.G, gem.F],		[item[14]]);		// 92-99 1d12x100 pp H, G, F 14
+treasure_table[15].addrow(100,100,	1,12,100,pp,	[gem.H, gem.G, gem.F],		[item[15]]);		// 100-100 1d12x100 pp H, G, F 15
+
+// 16 
+treasure_table[16].addrow(01,07,	1,12,1000,gp,	[gem.G, gem.E],		[item[11]]);		// 01-07 1d12x1000 gp G, E 11
+treasure_table[16].addrow(08,10,	1,10,1000,gp,	[gem.H],		[item[11]]);		// 08-10 1d10x1000 gp H 11
+treasure_table[16].addrow(11,21,	1,10,1000,gp,	[gem.G, gem.F],		[item[12]]);		// 11-21 1d10x1000 gp G, F 12
+treasure_table[16].addrow(22,44,	3,4,1000,gp,	[gem.H, gem.G],		[item[12], item[6]]);		// 22-44 3d4x1000 gp H, G 12, 6
+treasure_table[16].addrow(45,60,	1,12,1000,gp,	[gem.I],		[item[13]]);		// 45-60 1d12x1000 gp I 13
+treasure_table[16].addrow(61,78,	1,12,1000,gp,	[gem.H, gem.G],		[item[13], item[8]]);		// 61-78 1d12x1000 gp H, G 13, 8
+treasure_table[16].addrow(79,83,	3,4,100,pp,	[gem.I, gem.F, gem.E],		[item[14]]);		// 79-83 3d4x100 pp I, F, E 14
+treasure_table[16].addrow(84,91,	3,4,100,pp,	[gem.I, gem.E],		[item[14], item[8]]);		// 84-91 3d4x100 pp I, E 14, 8
+treasure_table[16].addrow(92,99,	2,6,100,pp,	[gem.I, gem.F, gem.E],		[item[15]]);		// 92-99 2d6x100 pp I, F, E 15
+treasure_table[16].addrow(100,100,	3,4,100,pp,	[gem.I, gem.F, gem.E],		[item[16]]);		// 100-100 3d4x100 pp I, F, E 16
+
+// 17 
+treasure_table[17].addrow(01,07,	3,4,1000,gp,	[gem.H],		[item[12]]);		// 01-07 3d4x1000 gp H 12
+treasure_table[17].addrow(08,10,	1,12,1000,gp,	[gem.H, gem.F, gem.F],		[item[12]]);		// 08-10 1d12x1000 gp H, F, F 12
+treasure_table[17].addrow(11,21,	1,12,1000,gp,	[gem.H, gem.F],		[item[13]]);		// 11-21 1d12x1000 gp H, F 13
+treasure_table[17].addrow(22,44,	2,8,1000,gp,	[gem.I],		[item[13]]);		// 22-44 2d8x1000 gp I 13
+treasure_table[17].addrow(45,60,	3,4,1000,gp,	[gem.I, gem.G],		[item[14]]);		// 45-60 3d4x1000 gp I, G 14
+treasure_table[17].addrow(61,78,	3,4,1000,gp,	[gem.I],		[item[14], item[7]]);		// 61-78 3d4x1000 gp I 14, 7
+treasure_table[17].addrow(79,83,	2,8,1000,gp,	[gem.I, gem.G],		[item[15]]);		// 79-83 2d8x1000 gp I, G 15
+treasure_table[17].addrow(84,91,	2,8,1000,gp,	[gem.I],		[item[16]]);		// 84-91 2d8x1000 gp I 16
+treasure_table[17].addrow(92,99,	3,4,1000,gp,	[gem.I, gem.G],		[item[17]]);		// 92-99 3d4x1000 gp I, G 17
+treasure_table[17].addrow(100,100,	2,8,1000,gp,	[gem.I, gem.G],		[item[18]]);		// 100-100 2d8x1000 gp I, G 18
+
+// 18 
+treasure_table[18].addrow(01,07,	2,8,1000,gp,	[gem.H, gem.G],		[item[13]]);		// 01-07 2d8x1000 gp H, G 13
+treasure_table[18].addrow(08,10,	3,4,1000,gp,	[gem.I],		[item[14]]);		// 08-10 3d4x1000 gp I 14
+treasure_table[18].addrow(11,21,	3,4,1000,gp,	[gem.H, gem.G],		[item[14], item[9]]);		// 11-21 3d4x1000 gp H, G 14, 9
+treasure_table[18].addrow(22,44,	4,4,1000,gp,	[gem.I],		[item[15]]);		// 22-44 4d4x1000 gp I 15
+treasure_table[18].addrow(45,60,	2,8,1000,gp,	[gem.I, gem.H],		[item[15]]);		// 45-60 2d8x1000 gp I, H 15
+treasure_table[18].addrow(61,78,	2,8,1000,gp,	[gem.I, gem.F],		[item[16]]);		// 61-78 2d8x1000 gp I, F 16
+treasure_table[18].addrow(79,83,	4,4,100,pp,	[gem.I, gem.G],		[item[17]]);		// 79-83 4d4x100 pp I, G 17
+treasure_table[18].addrow(84,91,	4,4,100,pp,	[gem.I, gem.F],		[item[18]]);		// 84-91 4d4x100 pp I, F 18
+treasure_table[18].addrow(92,99,	2,8,100,pp,	[gem.I, gem.G],		[item[19]]);		// 92-99 2d8x100 pp I, G 19
+treasure_table[18].addrow(100,100,	4,4,100,pp,	[gem.I, gem.G],		[item[20]]);		// 100-100 4d4x100 pp I, G 20
+
+// 19 
+treasure_table[19].addrow(01,07,	3,6,1000,gp,	[gem.I],		[item[14]]);		// 01-07 3d6x1000 gp I 14
+treasure_table[19].addrow(08,10,	2,8,1000,gp,	[gem.I, gem.F],		[item[15]]);		// 08-10 2d8x1000 gp I, F 15
+treasure_table[19].addrow(11,21,	2,8,1000,gp,	[gem.I],		[item[15], item[7]]);		// 11-21 2d8x1000 gp I 15, 7
+treasure_table[19].addrow(22,44,	3,8,1000,gp,	[gem.I, gem.F],		[item[16]]);		// 22-44 3d8x1000 gp I, F 16
+treasure_table[19].addrow(45,60,	2,10,1000,gp,	[gem.I, gem.H],		[item[16], item[10]]);		// 45-60 2d10x1000 gp I, H 16, 10
+treasure_table[19].addrow(61,78,	2,10,100,pp,	[gem.I, gem.F],		[item[17]]);		// 61-78 2d10x100 pp I, F 17
+treasure_table[19].addrow(79,83,	3,8,100,pp,	[gem.I, gem.H],		[item[18]]);		// 79-83 3d8x100 pp I, H 18
+treasure_table[19].addrow(84,91,	3,8,100,pp,	[gem.I, gem.F],		[item[19]]);		// 84-91 3d8x100 pp I, F 19
+treasure_table[19].addrow(92,99,	3,6,100,pp,	[gem.I, gem.H],		[item[20]]);		// 92-99 3d6x100 pp I, H 20
+treasure_table[19].addrow(100,100,	3,8,100,pp,	[gem.I, gem.H],		[item[21]]);		// 100-100 3d8x100 pp I, H 21
+
+// 20 
+treasure_table[20].addrow(01,07,	2,12,1000,gp,	[gem.I, gem.F, gem.F],		[item[15]]);		// 01-07 2d12x1000 gp I, F, F 15
+treasure_table[20].addrow(08,10,	2,10,1000,gp,	[gem.I, gem.H],		[item[16]]);		// 08-10 2d10x1000 gp I, H 16
+treasure_table[20].addrow(11,21,	2,10,1000,gp,	[gem.I, gem.F, gem.F],		[item[17]]);		// 11-21 2d10x1000 gp I, F, F 17
+treasure_table[20].addrow(22,44,	4,6,1000,gp,	[gem.I, gem.H],		[item[18]]);		// 22-44 4d6x1000 gp I, H 18
+treasure_table[20].addrow(45,60,	2,12,1000,gp,	[gem.I, gem.H, gem.G],		[item[19]]);		// 45-60 2d12x1000 gp I, H, G 19
+treasure_table[20].addrow(61,78,	2,12,100,pp,	[gem.I, gem.H],		[item[20]]);		// 61-78 2d12x100 pp I, H 20
+treasure_table[20].addrow(79,83,	4,6,100,pp,	[gem.I, gem.H, gem.G],		[item[21]]);		// 79-83 4d6x100 pp I, H, G 21
+treasure_table[20].addrow(84,91,	4,6,100,pp,	[gem.I, gem.H],		[item[22]]);		// 84-91 4d6x100 pp I, H 22
+treasure_table[20].addrow(92,95,	2,12,100,pp,	[gem.I, gem.H, gem.G],		[item[23]]);		// 92-95 2d12x100 pp I, H, G 23
+treasure_table[20].addrow(96,99,	2,12,100,pp,	[gem.I, gem.H, gem.G],		[item[24]]);		// 96-99 2d12x100 pp I, H, G 24
+treasure_table[20].addrow(99,100,	2,12,100,pp,	[gem.I, gem.I],		[item[25]]);		// 99-100 2d12x100 pp I, I 25

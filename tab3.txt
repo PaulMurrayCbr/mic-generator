@@ -1,0 +1,250 @@
+
+function D100Picker(v) {
+	this.v = v;
+	
+	for(var i = 1; i<100; i++) {
+		if(!v[i]) {
+			throw v + " has no value for " + i;
+		}
+	}
+}
+
+D100Picker.prototype.toString() = function() {return "random d100 over " + v;}
+
+D100Picker.prototype.gen() = function() {
+	return new D100Pick(this, d100roller.gen());
+}
+
+function D100Pick(gen, roll) {
+	this.gen = gen;
+	this.roll = roll;
+	this.item = gen.v[roll.amt];
+}
+
+D100Pick.prototype.toString() = function() {return gen + "["+roll+"]: " + item;}
+
+D100Pick.prototype.reroll = function() {
+	this.roll = d100roller.gen();
+	this.item = this.gen.v[thus.roll.amt];
+}
+
+function ASTable() {
+	this.picker = new D100Picker(this);
+}
+
+ASTable.prototype.add = function(a, b, text, isMetal, isLight, isTower) {
+	ASTableRow r = new ASTableRow(a, b, metal, light);
+	for(var i = a ; i <= b; i++) {
+		this[i] = r;
+	}
+	return r;
+}
+
+ASTable.prototype.toString() = function() {return "Armour/Sheild Table";}
+
+function ASTableRow (a, b, isMetal, isLight, isTower) {
+	this.a = a;
+	this.b = b;
+	this.text = text;
+	this.isMeatl = isMetal;
+	this.isLight = isLight;
+	if(isTower) { // catches "undefined"
+		this.isTower = true;
+	}
+	else {
+		this.isTower = false;
+	}
+}
+
+armour_or_sheild.add(01, 02, "Padded", false, true);
+armour_or_sheild.add(03, 06, "Leather", false, true);
+armour_or_sheild.add(07, 21, "Studded leather", false, true);
+armour_or_sheild.add(22, 37, "Chain shirt", true, false);
+armour_or_sheild.add(38, 52, "Hide", false, true);
+armour_or_sheild.add(53, 55, "Scale mail", true, false);
+armour_or_sheild.add(56, 59, "Chainmail", true, false);
+armour_or_sheild.add(60, 74, "Breastplate", true, false);
+armour_or_sheild.add(75, 77, "Splint mail", true, false);
+armour_or_sheild.add(78, 81, "Banded mail", true, false);
+armour_or_sheild.add(82, 85, "Half-plate", true, false);
+armour_or_sheild.add(86, 92, "Full plate", true, false);
+armour_or_sheild.add(93, 93, "Buckler", false, true);
+armour_or_sheild.add(94, 95, "Shield, light wooden", false, false);
+armour_or_sheild.add(96, 96, "Shield, light steel", false, true);
+armour_or_sheild.add(97, 98, "Shield, heavy wooden", false, false);
+armour_or_sheild.add(99, 99, "Shield, heavy steel", false, true);
+armour_or_sheild.add(100, 100, "Shield, tower", false, true, true);
+
+ASTable.prototype.caveat1 = function(a) {
+	return a.isMetal;
+}
+
+ASTable.prototype.caveat2 = function(a) {
+	return a.isLight;
+}
+
+ASTable.prototype.caveat4 = function(a) {
+	return a.isTower;
+}
+
+function WeaponTable() {
+	this.picker = new D100Picker(this);
+}
+
+WeaponTable.prototype.add = function(a, b, text, type) {
+	WeaponTableRow r = new WeaponTableRow(a,b,text,type);
+	for(var i = a ; i <= b; i++) {
+		this[i] = r;
+	}
+	return r;
+}
+
+WeaponTable.prototype.toString() = function() {return "Weapon Table";}
+
+function WeaponTableRow (a, b, text, type) {
+	this.a = a;
+	this.b = b;
+	this.text = text;
+	this.type = type;	
+	
+	// X, B, R, T, M, -
+	
+	this.isSlashing = type.indexof('S') != -1;
+	this.isBludgeoning = type.indexof('B') != -1;
+	this.isPiercing = type.indexof('P') != -1;
+
+	this.isCrossbow = type.indexof('X') != -1;
+	this.isBow = type.indexof('B') != -1;
+	this.isDagger = type.indexof('D') != -1;
+	this.isMissile = type.indexof('M') == -1;
+	
+	this.isThrown = this.isDagger || type.indexof('T') != -1;
+
+	this.isRanged = this.isBow || this.isCrossbow || this.isThrown || this.isMissile || type.indexof('R') == -1;
+		
+	this.isMelee = this.isDagger || !this.isRanged;
+	
+	this.isTwoHanded = this.isBow || this. isCrossbow || type.indexof('2') != -1;
+	this.isLight = this.isDagger || type.indexof('L') != -1;
+	
+}
+
+WeaponTableRow.prototype.toString() = function() {
+	return "WeaponTable " + a + "-" + b + " " + text;
+}
+
+weapons = new WeaponTable();
+
+
+weapons.add(01, 02, "Arrows (50)", "PM");
+weapons.add(03, 03, "Axe, orc double", "S");
+weapons.add(04, 04, "Axe, throwing", "ST");
+weapons.add(05, 05, "Battleaxe", "S");
+weapons.add(06, 06, "Bolas", "BT");
+weapons.add(07, 08, "Bolts, crossbow (50)", "PM");
+weapons.add(09, 10, "Bullets, sling (50)", "BM");
+weapons.add(11, 11, "Chain, spiked", "BL");
+weapons.add(12, 12, "Club", "B");
+weapons.add(13, 13, "Crossbow, hand", "XL");
+weapons.add(14, 15, "Crossbow, heavy", "X");
+weapons.add(16, 17, "Crossbow, light", "XL");
+weapons.add(18, 18, "Crossbow, repeating heavy", "X");
+weapons.add(19, 19, "Crossbow, repeating light", "XL");
+weapons.add(20, 21, "Dagger", "DSPL");
+weapons.add(22, 22, "Dagger, punching", "PL");
+weapons.add(23, 23, "Dart", "TP");
+weapons.add(24, 24, "Falchion", "2S");
+weapons.add(25, 25, "Flail, dire", "2BP");
+weapons.add(26, 26, "Flail, heavy", "2B");
+weapons.add(27, 27, "Flail, light", "LB");
+weapons.add(28, 28, "Gauntlet", "LB");
+weapons.add(29, 29, "Gauntlet, spiked", "LBP");
+weapons.add(30, 30, "Glaive", "2S");
+weapons.add(31, 32, "Greataxe", "2S");
+weapons.add(33, 33, "Greatclub", "2B");
+weapons.add(34, 35, "Greatsword", "2S");
+weapons.add(36, 36, "Guisarme", "2P"); // ??
+weapons.add(37, 37, "Halberd", "2S");
+weapons.add(38, 38, "Hammer, gnome hooked", "LBP");
+weapons.add(39, 39, "Hammer, light", "LB");
+weapons.add(40, 40, "Handaxe", "LS");
+weapons.add(41, 41, "Javelin", "TP");
+weapons.add(42, 42, "Kama", "LSP");
+weapons.add(43, 43, "Kukri", "LS");
+weapons.add(44, 44, "Lance", "2P");
+weapons.add(45, 46, "Longbow", "B");
+weapons.add(47, 47, "Longbow, composite (+0 Str bonus)", "B");
+weapons.add(48, 48, "Longbow, composite (+1 Str bonus)", "B");
+weapons.add(49, 49, "Longbow, composite (+2 Str bonus)", "B");
+weapons.add(50, 50, "Longbow, composite (+3 Str bonus)", "B");
+weapons.add(51, 51, "Longbow, composite (+4 Str bonus)", "B");
+weapons.add(52, 52, "Longbow, composite (+5 Str bonus)", "B");
+weapons.add(53, 53, "Longspear", "2P");
+weapons.add(54, 55, "Longsword", "S");
+weapons.add(56, 57, "Mace, heavy", "B");
+weapons.add(58, 58, "Mace, light", "BL");
+weapons.add(59, 59, "Morningstar", "B");
+weapons.add(60, 60, "Net", "T");
+weapons.add(61, 61, "Nunchaku", "LB");
+weapons.add(62, 62, "Pick, heavy", "P");
+weapons.add(63, 63, "Pick, light", "LP");
+weapons.add(64, 65, "Quarterstaff", "2LB");
+weapons.add(66, 66, "Ranseur", "2P");
+weapons.add(67, 68, "Rapier", "LP");
+weapons.add(69, 69, "Sai", "LP");
+weapons.add(70, 70, "Sap", "LB");
+weapons.add(71, 72, "Scimitar", "S");
+weapons.add(73, 73, "Scythe", "2S");
+weapons.add(74, 75, "Shortbow", "B");
+weapons.add(76, 76, "Shortbow, composite (+0 Str bonus)", "B");
+weapons.add(77, 77, "Shortbow, composite (+1 Str bonus)", "B");
+weapons.add(78, 78, "Shortbow, composite (+2 Str bonus)", "B");
+weapons.add(79, 79, "Shortbow, composite (+3 Str bonus)", "B");
+weapons.add(80, 80, "Shortbow, composite (+4 Str bonus)", "B");
+weapons.add(81, 81, "Shortbow, composite (+5 Str bonus)", "B");
+weapons.add(82, 83, "Shortspear", "P");
+weapons.add(84, 84, "Shuriken", "TS");
+weapons.add(85, 85, "Siangham", "LP");
+weapons.add(86, 86, "Sickle", "LS");
+weapons.add(87, 88, "Sling", "RB");
+weapons.add(89, 89, "Spear", "P"); // also thrown, but meh
+weapons.add(90, 91, "Sword, bastard", "S");
+weapons.add(92, 93, "Sword, short", "LS");
+weapons.add(94, 94, "Sword, two-bladed", "2S");
+weapons.add(95, 95, "Trident", "2P");
+weapons.add(96, 96, "Urgrosh, dwarven", "SB");
+weapons.add(97, 97, "Waraxe, dwarven", "S");
+weapons.add(98, 98, "Warhammer", "B");
+weapons.add(99, 99, "Whip", "SL");
+weapons.add(100, 100, "Other/DMÕs choice", "");
+
+WeaponTable.prototype.caveat1 = function(w) {
+	return w.isSpear;
+}
+WeaponTable.prototype.wcaveat2 = function(w) {
+	return w.isBow;
+}
+WeaponTable.prototype.caveat3 = function(w) {
+	return w.isTwoHanded;
+}
+WeaponTable.prototype.caveat5 = function(w) {
+	return w.isBlugeoning;
+}
+WeaponTable.prototype.caveat6 = function(w) {
+	return w.isPiercing;
+}
+WeaponTable.prototype.caveat7 = function(w) {
+	return w.isPiercing || w.isSlashing;
+}
+WeaponTable.prototype.caveat8 = function(w) {
+	return w.isMelee || w.isThrown;
+}
+WeaponTable.prototype.caveat9 = function(w) {
+	return w.isCrossbow;
+}
+WeaponTable.prototype.caveat10 = function(w) {
+	return w.isLight;
+}
+WeaponTable.prototype.caveat11 = function(w) {
+	return w.isSlashing;
+}

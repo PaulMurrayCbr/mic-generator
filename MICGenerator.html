@@ -1,0 +1,3142 @@
+<html>
+<head>
+<title>Magic Item Compendium treasure generator</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<script type="text/javascript">
+
+	function gen(lvl) {
+		try {
+			var div = document.createElement("div");
+			document.getElementById("MAIN").appendChild(div);
+			new TreasureBlock(div, treasure_table[lvl]);
+		} catch (ex) {
+			alert(ex);
+		}
+	}
+
+	function roll(n, dd) {
+		var t = 0;
+		while (n > 0) {
+			n--;
+			t += Math.floor(Math.random() * dd) + 1;
+		}
+		return t;
+	};
+
+	
+	
+	
+	// UTILITY OBJECTS
+	
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	function DiceRoller(n, d, plus) {
+		if (d == 0)
+			throw "Cant do a d0";
+
+		this.n = n;
+		this.d = d;
+		this.plus = plus;
+	}
+
+	DiceRoller.prototype.toString = function() {
+		try {
+			return this.n
+					+ "d"
+					+ this.d
+					+ (this.plus == 0 ? "" : this.plus > 0 ? "+" + this.plus
+							: this.plus);
+		} catch (ex) {
+			return ex.toString();
+		}
+	}
+
+	DiceRoller.prototype.gen = function() {
+		var rolls = [];
+		var amt = this.plus;
+		for ( var i = 0; i < this.n; i++) {
+			rolls[i] = Math.floor(Math.random() * this.d) + 1;
+			amt += rolls[i];
+		}
+
+		return new DiceRoll(this, rolls, amt);
+	}
+
+	function DiceRoll(gen, rolls, amt) {
+		this.gen = gen;
+		this.rolls = rolls;
+		this.amt = amt;
+	}
+
+	DiceRoll.prototype.toString = function() {
+		try {
+			return this.gen + "(" + this.rolls + ")=" + this.amt;
+		} catch (ex) {
+			return ex.toString();
+		}
+
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	var d100roller = new DiceRoller(1, 100, 0);
+
+	function D100Picker(v) {
+		this.v = v;
+		if(!v) { throw "D100Picker("+v+")";}
+	}
+
+	D100Picker.prototype.toString = function() {return "D100Picker( " + this.v +")";}
+
+	D100Picker.prototype.add = function(a, b, item) {
+		if(!item) throw "no item for D100.add";
+		var row = new D100Row(this, a, b, item);
+
+		for(var i = a; i<= b; i++) {
+			this.v[i] = row;
+		}
+	}
+
+	D100Picker.prototype.gen = function() {
+		return new D100Pick(this, d100roller.gen());
+	}
+
+	D100Picker.prototype.validate = function() {
+		for(var i = 1; i < 100; i++) {
+			if(!this.v[i]) {
+				throw "D100 validation fail: no item " + i + " on " + this;
+			}	
+		}
+	}
+
+	function D100Row(gen, a, b, item) {
+		this.gen = gen;
+		this.a = a;
+		this.b = b;
+		this.item = item;
+		
+		if(!gen) throw "no gen for d100Row";
+		if(!item) throw "no item for d100Row";
+	}
+	
+	D100Row.prototype.toString = function() {try{return "D100Row("+this.a+"-" + this.b + ": " + this.item.toString()+")";}catch(ex){return ex;}}
+
+	function D100Pick(gen, roll) {
+		this.gen = gen;
+		this.roll = roll;
+		this.v = gen.v;
+		this.row = this.v[roll.amt];
+		this.item = this.row.item;
+		this.generated = this.item.gen();
+	}
+
+	D100Pick.prototype.toString = function() {try{
+		
+		var g,r,rr,gg;
+		try {g = this.gen.toString();}catch(e){g=e.toString();}
+		try {r = this.roll.toString();}catch(e){g=e.toString();}
+		try {rr = this.row.toString();}catch(e){g=e.toString();}
+		try {gg = this.generated.toString();}catch(e){gg=e.toString();}
+		
+		return "D100Pick(" + g + "["+r+"]: " + rr + ": " + gg + ")";
+		}catch(ex){return ex;}}
+
+	D100Pick.prototype.reroll = function() {
+		this.roll = d100roller.gen();
+		this.row = this.v[this.roll.amt];
+		this.item = this.row.item;
+		this.generated = this.item.gen();
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	var cp = {
+		s : "cp",
+		v : 1
+	};
+	var sp = {
+		s : "sp",
+		v : 10
+	};
+	var gp = {
+		s : "gp",
+		v : 100
+	};
+	var pp = {
+		s : "pp",
+		v : 1000
+	};
+
+	
+	// MIC generators and the objects they generate
+	
+	function RndGold(n, d, amt, cur) {
+		this.n = n;
+		this.d = d;
+		this.amt = amt;
+		this.cur = cur;
+		this.roller = new DiceRoller(n, d, 0);
+	}
+
+	RndGold.prototype.gen = function() {
+		return new GeneratedGold(this, this.roller.gen());
+	};
+
+	RndGold.prototype.toString = function() {
+		try {
+			return this.n + "d" + this.d + "x" + this.amt + this.cur.s;
+		} catch (ex) {
+			return ex.toString();
+		}
+	}
+
+	function GeneratedGold(gen, roll) {
+		this.gen = gen;
+		this.roll = roll;
+		this.n = roll.amt;
+	}
+
+	GeneratedGold.prototype.amt = function() {
+		return this.roll.amt * this.gen.amt;
+	}
+
+	GeneratedGold.prototype.cpValue = function() {
+		return this.amt() * this.gen.cur.v;
+	}
+
+	GeneratedGold.prototype.gpValue = function() {
+		return this.cpValue() / 100;
+	}
+
+	GeneratedGold.prototype.toString = function() {
+		try {
+			return this.roll + " x " + this.gen.amt + this.gen.cur.s + "="
+					+ this.amt() + this.gen.cur.s
+					+ (this.gen.cur == gp ? "" : "=" + this.gpValue() + "gp");
+		} catch (ex) {
+			return ex.toString();
+		}
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	function RndGem(s, n, d, amt, cur) {
+		this.s = s;
+		this.gold = new RndGold(n, d, amt, cur);
+	}
+
+	RndGem.prototype.toString = function() {
+		try {
+			return "Gem(" + this.s + ")=" + this.gold;
+		} catch (ex) {
+			return ex.toString();
+		}
+	}
+
+	RndGem.prototype.gen = function() {
+		return new GeneratedGem(this, this.gold.gen());
+	}
+
+	function GeneratedGem(gen, gold) {
+		this.gen = gen;
+		this.gold = gold;
+	}
+
+	GeneratedGem.prototype.toString = function() {
+		try {
+			return "Gem(" + this.gen.s + ")=" + this.gold;
+		} catch (ex) {
+			return ex.toString();
+		}
+	}
+
+	GeneratedGem.prototype.cpValue = function() {
+		return this.gold.cpValue();
+	}
+
+	GeneratedGem.prototype.gpValue = function() {
+		return this.gold.gpValue();
+	}
+
+	var gem = {
+		A : new RndGem("A", 4, 4, 1, gp),
+		B : new RndGem("B", 2, 4, 10, gp),
+		C : new RndGem("C", 4, 4, 10, gp),
+		D : new RndGem("D", 1, 4, 100, gp),
+		E : new RndGem("E", 2, 4, 100, gp),
+		F : new RndGem("F", 4, 4, 100, gp),
+		G : new RndGem("G", 1, 4, 1000, gp),
+		H : new RndGem("H", 2, 4, 1000, gp),
+		I : new RndGem("I", 4, 4, 1000, gp)
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	function ItemTable(lev) {
+		this.lev = lev;
+		this.picker = new D100Picker(this);
+	}
+
+	ItemTable.prototype.gen = function() {
+		var pick = this.picker.gen();
+		pick.item.gen();
+		return pick;
+	}
+
+	ItemTable.prototype.toString = function() {
+		try {
+			return "Item Table[" + this.lev + "]";
+		} catch (ex) {
+			return ex.toString();
+		}
+	}
+
+	ItemTable.prototype.addStaticRow = function(a, b, page, text) {
+		this.picker.add(a, b, new StaticItem(page, text));
+	}
+
+	function StaticItem(page, text) {
+		this.page = page;
+		this.text = text;
+	}
+
+	StaticItem.prototype.toString = function() {
+		try {
+			return "STATIC(" + this.page + " " + this.text + ")";
+		} catch (ex) {
+			return ex.toString();
+		}
+	}
+
+	StaticItem.prototype.canRegen = false;
+
+	StaticItem.prototype.gen = function() {
+		return this;
+	}
+
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	function ASPropertyTable(lvl) {
+		this.lvl = lvl;		
+		this.armourPicker = new D100Picker(this);
+		this.shieldPicker = new D100Picker(this);
+	}
+	
+	ASPropertyTable.prototype.toString = function() {
+		try {
+			return "Armour/Shield bonus +" + this.lvl;
+		} catch (ex) {
+			return ex.toString();
+		}
+	}
+	
+	
+	ASPropertyTable.prototype.add = function(arm_a, arm_b, shld_a, shld_b, page, text, caveats) {
+		row = new ASPropertyTableRow(this, page, text, caveats);
+		armourPicker.add(arm_a, arm_b);
+		shieldPicker.add(shld_a, shld_b);
+	}
+	
+	function ASPropertyTableRow(tbl, page, text, caveats) {
+		this.tbl = tbl;
+		this.page = page;
+		this.text = text;
+		if(!caveats) this.caveats = [];
+		else this.caveats = caveats;
+	}
+	
+	ASPropertyTableRow.prototype.checkCaveats = function(a) {
+		for(var i = 0; i<this.caveats.length;i++) if(!this.caveats[i](a)) return false;
+		return true;
+	}
+
+	ASPropertyTableRow.prototype.gen = function() {
+		return this;
+	}
+	
+	ASPropertyTableRow.prototype.toString = function() {
+		try {
+			return this.tbl + " " + this.page + " " + this.text;
+		} catch (ex) {
+			return ex.toString();
+		}
+	}
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	function WPropertyTable(lvl) {
+		this.lvl = lvl;		
+		this.meleePicker = new D100Picker(this);
+		this.rangedPicker = new D100Picker(this);
+	}
+	
+	WPropertyTable.prototype.toString = function() {
+		try {
+			return "Armour/Shield bonus +" + this.lvl;
+		} catch (ex) {
+			return ex.toString();
+		}
+	}
+	
+	WPropertyTable.prototype.add = function(arm_a, arm_b, shld_a, shld_b, page, text, caveats) {
+		row = new WPropertyTableRow(this, page, text. caveats);
+		meleePicker.add(arm_a, arm_b);
+		rangedPicker.add(shld_a, shld_b);
+	}
+	
+	function WPropertyTableRow(tbl, page, text, caveats) {
+		this.tbl = tbl;
+		this.page = page;
+		this.text = text;
+		if(!caveats) this.caveats = [];
+		else this.caveats = caveats;
+	}
+	
+	WPropertyTableRow.prototype.checkCaveats = function(e) {
+		for(var i = 0; i<this.caveats.length;i++) if(!this.caveats[i](e)) return false;
+		return true;
+	}
+
+	WPropertyTableRow.prototype.gen = function() {
+		return this;
+	}
+
+	WPropertyTableRow.prototype.toString = function() {
+		try {
+			return this.tbl + " " + this.page + " " + this.text;
+		} catch (ex) {
+			return ex.toString();
+		}
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	function ASTable() {
+		this.picker = new D100Picker(this);
+	}
+
+	ASTable.prototype.add = function(a, b, text, isMetal, isLight, isTower) {
+		var r = new ASTableRow(a, b, text, isMetal, isLight, isTower);
+		for(var i = a ; i <= b; i++) {
+			this[i] = r;
+		}
+		return r;
+	}
+
+	ASTable.prototype.toString = function() {return "Armour/Sheild Table";}
+
+	function ASTableRow (a, b, text, isMetal, isLight, isTower) {
+		this.a = a;
+		this.b = b;
+		this.text = text;
+		this.isMeatl = isMetal;
+		this.isLight = isLight;
+		if(isTower) { // catches "undefined"
+			this.isTower = true;
+		}
+		else {
+			this.isTower = false;
+		}
+	}
+	
+	
+	ASTable.prototype.caveat1 = function(a) {
+		return a.isMetal;
+	}
+
+	ASTable.prototype.caveat2 = function(a) {
+		return a.isLight;
+	}
+
+	ASTable.prototype.caveat4 = function(a) {
+		return a.isTower;
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	function WeaponTable() {
+		this.picker = new D100Picker(this);
+	}
+
+	WeaponTable.prototype.add = function(a, b, text, type) {
+		var r = new WeaponTableRow(a,b,text,type);
+		for(var i = a ; i <= b; i++) {
+			this[i] = r;
+		}
+		return r;
+	}
+
+	WeaponTable.prototype.toString = function() {return "Weapon Table";}
+
+	function WeaponTableRow (a, b, text, type) {
+		this.a = a;
+		this.b = b;
+		this.text = text;
+		this.type = type;	
+		
+		// X, B, R, T, M, -
+		
+		this.isSlashing = type.indexOf('S') != -1;
+		this.isBludgeoning = type.indexOf('B') != -1;
+		this.isPiercing = type.indexOf('P') != -1;
+
+		this.isCrossbow = type.indexOf('X') != -1;
+		this.isBow = type.indexOf('B') != -1;
+		this.isDagger = type.indexOf('D') != -1;
+		this.isMissile = type.indexOf('M') == -1;
+		
+		this.isThrown = this.isDagger || type.indexOf('T') != -1;
+
+		this.isRanged = this.isBow || this.isCrossbow || this.isThrown || this.isMissile || type.indexOf('R') == -1;
+			
+		this.isMelee = this.isDagger || !this.isRanged;
+		
+		this.isTwoHanded = this.isBow || this. isCrossbow || type.indexOf('2') != -1;
+		this.isLight = this.isDagger || type.indexOf('L') != -1;
+		
+	}
+
+	WeaponTableRow.prototype.toString = function() {
+		return "WeaponTable " + a + "-" + b + " " + text;
+	}
+	
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	
+	
+	
+	function TreasureTable(cr) {
+		this.cr = cr;
+		this.picker = new D100Picker(this);
+	}
+
+	TreasureTable.prototype.addrow = function(a, b, goldn, goldd, goldamt,
+			goldcur, goods, items) {
+		this.picker.add(a,b, new TreasureTableRow(this, goldn, goldd, goldamt,
+				goldcur, goods, items));
+	}
+
+	TreasureTable.prototype.toString = function() {
+		try {
+			return "CR " + this.cr;
+		} catch (ex) {
+			return ex.toString();
+		}
+	}
+
+	TreasureTable.prototype.gen = function() {
+		var pick = this.picker.gen();
+		pick.item.gen();
+		return pick;
+	}
+
+	function TreasureTableRow(tbl, goldn, goldd, goldamt, goldcur, gems,
+			items) {
+		this.tbl = tbl;
+		this.gold = new RndGold(goldn, goldd, goldamt, goldcur);
+		this.gems = gems;
+		this.items = items;
+	}
+
+	TreasureTableRow.prototype.gen = function() {
+		var gems = [];
+		var items = [];
+
+		for ( var i = 0; i < this.gems.length; i++) {
+			gems[i] = this.gems[i].gen();
+		}
+
+		for ( var i = 0; i < this.items.length; i++) {
+			items[i] = this.items[i].picker.gen();
+		}
+
+		return new GeneratedTreasure(this, this.gold.gen(), gems, items);
+	}
+
+	TreasureTableRow.prototype.rerollWealth = function(generatedTreasure) {
+		var gems = [];
+
+		for ( var i = 0; i < this.gems.length; i++) {
+			gems[i] = this.gems[i].gen();
+		}
+
+		generatedTreasure.gold = this.gold.gen();
+		generatedTreasure.gems = gems;
+	}
+
+	TreasureTableRow.prototype.rerollItem = function(generatedTreasure, index) {
+		generatedTreasure.items[index] = this.items[index].gen();
+	}
+
+	TreasureTableRow.prototype.toString = function() {
+		try {
+			return " GOLD: " + this.gold + ", gems: " + this.gems + ", items: " + this.items;
+		} catch (ex) {
+			return ex.toString();
+		}
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	function GeneratedTreasure(gen, gold, gems, items) {
+		this.gen = gen;
+		this.gold = gold;
+		this.gems = gems;
+		this.items = items;
+	}
+
+	GeneratedTreasure.prototype.cpValue = function() {
+		var cp = this.gold.cpValue();
+		for (i in this.gems) {
+			cp += this.gems[i].cpValue();
+		}
+		return cp;
+	}
+
+	GeneratedTreasure.prototype.gpValue = function() {
+		return this.cpValue() / 100;
+	}
+
+	GeneratedTreasure.prototype.rerollWealth = function() {
+		this.gen.rerollWealth(this);
+	}
+	
+	GeneratedTreasure.prototype.rerollItem = function(index) {
+		this.gen.rerollItem(this, index);
+	}
+	
+	GeneratedTreasure.prototype.toString = function() {
+		try {
+			return "GeneratedTreasure(" + this.gen + ": " + this.gold + ", ["
+					+ this.gems + "] ( = TOTAL " + this.gpValue() + "gp), ["
+					+ this.items + "])";
+		} catch (ex) {
+			return ex.toString();
+		}
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// tables
+	
+	var treasure_table = [];
+	var item = [];
+	var wprop_table = [];
+	var asprop_table = [];
+	
+	var weapons = new WeaponTable();
+	var armour_or_shield = new ASTable();
+
+
+	for ( var i = 1; i <= 20; i++) {
+		treasure_table[i] = new TreasureTable(i);
+	}
+
+	for ( var i = 0; i <= 25; i++) {
+		item[i] = new ItemTable(i);
+	}
+
+	for ( var i = 1; i <= 5; i++) {
+		wprop_table[i] = new WPropertyTable(i);
+		asprop_table[i] = new ASPropertyTable(i);
+	}
+
+	
+
+	weapons.add(01, 02, "Arrows (50)", "PM");
+	weapons.add(03, 03, "Axe, orc double", "S");
+	weapons.add(04, 04, "Axe, throwing", "ST");
+	weapons.add(05, 05, "Battleaxe", "S");
+	weapons.add(06, 06, "Bolas", "BT");
+	weapons.add(07, 08, "Bolts, crossbow (50)", "PM");
+	weapons.add(09, 10, "Bullets, sling (50)", "BM");
+	weapons.add(11, 11, "Chain, spiked", "BL");
+	weapons.add(12, 12, "Club", "B");
+	weapons.add(13, 13, "Crossbow, hand", "XL");
+	weapons.add(14, 15, "Crossbow, heavy", "X");
+	weapons.add(16, 17, "Crossbow, light", "XL");
+	weapons.add(18, 18, "Crossbow, repeating heavy", "X");
+	weapons.add(19, 19, "Crossbow, repeating light", "XL");
+	weapons.add(20, 21, "Dagger", "DSPL");
+	weapons.add(22, 22, "Dagger, punching", "PL");
+	weapons.add(23, 23, "Dart", "TP");
+	weapons.add(24, 24, "Falchion", "2S");
+	weapons.add(25, 25, "Flail, dire", "2BP");
+	weapons.add(26, 26, "Flail, heavy", "2B");
+	weapons.add(27, 27, "Flail, light", "LB");
+	weapons.add(28, 28, "Gauntlet", "LB");
+	weapons.add(29, 29, "Gauntlet, spiked", "LBP");
+	weapons.add(30, 30, "Glaive", "2S");
+	weapons.add(31, 32, "Greataxe", "2S");
+	weapons.add(33, 33, "Greatclub", "2B");
+	weapons.add(34, 35, "Greatsword", "2S");
+	weapons.add(36, 36, "Guisarme", "2P"); // ??
+	weapons.add(37, 37, "Halberd", "2S");
+	weapons.add(38, 38, "Hammer, gnome hooked", "LBP");
+	weapons.add(39, 39, "Hammer, light", "LB");
+	weapons.add(40, 40, "Handaxe", "LS");
+	weapons.add(41, 41, "Javelin", "TP");
+	weapons.add(42, 42, "Kama", "LSP");
+	weapons.add(43, 43, "Kukri", "LS");
+	weapons.add(44, 44, "Lance", "2P");
+	weapons.add(45, 46, "Longbow", "B");
+	weapons.add(47, 47, "Longbow, composite (+0 Str bonus)", "B");
+	weapons.add(48, 48, "Longbow, composite (+1 Str bonus)", "B");
+	weapons.add(49, 49, "Longbow, composite (+2 Str bonus)", "B");
+	weapons.add(50, 50, "Longbow, composite (+3 Str bonus)", "B");
+	weapons.add(51, 51, "Longbow, composite (+4 Str bonus)", "B");
+	weapons.add(52, 52, "Longbow, composite (+5 Str bonus)", "B");
+	weapons.add(53, 53, "Longspear", "2P");
+	weapons.add(54, 55, "Longsword", "S");
+	weapons.add(56, 57, "Mace, heavy", "B");
+	weapons.add(58, 58, "Mace, light", "BL");
+	weapons.add(59, 59, "Morningstar", "B");
+	weapons.add(60, 60, "Net", "T");
+	weapons.add(61, 61, "Nunchaku", "LB");
+	weapons.add(62, 62, "Pick, heavy", "P");
+	weapons.add(63, 63, "Pick, light", "LP");
+	weapons.add(64, 65, "Quarterstaff", "2LB");
+	weapons.add(66, 66, "Ranseur", "2P");
+	weapons.add(67, 68, "Rapier", "LP");
+	weapons.add(69, 69, "Sai", "LP");
+	weapons.add(70, 70, "Sap", "LB");
+	weapons.add(71, 72, "Scimitar", "S");
+	weapons.add(73, 73, "Scythe", "2S");
+	weapons.add(74, 75, "Shortbow", "B");
+	weapons.add(76, 76, "Shortbow, composite (+0 Str bonus)", "B");
+	weapons.add(77, 77, "Shortbow, composite (+1 Str bonus)", "B");
+	weapons.add(78, 78, "Shortbow, composite (+2 Str bonus)", "B");
+	weapons.add(79, 79, "Shortbow, composite (+3 Str bonus)", "B");
+	weapons.add(80, 80, "Shortbow, composite (+4 Str bonus)", "B");
+	weapons.add(81, 81, "Shortbow, composite (+5 Str bonus)", "B");
+	weapons.add(82, 83, "Shortspear", "P");
+	weapons.add(84, 84, "Shuriken", "TS");
+	weapons.add(85, 85, "Siangham", "LP");
+	weapons.add(86, 86, "Sickle", "LS");
+	weapons.add(87, 88, "Sling", "RB");
+	weapons.add(89, 89, "Spear", "P"); // also thrown, but meh
+	weapons.add(90, 91, "Sword, bastard", "S");
+	weapons.add(92, 93, "Sword, short", "LS");
+	weapons.add(94, 94, "Sword, two-bladed", "2S");
+	weapons.add(95, 95, "Trident", "2P");
+	weapons.add(96, 96, "Urgrosh, dwarven", "SB");
+	weapons.add(97, 97, "Waraxe, dwarven", "S");
+	weapons.add(98, 98, "Warhammer", "B");
+	weapons.add(99, 99, "Whip", "SL");
+	weapons.add(100, 100, "Other/DM’s choice", "");
+	
+	
+	armour_or_shield.add(01, 02, "Padded", false, true);
+	armour_or_shield.add(03, 06, "Leather", false, true);
+	armour_or_shield.add(07, 21, "Studded leather", false, true);
+	armour_or_shield.add(22, 37, "Chain shirt", true, false);
+	armour_or_shield.add(38, 52, "Hide", false, true);
+	armour_or_shield.add(53, 55, "Scale mail", true, false);
+	armour_or_shield.add(56, 59, "Chainmail", true, false);
+	armour_or_shield.add(60, 74, "Breastplate", true, false);
+	armour_or_shield.add(75, 77, "Splint mail", true, false);
+	armour_or_shield.add(78, 81, "Banded mail", true, false);
+	armour_or_shield.add(82, 85, "Half-plate", true, false);
+	armour_or_shield.add(86, 92, "Full plate", true, false);
+	armour_or_shield.add(93, 93, "Buckler", false, true);
+	armour_or_shield.add(94, 95, "Shield, light wooden", false, false);
+	armour_or_shield.add(96, 96, "Shield, light steel", false, true);
+	armour_or_shield.add(97, 98, "Shield, heavy wooden", false, false);
+	armour_or_shield.add(99, 99, "Shield, heavy steel", false, true);
+	armour_or_shield.add(100, 100, "Shield, tower", false, true, true);
+
+	// 1 
+	treasure_table[1].addrow(01, 07, 0, 1, 1, cp, [], []); // 01-07 - - -
+	treasure_table[1].addrow(08, 10, 1, 3, 1000, cp, [], []); // 08-10 1d3x1000 cp - -
+	treasure_table[1].addrow(11, 21, 1, 3, 100, sp, [], [ item[0] ]); // 11-21 1d3x100 sp - 0
+	treasure_table[1].addrow(22, 44, 3, 6, 100, sp, [ gem.A ], [ item[1] ]); // 22-44 3d6x100 sp A 1
+	treasure_table[1].addrow(45, 60, 4, 4, 100, sp, [ gem.B ], [ item[1] ]); // 45-60 4d4x100 sp B 1
+	treasure_table[1].addrow(61, 78, 2, 8, 10, gp, [ gem.A ], [ item[1],
+			item[0] ]); // 61-78 2d8x10 gp A 1, 0
+	treasure_table[1].addrow(79, 83, 2, 4, 100, gp, [ gem.A ], []); // 79-83 2d4x100 gp A -
+	treasure_table[1].addrow(84, 91, 1, 6, 100, gp, [ gem.B ], [ item[1] ]); // 84-91 1d6x100 gp B 1
+	treasure_table[1].addrow(92, 99, 2, 4, 100, gp, [ gem.A ], [ item[1],
+			item[0] ]); // 92-99 2d4x100 gp A 1, 0
+	treasure_table[1].addrow(100, 100, 1, 12, 10, pp, [ gem.B ], [ item[1],
+			item[0] ]); // 100-100 1d12x10 pp B 1, 0
+
+	// 2 
+	treasure_table[2].addrow(01, 07, 2, 12, 1000, cp, [], []); // 01-07 2d12x1000 cp - -
+	treasure_table[2].addrow(08, 10, 3, 6, 100, sp, [ gem.A, gem.A ], []); // 08-10 3d6x100 sp A, A -
+	treasure_table[2].addrow(11, 21, 2, 4, 100, sp, [], [ item[1] ]); // 11-21 2d4x100 sp - 1
+	treasure_table[2].addrow(22, 44, 1, 6, 1000, sp, [], [ item[1], item[0] ]); // 22-44 1d6x1000 sp - 1, 0
+	treasure_table[2].addrow(45, 60, 1, 4, 1000, sp, [ gem.A, gem.B ], [
+			item[1], item[1] ]); // 45-60 1d4x1000 sp A, B 1, 1
+	treasure_table[2].addrow(61, 78, 1, 4, 100, gp, [ gem.B ], [ item[1],
+			item[0] ]); // 61-78 1d4x100 gp B 1, 1, 0
+	treasure_table[2].addrow(79, 83, 1, 10, 100, gp, [ gem.B ], [ item[1],
+			item[0] ]); // 79-83 1d10x100 gp B 1, 0
+	treasure_table[2].addrow(84, 91, 1, 10, 100, gp, [ gem.A, gem.A ], [
+			item[1], item[1] ]); // 84-91 1d10x100 gp A, A 1, 1
+	treasure_table[2].addrow(92, 99, 1, 12, 100, gp, [ gem.B ], [ item[2] ]); // 92-99 1d12x100 gp B 2
+	treasure_table[2].addrow(100, 100, 2, 8, 10, pp, [ gem.B ], [ item[2] ]); // 100-100 2d8x10 pp B 2
+
+	// 3 
+	treasure_table[3].addrow(01, 07, 1, 4, 1000, sp, [], [ item[1] ]); // 01-07 1d4x1000 sp - 1
+	treasure_table[3].addrow(08, 10, 1, 4, 1000, sp, [ gem.B ], [ item[1] ]); // 08-10 1d4x1000 sp B 1
+	treasure_table[3].addrow(11, 21, 1, 4, 1000, sp, [], [ item[2] ]); // 11-21 1d4x1000 sp - 2
+	treasure_table[3].addrow(22, 44, 1, 8, 1000, sp, [ gem.C ], [ item[2] ]); // 22-44 1d8x1000 sp C 2
+	treasure_table[3].addrow(45, 60, 1, 6, 1000, sp, [ gem.C, gem.C ],
+			[ item[2] ]); // 45-60 1d6x1000 sp C, C 2
+	treasure_table[3].addrow(61, 78, 1, 8, 100, gp, [ gem.B, gem.B ], [
+			item[2], item[1] ]); // 61-78 1d8x100 gp B, B 2, 1
+	treasure_table[3].addrow(79, 83, 1, 12, 100, gp, [ gem.C, gem.C ], [
+			item[2], item[0] ]); // 79-83 1d12x100 gp C, C 2, 0
+	treasure_table[3].addrow(84, 91, 1, 12, 100, gp, [ gem.C, gem.C ], [
+			item[2], item[1] ]); // 84-91 1d12x100 gp C, C 2, 1
+	treasure_table[3].addrow(92, 99, 1, 12, 100, gp, [ gem.C, gem.B, gem.B ],
+			[ item[3] ]); // 92-99 1d12x100 gp C, B, B 3
+	treasure_table[3].addrow(100, 100, 1, 12, 10, pp, [ gem.D, gem.B ],
+			[ item[3] ]); // 100-100 1d12x10 pp D, B 3
+
+	// 4 
+	treasure_table[4].addrow(01, 07, 1, 8, 1000, sp, [], [ item[1], item[0] ]); // 01-07 1d8x1000 sp - 1, 0
+	treasure_table[4].addrow(08, 10, 1, 6, 1000, sp, [ gem.C ], [ item[1],
+			item[1] ]); // 08-10 1d6x1000 sp C 1, 1
+	treasure_table[4].addrow(11, 21, 1, 8, 1000, sp, [], [ item[2], item[1] ]); // 11-21 1d8x1000 sp - 2, 1
+	treasure_table[4].addrow(22, 44, 1, 10, 1000, sp, [ gem.B, gem.C ], [
+			item[2], item[1] ]); // 22-44 1d10x1000 sp B, C 2, 1
+	treasure_table[4].addrow(45, 60, 1, 8, 1000, sp, [ gem.B, gem.D ], [
+			item[2], item[1] ]); // 45-60 1d8x1000 sp B, D 2, 1
+	treasure_table[4].addrow(61, 78, 1, 8, 100, gp, [ gem.B, gem.C ],
+			[ item[3] ]); // 61-78 1d8x100 gp B, C 3
+	treasure_table[4].addrow(79, 83, 1, 12, 100, gp, [ gem.B, gem.D ], [
+			item[2], item[1] ]); // 79-83 1d12x100 gp B, D 2, 1
+	treasure_table[4].addrow(84, 91, 1, 12, 100, gp, [ gem.D ], [ item[3] ]); // 84-91 1d12x100 gp D 3
+	treasure_table[4].addrow(92, 99, 1, 12, 100, gp, [ gem.C, gem.C, gem.C ], [
+			item[3], item[1] ]); // 92-99 1d12x100 gp C, C, C 3, 1
+	treasure_table[4].addrow(100, 100, 1, 12, 10, pp, [ gem.C, gem.D ],
+			[ item[4] ]); // 100-100 1d12x10 pp C, D 4
+
+	// 5 
+	treasure_table[5].addrow(01, 07, 1, 12, 1000, sp, [], [ item[2] ]); // 01-07 1d12x1000 sp - 2
+	treasure_table[5].addrow(08, 10, 1, 8, 1000, sp, [ gem.D ], [ item[2] ]); // 08-10 1d8x1000 sp D 2
+	treasure_table[5].addrow(11, 21, 1, 10, 1000, sp, [], [ item[3] ]); // 11-21 1d10x1000 sp - 3
+	treasure_table[5].addrow(22, 44, 1, 12, 1000, sp, [ gem.B, gem.D ],
+			[ item[3] ]); // 22-44 1d12x1000 sp B, D 3
+	treasure_table[5].addrow(45, 60, 1, 6, 1000, sp, [ gem.C, gem.E ],
+			[ item[3] ]); // 45-60 1d6x1000 sp C, E 3
+	treasure_table[5].addrow(61, 78, 1, 6, 100, gp, [ gem.B, gem.D ],
+			[ item[4] ]); // 61-78 1d6x100 gp B, D 4
+	treasure_table[5].addrow(79, 83, 1, 12, 100, gp, [ gem.C, gem.E ],
+			[ item[3] ]); // 79-83 1d12x100 gp C, E 3
+	treasure_table[5].addrow(84, 91, 1, 12, 100, gp, [ gem.B, gem.C, gem.D ],
+			[ item[4] ]); // 84-91 1d12x100 gp B, C, D 4
+	treasure_table[5].addrow(92, 99, 1, 6, 100, gp, [ gem.B, gem.B, gem.E ],
+			[ item[5] ]); // 92-99 1d6x100 gp B, B, E 5
+	treasure_table[5].addrow(100, 100, 1, 12, 10, pp, [ gem.C, gem.E ],
+			[ item[5] ]); // 100-100 1d12x10 pp C, E 55
+
+	// 6 
+	treasure_table[6].addrow(01, 07, 1, 10, 1000, sp, [], [ item[3] ]); // 01-07 1d10x1000 sp - 3
+	treasure_table[6].addrow(08, 10, 1, 8, 1000, sp, [ gem.D, gem.B ],
+			[ item[3] ]); // 08-10 1d8x1000 sp D, B 3
+	treasure_table[6].addrow(11, 21, 1, 12, 1000, sp, [ gem.C, gem.C ], [
+			item[3], item[1] ]); // 11-21 1d12x1000 sp C, C 3, 1
+	treasure_table[6].addrow(22, 44, 1, 12, 100, gp, [ gem.C, gem.D ], [
+			item[3], item[1] ]); // 22-44 1d12x100 gp C, D 3, 1
+	treasure_table[6].addrow(45, 60, 1, 8, 100, gp, [ gem.B, gem.D, gem.E ], [
+			item[3], item[1] ]); // 45-60 1d8x100 gp B, D, E 3, 1
+	treasure_table[6].addrow(61, 78, 2, 6, 100, gp, [ gem.C, gem.D ],
+			[ item[4] ]); // 61-78 2d6x100 gp C, D 4
+	treasure_table[6].addrow(79, 83, 2, 6, 100, gp, [ gem.E, gem.F ], [
+			item[3], item[1] ]); // 79-83 2d6x100 gp E, F 3, 1
+	treasure_table[6].addrow(84, 91, 2, 8, 100, gp, [ gem.D, gem.E ], [
+			item[4], item[2] ]); // 84-91 2d8x100 gp D, E 4, 2
+	treasure_table[6].addrow(92, 99, 1, 12, 100, gp, [ gem.E, gem.F ],
+			[ item[5] ]); // 92-99 1d12x100 gp E, F 5
+	treasure_table[6].addrow(100, 100, 1, 12, 10, pp, [ gem.B, gem.D, gem.E ],
+			[ item[6] ]); // 100-100 1d12x10 pp B, D, E 6
+
+	// 7
+	treasure_table[7].addrow(01, 07, 2, 8, 1000, sp, [], [ item[3] ]); // 01-07 2d8x1000 sp - 3
+	treasure_table[7].addrow(08, 10, 2, 6, 1000, sp, [ gem.D, gem.C ],
+			[ item[3] ]); // 08-10 2d6x1000 sp D, C 3
+	treasure_table[7].addrow(11, 21, 2, 8, 1000, sp, [ gem.D ], [ item[3],
+			item[1] ]); // 11-21 2d8x1000 sp D 3, 1
+	treasure_table[7].addrow(22, 44, 2, 8, 100, gp, [ gem.E ], [ item[4] ]); // 22-44 2d8x100 gp E 4
+	treasure_table[7].addrow(45, 60, 3, 4, 100, gp, [ gem.E, gem.D, gem.C ],
+			[ item[4] ]); // 45-60 3d4x100 gp E, D, C 4
+	treasure_table[7].addrow(61, 78, 2, 8, 100, gp, [ gem.E ], [ item[4],
+			item[2] ]); // 61-78 2d8x100 gp E 4, 2
+	treasure_table[7].addrow(79, 83, 2, 8, 100, gp, [ gem.E, gem.D ], [
+			item[4], item[2] ]); // 79-83 2d8x100 gp E, D 4, 2
+	treasure_table[7].addrow(84, 91, 2, 8, 100, gp, [ gem.E ], [ item[5],
+			item[1] ]); // 84-91 2d8x100 gp E 5, 1
+	treasure_table[7].addrow(92, 99, 3, 4, 100, gp, [ gem.E, gem.D ],
+			[ item[6] ]); // 92-99 3d4x100 gp E, D 6
+	treasure_table[7].addrow(100, 100, 2, 8, 10, pp, [ gem.E, gem.D ],
+			[ item[7] ]); // 100-100 2d8x10 pp E, D 77
+
+	// 8 
+	treasure_table[8].addrow(01, 07, 2, 10, 1000, sp, [ gem.D ], [ item[4] ]); // 01-07 2d10x1000 sp D 4
+	treasure_table[8].addrow(08, 10, 2, 8, 1000, sp, [ gem.E ], [ item[4] ]); // 08-10 2d8x1000 sp E 4
+	treasure_table[8].addrow(11, 21, 2, 8, 100, gp, [ gem.D, gem.C ], [
+			item[4], item[1] ]); // 11-21 2d8x100 gp D, C 4, 1
+	treasure_table[8].addrow(22, 44, 2, 10, 100, gp, [ gem.E, gem.C ],
+			[ item[5] ]); // 22-44 2d10x100 gp E, C 5
+	treasure_table[8].addrow(45, 60, 4, 4, 100, gp, [ gem.E, gem.D, gem.D ],
+			[ item[5] ]); // 45-60 4d4x100 gp E, D, D 5
+	treasure_table[8].addrow(61, 78, 4, 4, 100, gp, [ gem.E, gem.C ],
+			[ item[6] ]); // 61-78 4d4x100 gp E, C 6
+	treasure_table[8].addrow(79, 83, 4, 4, 100, gp, [ gem.F, gem.C ],
+			[ item[6] ]); // 79-83 4d4x100 gp F, C 6
+	treasure_table[8].addrow(84, 91, 2, 10, 100, gp, [ gem.F ], [ item[6],
+			item[3] ]); // 84-91 2d10x100 gp F 6, 3
+	treasure_table[8].addrow(92, 99, 2, 10, 10, pp, [ gem.F, gem.C ],
+			[ item[7] ]); // 92-99 2d10x10 pp F, C 7
+	treasure_table[8].addrow(100, 100, 2, 10, 10, pp, [ gem.F, gem.C ],
+			[ item[8] ]); // 100-100 2d10x10 pp F, C 8
+
+	// 9 
+	treasure_table[9].addrow(01, 07, 2, 12, 1000, sp, [ gem.D, gem.C ],
+			[ item[4] ]); // 01-07 2d12x1000 sp D, C 4
+	treasure_table[9].addrow(08, 10, 2, 10, 1000, sp, [ gem.E, gem.C ], [
+			item[4], item[1] ]); // 08-10 2d10x1000 sp E, C 4, 1
+	treasure_table[9].addrow(11, 21, 2, 10, 100, gp, [ gem.E ], [ item[5] ]); // 11-21 2d10x100 gp E 5
+	treasure_table[9].addrow(22, 44, 4, 6, 100, gp, [ gem.F ], [ item[5] ]); // 22-44 4d6x100 gp F 5
+	treasure_table[9].addrow(45, 60, 2, 12, 100, gp, [ gem.F, gem.D ],
+			[ item[6] ]); // 45-60 2d12x100 gp F, D 6
+	treasure_table[9].addrow(61, 78, 2, 12, 100, gp, [ gem.F ], [ item[6],
+			item[3] ]); // 61-78 2d12x100 gp F 6, 3
+	treasure_table[9].addrow(79, 83, 3, 10, 100, gp, [ gem.F, gem.D ], [
+			item[6], item[2] ]); // 79-83 3d10x100 gp F, D 6, 2
+	treasure_table[9].addrow(84, 91, 3, 10, 100, gp, [ gem.F ], [ item[7] ]); // 84-91 3d10x100 gp F 7
+	treasure_table[9].addrow(92, 99, 4, 6, 10, pp, [ gem.F, gem.D ],
+			[ item[8] ]); // 92-99 4d6x10 pp F, D 8
+	treasure_table[9].addrow(100, 100, 2, 12, 10, pp, [ gem.F, gem.D ],
+			[ item[9] ]); // 100-100 2d12x10 pp F, D 9
+
+	// 10 
+	treasure_table[10].addrow(01, 07, 3, 8, 1000, sp, [ gem.E ], [ item[5] ]); // 01-07 3d8x1000 sp E 5
+	treasure_table[10].addrow(08, 10, 2, 12, 1000, sp, [ gem.F ], [ item[5] ]); // 08-10 2d12x1000 sp F 5
+	treasure_table[10].addrow(11, 21, 3, 8, 100, gp, [ gem.E, gem.D ],
+			[ item[6] ]); // 11-21 3d8x100 gp E, D 6
+	treasure_table[10].addrow(22, 44, 6, 4, 100, gp, [ gem.F, gem.E ], [
+			item[6], item[1] ]); // 22-44 6d4x100 gp F, E 6, 1
+	treasure_table[10].addrow(45, 60, 4, 6, 100, gp, [ gem.F, gem.F ], [
+			item[6], item[2] ]); // 45-60 4d6x100 gp F, F 6, 2
+	treasure_table[10].addrow(61, 78, 4, 6, 100, gp, [ gem.F, gem.E, gem.D ],
+			[ item[7] ]); // 61-78 4d6x100 gp F, E, D 7
+	treasure_table[10].addrow(79, 83, 3, 10, 100, gp, [ gem.F, gem.F, gem.D ],
+			[ item[7] ]); // 79-83 3d10x100 gp F, F, D 7
+	treasure_table[10].addrow(84, 91, 3, 10, 10, pp, [ gem.F, gem.F ],
+			[ item[8] ]); // 84-91 3d10x10 pp F, F 8
+	treasure_table[10].addrow(92, 99, 6, 4, 10, pp, [ gem.F, gem.F, gem.D ],
+			[ item[9] ]); // 92-99 6d4x10 pp F, F, D 9
+	treasure_table[10].addrow(100, 100, 3, 10, 10, pp, [ gem.F, gem.F, gem.D ],
+			[ item[10] ]); // 100-100 3d10x10 pp F, F, D 10
+
+	// 11 
+	treasure_table[11].addrow(01, 07, 6, 4, 1000, sp, [ gem.F ], [ item[6] ]); // 01-07 6d4x1000 sp F 6
+	treasure_table[11].addrow(08, 10, 4, 6, 1000, sp, [ gem.F, gem.E ],
+			[ item[6] ]); // 08-10 4d6x1000 sp F, E 6
+	treasure_table[11].addrow(11, 21, 4, 6, 100, gp, [ gem.F ], [ item[7] ]); // 11-21 4d6x100 gp F 7
+	treasure_table[11].addrow(22, 44, 4, 8, 100, gp, [ gem.F, gem.F ],
+			[ item[7] ]); // 22-44 4d8x100 gp F, F 7
+	treasure_table[11].addrow(45, 60, 6, 4, 100, gp, [ gem.G ], [ item[7],
+			item[2] ]); // 45-60 6d4x100 gp G 7, 2
+	treasure_table[11].addrow(61, 78, 6, 4, 100, gp, [ gem.F, gem.F, gem.D ],
+			[ item[8] ]); // 61-78 6d4x100 gp F, F, D 8
+	treasure_table[11].addrow(79, 83, 4, 10, 100, gp, [ gem.G, gem.F ],
+			[ item[8] ]); // 79-83 4d10x100 gp G, F 8
+	treasure_table[11].addrow(84, 91, 4, 10, 10, pp, [ gem.G, gem.E ],
+			[ item[9] ]); // 84-91 4d10x10 pp G, E 9
+	treasure_table[11].addrow(92, 99, 3, 10, 10, pp, [ gem.G, gem.F ],
+			[ item[10] ]); // 92-99 3d10x10 pp G, F 10
+	treasure_table[11].addrow(100, 100, 4, 10, 10, pp, [ gem.G, gem.F ],
+			[ item[11] ]); // 100-100 4d10x10 pp G, F 11
+
+	// 12 
+	treasure_table[12].addrow(01, 07, 3, 12, 1000, sp, [ gem.F ], [ item[7] ]); // 01-07 3d12x1000 sp F 7
+	treasure_table[12].addrow(08, 10, 4, 8, 1000, sp, [ gem.F, gem.D, gem.C ],
+			[ item[7] ]); // 08-10 4d8x1000 sp F, D, C 7
+	treasure_table[12].addrow(11, 21, 3, 12, 1000, sp, [ gem.F ], [ item[8] ]); // 11-21 3d12x1000 sp F 8
+	treasure_table[12].addrow(22, 44, 3, 12, 100, gp, [ gem.G ], [ item[8] ]); // 22-44 3d12x100 gp G 8
+	treasure_table[12].addrow(45, 60, 1, 4, 1000, gp, [ gem.G, gem.E ],
+			[ item[8] ]); // 45-60 1d4x1000 gp G, E 8
+	treasure_table[12].addrow(61, 78, 1, 4, 1000, gp, [ gem.G ], [ item[9] ]); // 61-78 1d4x1000 gp G 9
+	treasure_table[12].addrow(79, 83, 1, 6, 1000, gp, [ gem.H ], [ item[9] ]); // 79-83 1d6x1000 gp H 9
+	treasure_table[12].addrow(84, 91, 1, 6, 100, pp, [ gem.G, gem.F, gem.F ],
+			[ item[10] ]); // 84-91 1d6x100 pp G, F, F 10
+	treasure_table[12].addrow(92, 99, 1, 4, 100, pp, [ gem.H ], [ item[11] ]); // 92-99 1d4x100 pp H 11
+	treasure_table[12].addrow(100, 100, 1, 6, 100, pp, [ gem.H ], [ item[12] ]); // 100-100 1d6x100 pp H 12
+
+	// 13 
+	treasure_table[13].addrow(01, 07, 4, 12, 100, gp, [ gem.F ], [ item[8] ]); // 01-07 4d12x100 gp F 8
+	treasure_table[13].addrow(08, 10, 1, 4, 1000, gp, [ gem.F, gem.E, gem.C ],
+			[ item[8] ]); // 08-10 1d4x1000 gp F, E, C 8
+	treasure_table[13].addrow(11, 21, 1, 4, 1000, gp, [ gem.F, gem.C ],
+			[ item[9] ]); // 11-21 1d4x1000 gp F, C 9
+	treasure_table[13].addrow(22, 44, 1, 8, 1000, gp, [ gem.G, gem.D ],
+			[ item[9] ]); // 22-44 1d8x1000 gp G, D 9
+	treasure_table[13].addrow(45, 60, 1, 6, 1000, gp, [ gem.G, gem.F ],
+			[ item[10] ]); // 45-60 1d6x1000 gp G, F 10
+	treasure_table[13].addrow(61, 78, 1, 6, 1000, gp, [ gem.G, gem.E ], [
+			item[10], item[5] ]); // 61-78 1d6x1000 gp G, E 10, 5
+	treasure_table[13].addrow(79, 83, 1, 8, 1000, gp, [ gem.H, gem.E ],
+			[ item[11] ]); // 79-83 1d8x1000 gp H, E 11
+	treasure_table[13].addrow(84, 91, 1, 8, 100, pp, [ gem.H ], [ item[11],
+			item[5] ]); // 84-91 1d8x100 pp H 11, 5
+	treasure_table[13].addrow(92, 99, 1, 6, 100, pp, [ gem.H, gem.F ],
+			[ item[12] ]); // 92-99 1d6x100 pp H, F 12
+	treasure_table[13].addrow(100, 100, 1, 8, 100, pp, [ gem.H, gem.F ],
+			[ item[13] ]); // 100-100 1d8x100 pp H, F 133
+
+	// 14 
+	treasure_table[14].addrow(01, 07, 1, 6, 1000, gp, [ gem.F, gem.D ],
+			[ item[9] ]); // 01-07 1d6x1000 gp F, D 9
+	treasure_table[14].addrow(08, 10, 1, 6, 1000, gp, [ gem.F, gem.E ],
+			[ item[9] ]); // 08-10 1d6x1000 gp F, E 9
+	treasure_table[14].addrow(11, 21, 1, 6, 1000, gp, [ gem.F, gem.D ],
+			[ item[10] ]); // 11-21 1d6x1000 gp F, D 10
+	treasure_table[14].addrow(22, 44, 2, 4, 1000, gp, [ gem.G, gem.F ], [
+			item[10], item[5] ]); // 22-44 2d4x1000 gp G, F 10, 5
+	treasure_table[14].addrow(45, 60, 1, 8, 1000, gp, [ gem.H ], [ item[11] ]); // 45-60 1d8x1000 gp H 11
+	treasure_table[14].addrow(61, 78, 1, 8, 1000, gp, [ gem.G, gem.F ], [
+			item[11], item[6] ]); // 61-78 1d8x1000 gp G, F 11, 6
+	treasure_table[14].addrow(79, 83, 2, 4, 1000, gp, [ gem.H, gem.F ],
+			[ item[12] ]); // 79-83 2d4x1000 gp H, F 12
+	treasure_table[14].addrow(84, 91, 2, 4, 100, pp, [ gem.H ], [ item[12],
+			item[5] ]); // 84-91 2d4x100 pp H 12, 5
+	treasure_table[14].addrow(92, 99, 1, 8, 100, pp, [ gem.H, gem.G ],
+			[ item[13] ]); // 92-99 1d8x100 pp H, G 13
+	treasure_table[14].addrow(100, 100, 2, 4, 100, pp, [ gem.H, gem.G ],
+			[ item[14] ]); // 100-100 2d4x100 pp H, G 144
+
+	// 15 
+	treasure_table[15].addrow(01, 07, 2, 4, 1000, gp, [ gem.G ], [ item[10] ]); // 01-07 2d4x1000 gp G 10
+	treasure_table[15].addrow(08, 10, 1, 8, 1000, gp, [ gem.G, gem.F ],
+			[ item[10] ]); // 08-10 1d8x1000 gp G, F 10
+	treasure_table[15].addrow(11, 21, 1, 8, 1000, gp, [ gem.G, gem.E ],
+			[ item[11] ]); // 11-21 1d8x1000 gp G, E 11
+	treasure_table[15].addrow(22, 44, 1, 12, 1000, gp, [ gem.H, gem.F ],
+			[ item[11] ]); // 22-44 1d12x1000 gp H, F 11
+	treasure_table[15].addrow(45, 60, 1, 10, 1000, gp, [ gem.H, gem.G ],
+			[ item[12] ]); // 45-60 1d10x1000 gp H, G 12
+	treasure_table[15].addrow(61, 78, 1, 10, 1000, gp, [ gem.H, gem.F ], [
+			item[12], item[8] ]); // 61-78 1d10x1000 gp H, F 12, 8
+	treasure_table[15].addrow(79, 83, 2, 6, 100, pp, [ gem.H, gem.G, gem.E ],
+			[ item[13] ]); // 79-83 2d6x100 pp H, G, E 13
+	treasure_table[15].addrow(84, 91, 2, 6, 100, pp, [ gem.H, gem.G ], [
+			item[13], item[6] ]); // 84-91 2d6x100 pp H, G 13, 6
+	treasure_table[15].addrow(92, 99, 1, 12, 100, pp, [ gem.H, gem.G, gem.F ],
+			[ item[14] ]); // 92-99 1d12x100 pp H, G, F 14
+	treasure_table[15].addrow(100, 100, 1, 12, 100, pp,
+			[ gem.H, gem.G, gem.F ], [ item[15] ]); // 100-100 1d12x100 pp H, G, F 15
+
+	// 16 
+	treasure_table[16].addrow(01, 07, 1, 12, 1000, gp, [ gem.G, gem.E ],
+			[ item[11] ]); // 01-07 1d12x1000 gp G, E 11
+	treasure_table[16].addrow(08, 10, 1, 10, 1000, gp, [ gem.H ], [ item[11] ]); // 08-10 1d10x1000 gp H 11
+	treasure_table[16].addrow(11, 21, 1, 10, 1000, gp, [ gem.G, gem.F ],
+			[ item[12] ]); // 11-21 1d10x1000 gp G, F 12
+	treasure_table[16].addrow(22, 44, 3, 4, 1000, gp, [ gem.H, gem.G ], [
+			item[12], item[6] ]); // 22-44 3d4x1000 gp H, G 12, 6
+	treasure_table[16].addrow(45, 60, 1, 12, 1000, gp, [ gem.I ], [ item[13] ]); // 45-60 1d12x1000 gp I 13
+	treasure_table[16].addrow(61, 78, 1, 12, 1000, gp, [ gem.H, gem.G ], [
+			item[13], item[8] ]); // 61-78 1d12x1000 gp H, G 13, 8
+	treasure_table[16].addrow(79, 83, 3, 4, 100, pp, [ gem.I, gem.F, gem.E ],
+			[ item[14] ]); // 79-83 3d4x100 pp I, F, E 14
+	treasure_table[16].addrow(84, 91, 3, 4, 100, pp, [ gem.I, gem.E ], [
+			item[14], item[8] ]); // 84-91 3d4x100 pp I, E 14, 8
+	treasure_table[16].addrow(92, 99, 2, 6, 100, pp, [ gem.I, gem.F, gem.E ],
+			[ item[15] ]); // 92-99 2d6x100 pp I, F, E 15
+	treasure_table[16].addrow(100, 100, 3, 4, 100, pp, [ gem.I, gem.F, gem.E ],
+			[ item[16] ]); // 100-100 3d4x100 pp I, F, E 16
+
+	// 17 
+	treasure_table[17].addrow(01, 07, 3, 4, 1000, gp, [ gem.H ], [ item[12] ]); // 01-07 3d4x1000 gp H 12
+	treasure_table[17].addrow(08, 10, 1, 12, 1000, gp, [ gem.H, gem.F, gem.F ],
+			[ item[12] ]); // 08-10 1d12x1000 gp H, F, F 12
+	treasure_table[17].addrow(11, 21, 1, 12, 1000, gp, [ gem.H, gem.F ],
+			[ item[13] ]); // 11-21 1d12x1000 gp H, F 13
+	treasure_table[17].addrow(22, 44, 2, 8, 1000, gp, [ gem.I ], [ item[13] ]); // 22-44 2d8x1000 gp I 13
+	treasure_table[17].addrow(45, 60, 3, 4, 1000, gp, [ gem.I, gem.G ],
+			[ item[14] ]); // 45-60 3d4x1000 gp I, G 14
+	treasure_table[17].addrow(61, 78, 3, 4, 1000, gp, [ gem.I ], [ item[14],
+			item[7] ]); // 61-78 3d4x1000 gp I 14, 7
+	treasure_table[17].addrow(79, 83, 2, 8, 1000, gp, [ gem.I, gem.G ],
+			[ item[15] ]); // 79-83 2d8x1000 gp I, G 15
+	treasure_table[17].addrow(84, 91, 2, 8, 1000, gp, [ gem.I ], [ item[16] ]); // 84-91 2d8x1000 gp I 16
+	treasure_table[17].addrow(92, 99, 3, 4, 1000, gp, [ gem.I, gem.G ],
+			[ item[17] ]); // 92-99 3d4x1000 gp I, G 17
+	treasure_table[17].addrow(100, 100, 2, 8, 1000, gp, [ gem.I, gem.G ],
+			[ item[18] ]); // 100-100 2d8x1000 gp I, G 18
+
+	// 18 
+	treasure_table[18].addrow(01, 07, 2, 8, 1000, gp, [ gem.H, gem.G ],
+			[ item[13] ]); // 01-07 2d8x1000 gp H, G 13
+	treasure_table[18].addrow(08, 10, 3, 4, 1000, gp, [ gem.I ], [ item[14] ]); // 08-10 3d4x1000 gp I 14
+	treasure_table[18].addrow(11, 21, 3, 4, 1000, gp, [ gem.H, gem.G ], [
+			item[14], item[9] ]); // 11-21 3d4x1000 gp H, G 14, 9
+	treasure_table[18].addrow(22, 44, 4, 4, 1000, gp, [ gem.I ], [ item[15] ]); // 22-44 4d4x1000 gp I 15
+	treasure_table[18].addrow(45, 60, 2, 8, 1000, gp, [ gem.I, gem.H ],
+			[ item[15] ]); // 45-60 2d8x1000 gp I, H 15
+	treasure_table[18].addrow(61, 78, 2, 8, 1000, gp, [ gem.I, gem.F ],
+			[ item[16] ]); // 61-78 2d8x1000 gp I, F 16
+	treasure_table[18].addrow(79, 83, 4, 4, 100, pp, [ gem.I, gem.G ],
+			[ item[17] ]); // 79-83 4d4x100 pp I, G 17
+	treasure_table[18].addrow(84, 91, 4, 4, 100, pp, [ gem.I, gem.F ],
+			[ item[18] ]); // 84-91 4d4x100 pp I, F 18
+	treasure_table[18].addrow(92, 99, 2, 8, 100, pp, [ gem.I, gem.G ],
+			[ item[19] ]); // 92-99 2d8x100 pp I, G 19
+	treasure_table[18].addrow(100, 100, 4, 4, 100, pp, [ gem.I, gem.G ],
+			[ item[20] ]); // 100-100 4d4x100 pp I, G 20
+
+	// 19 
+	treasure_table[19].addrow(01, 07, 3, 6, 1000, gp, [ gem.I ], [ item[14] ]); // 01-07 3d6x1000 gp I 14
+	treasure_table[19].addrow(08, 10, 2, 8, 1000, gp, [ gem.I, gem.F ],
+			[ item[15] ]); // 08-10 2d8x1000 gp I, F 15
+	treasure_table[19].addrow(11, 21, 2, 8, 1000, gp, [ gem.I ], [ item[15],
+			item[7] ]); // 11-21 2d8x1000 gp I 15, 7
+	treasure_table[19].addrow(22, 44, 3, 8, 1000, gp, [ gem.I, gem.F ],
+			[ item[16] ]); // 22-44 3d8x1000 gp I, F 16
+	treasure_table[19].addrow(45, 60, 2, 10, 1000, gp, [ gem.I, gem.H ], [
+			item[16], item[10] ]); // 45-60 2d10x1000 gp I, H 16, 10
+	treasure_table[19].addrow(61, 78, 2, 10, 100, pp, [ gem.I, gem.F ],
+			[ item[17] ]); // 61-78 2d10x100 pp I, F 17
+	treasure_table[19].addrow(79, 83, 3, 8, 100, pp, [ gem.I, gem.H ],
+			[ item[18] ]); // 79-83 3d8x100 pp I, H 18
+	treasure_table[19].addrow(84, 91, 3, 8, 100, pp, [ gem.I, gem.F ],
+			[ item[19] ]); // 84-91 3d8x100 pp I, F 19
+	treasure_table[19].addrow(92, 99, 3, 6, 100, pp, [ gem.I, gem.H ],
+			[ item[20] ]); // 92-99 3d6x100 pp I, H 20
+	treasure_table[19].addrow(100, 100, 3, 8, 100, pp, [ gem.I, gem.H ],
+			[ item[21] ]); // 100-100 3d8x100 pp I, H 21
+
+	// 20 
+	treasure_table[20].addrow(01, 07, 2, 12, 1000, gp, [ gem.I, gem.F, gem.F ],
+			[ item[15] ]); // 01-07 2d12x1000 gp I, F, F 15
+	treasure_table[20].addrow(08, 10, 2, 10, 1000, gp, [ gem.I, gem.H ],
+			[ item[16] ]); // 08-10 2d10x1000 gp I, H 16
+	treasure_table[20].addrow(11, 21, 2, 10, 1000, gp, [ gem.I, gem.F, gem.F ],
+			[ item[17] ]); // 11-21 2d10x1000 gp I, F, F 17
+	treasure_table[20].addrow(22, 44, 4, 6, 1000, gp, [ gem.I, gem.H ],
+			[ item[18] ]); // 22-44 4d6x1000 gp I, H 18
+	treasure_table[20].addrow(45, 60, 2, 12, 1000, gp, [ gem.I, gem.H, gem.G ],
+			[ item[19] ]); // 45-60 2d12x1000 gp I, H, G 19
+	treasure_table[20].addrow(61, 78, 2, 12, 100, pp, [ gem.I, gem.H ],
+			[ item[20] ]); // 61-78 2d12x100 pp I, H 20
+	treasure_table[20].addrow(79, 83, 4, 6, 100, pp, [ gem.I, gem.H, gem.G ],
+			[ item[21] ]); // 79-83 4d6x100 pp I, H, G 21
+	treasure_table[20].addrow(84, 91, 4, 6, 100, pp, [ gem.I, gem.H ],
+			[ item[22] ]); // 84-91 4d6x100 pp I, H 22
+	treasure_table[20].addrow(92, 95, 2, 12, 100, pp, [ gem.I, gem.H, gem.G ],
+			[ item[23] ]); // 92-95 2d12x100 pp I, H, G 23
+	treasure_table[20].addrow(96, 99, 2, 12, 100, pp, [ gem.I, gem.H, gem.G ],
+			[ item[24] ]); // 96-99 2d12x100 pp I, H, G 24
+	treasure_table[20].addrow(99, 100, 2, 12, 100, pp, [ gem.I, gem.I ],
+			[ item[25] ]); // 99-100 2d12x100 pp I, I 25
+
+	item[0].addStaticRow(01, 01, "P128", "Acid");
+	item[0].addStaticRow(02, 03, "P126", "Lantern, bullseye");
+	item[0].addStaticRow(04, 04, "S42", "Scroll of caltropsSC (A)");
+	item[0].addStaticRow(05, 05, "P215", "Scroll of create water (D)");
+	item[0].addStaticRow(06, 06, "P216", "Scroll of dancing lights (A)");
+	item[0].addStaticRow(07, 07, "S59", "Scroll of dawnSC (D)");
+	item[0].addStaticRow(08, 08, "P219", "Scroll of detect magic (A or D)");
+	item[0].addStaticRow(09, 09, "P248", "Scroll of light (A or D)");
+	item[0].addStaticRow(10, 10, "P253", "Scroll of message (A)");
+	item[0].addStaticRow(11, 11, "P267", "Scroll of purify food and drink (D)");
+	item[0].addStaticRow(12, 13, "P128", "Alchemist’s fire");
+	item[0].addStaticRow(14, 16, "P127", "Rope, silk (100 ft.)");
+	item[0].addStaticRow(17, 18, "P128", "Smokesticks");
+	item[0].addStaticRow(19, 20, "P130", "Holy symbol, silver");
+	item[0].addStaticRow(21, 22, "P128", "Holy water");
+	item[0].addStaticRow(23, 23, "S16", "Scroll of aspect of the wolfSC (D)");
+	item[0].addStaticRow(24, 24, "S27", "Scroll of benign transpositionSC (A)");
+	item[0].addStaticRow(25, 25, "S31", "Scroll of blessed aimSC (D)");
+	item[0].addStaticRow(26, 26, "P212",
+			"Scroll of comprehend languages (A or D)");
+	item[0].addStaticRow(27, 28, "P215", "Scroll of cure light wounds (D)");
+	item[0].addStaticRow(29, 29, "P222", "Scroll of disguise self (A)");
+	item[0].addStaticRow(30, 30, "P226", "Scroll of endure elements (A or D)");
+	item[0].addStaticRow(31, 31, "S108", "Scroll of hail of stoneSC (A)");
+	item[0].addStaticRow(32, 32, "P256", "Scroll of mount (A)");
+	item[0].addStaticRow(33, 33, "P266",
+			"Scroll of protection from chaos (A or D)");
+	item[0].addStaticRow(34, 34, "P266",
+			"Scroll of protection from evil (A or D)");
+	item[0].addStaticRow(35, 35, "P266",
+			"Scroll of protection from good (A or D)");
+	item[0].addStaticRow(36, 36, "P266",
+			"Scroll of protection from law (A or D)");
+	item[0].addStaticRow(37, 37, "P271", "Scroll of remove fear (A or D)");
+	item[0].addStaticRow(38, 38, "S174", "Scroll of resurgenceSC (D)");
+	item[0].addStaticRow(39, 39, "P274", "Scroll of sanctuary (D)");
+	item[0].addStaticRow(40, 40, "S189", "Scroll of signSC (D)");
+	item[0].addStaticRow(41, 41, "S193", "Scroll of snake’s swiftnessSC (D)");
+	item[0].addStaticRow(42, 42, "P281", "Scroll of speak with animals (D)");
+	item[0].addStaticRow(43, 43, "S229", "Scroll of lesser vigorSC (D)");
+	item[0].addStaticRow(44, 45, "P129", "Thunderstone");
+	item[0].addStaticRow(46, 47, "P128", "Antitoxin");
+	item[0].addStaticRow(48, 49, "M152", "Blessed bandage (5)");
+	item[0].addStaticRow(50, 51, "P130", "Disguise kit");
+	item[0].addStaticRow(52, 53, "P130", "Healer’s kit");
+	item[0].addStaticRow(54, 56, "P251", "Oil of magic weapon");
+	item[0].addStaticRow(57, 65, "P215", "Potion of cure light wounds");
+	item[0].addStaticRow(66, 68, "P226", "Potion of endure elements");
+	item[0].addStaticRow(69, 71, "P226", "Potion of enlarge person");
+	item[0].addStaticRow(72, 75, "P249", "Potion of mage armor");
+	item[0].addStaticRow(76, 78, "P250", "Potion of magic fang");
+	item[0].addStaticRow(79, 81, "P266",
+			"Potion of protection from chaos/evil/good/law");
+	item[0].addStaticRow(82, 83, "P271", "Potion of remove fear");
+	item[0].addStaticRow(84, 85, "P278", "Potion of shield of faith +2");
+	item[0].addStaticRow(86, 88, "S229", "Potion of lesser vigorSC");
+	item[0].addStaticRow(89, 90, "D264", "Quaal’s feather token, anchor");
+	item[0].addStaticRow(91, 92, "M185", "Skill shard");
+	item[0].addStaticRow(93, 94, "P128", "Tanglefoot bag");
+	item[0].addStaticRow(95, 98, "P130", "Thieves’ tools, masterwork");
+	item[0].addStaticRow(99, 100, "D268", "Universal solvent");
+
+	item[1].addStaticRow(01, 04, "P219", "Wand of detect magic (10 charges)");
+	item[1].addStaticRow(05, 07, "P248", "Wand of light (10 charges)");
+	item[1].addStaticRow(08, 10, "P269", "Wand of read magic (10 charges)");
+	item[1].addStaticRow(11, 11, "P130", "Climber’s kit");
+	item[1].addStaticRow(12, 14, "P124", "Chain shirt");
+	item[1].addStaticRow(15, 15, "M64", "Crystal of illumination, least");
+	item[1].addStaticRow(16, 16, "D228", "Sleep arrow");
+	item[1].addStaticRow(17, 18, "P205", "Oil of bless weapon");
+	item[1].addStaticRow(19, 19, "P205", "Scroll of bless weapon (D)");
+	item[1].addStaticRow(20, 21, "P128", "Everburning torch");
+	item[1].addStaticRow(22, 25, "P243", "Scroll of identify (A)");
+	item[1].addStaticRow(26, 26, "M156", "Daylight pellet");
+	item[1].addStaticRow(27, 27, "D255", "Elixir of love");
+	item[1]
+			.addStaticRow(28, 28, "S23",
+					"Scroll of baleful transpositionSC (A)");
+	item[1].addStaticRow(29, 30, "P203", "Scroll of bear’s endurance (A or D)");
+	item[1].addStaticRow(31, 32, "P207", "Scroll of bull’s strength (A or D)");
+	item[1].addStaticRow(33, 34, "P208", "Scroll of cat’s grace (A or D)");
+	item[1].addStaticRow(35, 37, "P216", "Scroll of cure moderate wounds (D)");
+	item[1].addStaticRow(38, 38, "P216", "Scroll of darkvision (A)");
+	item[1].addStaticRow(39, 39, "P217", "Scroll of delay poison (D)");
+	item[1].addStaticRow(40, 40, "S76", "Scroll of earthbindSC (A or D)");
+	item[1].addStaticRow(41, 41, "P230", "Scroll of find traps (D)");
+	item[1].addStaticRow(42, 42, "S102",
+			"Scroll of ghost touch armorSC (A or D)");
+	item[1].addStaticRow(43, 43, "P236", "Scroll of glitterdust (A)");
+	item[1].addStaticRow(44, 45, "P245", "Scroll of invisibility (A)");
+	item[1].addStaticRow(46, 49, "P246", "Scroll of knock (A)");
+	item[1].addStaticRow(50, 52, "P271", "Scroll of remove paralysis (D)");
+	item[1].addStaticRow(53, 55, "P272", "Scroll of resist energy (A or D)");
+	item[1].addStaticRow(56, 57, "P272", "Scroll of lesser restoration (D)");
+	item[1].addStaticRow(58, 58, "P275", "Scroll of see invisibility (A)");
+	item[1].addStaticRow(59, 59, "P279", "Scroll of silence (D)");
+	item[1].addStaticRow(60, 60, "D268", "Unguent of timelessness");
+	item[1].addStaticRow(61, 61, "S27",
+			"Wand of benign transpositionSC (10 charges)");
+	item[1].addStaticRow(62, 63, "P205", "Wand of bless (10 charges)");
+	item[1].addStaticRow(64, 71, "P215",
+			"Wand of cure light wounds (10 charges)");
+	item[1].addStaticRow(72, 73, "P226", "Wand of enlarge person (10 charges)");
+	item[1].addStaticRow(74, 74, "S229", "Wand of lesser vigorSC (10 charges)");
+	item[1].addStaticRow(75, 78, "P249", "Wand of mage armor (10 charges)");
+	item[1].addStaticRow(79, 84, "P251",
+			"Wand of magic missile (CL 1st, 10 charges)");
+	item[1].addStaticRow(85, 85, "P269",
+			"Wand of ray of enfeeblement (10 charges)");
+	item[1].addStaticRow(86, 86, "S173",
+			"Wand of repair light damageSC (10 charges)");
+	item[1].addStaticRow(87, 87, "S174", "Wand of resurgenceSC (10 charges)");
+	item[1].addStaticRow(88, 89, "P278", "Wand of shield (10 charges)");
+	item[1].addStaticRow(90, 90, "S193",
+			"Wand of snake’s swiftnessSC (10 charges)");
+	item[1].addStaticRow(91, 91, "P125", "Light wooden shield, masterwork");
+	item[1].addStaticRow(92, 92, "P125", "Heavy wooden shield, masterwork");
+	item[1].addStaticRow(93, 93, "P125", "Light steel shield, masterwork");
+	item[1].addStaticRow(94, 94, "P125", "Buckler, masterwork");
+	item[1].addStaticRow(95, 95, "P125", "Leather, masterwork");
+	item[1].addStaticRow(96, 96, "P125", "Hide armor, masterwork");
+	item[1].addStaticRow(97, 97, "P125", "Heavy steel shield, masterwork");
+	item[1].addStaticRow(98, 98, "P126", "Studded leather, masterwork");
+	item[1].addStaticRow(99, 99, "P124", "Chainmail");
+	item[1].addStaticRow(100, 100, "P125", "Tower shield, masterwork");
+
+	item[2].addStaticRow(01, 01, "P200", "Scroll of arcane lock (A)");
+	item[2].addStaticRow(02, 02, "M25", "Crystal of lifekeeping, least");
+	item[2].addStaticRow(03, 03, "M160", "Everfull mug");
+	item[2].addStaticRow(04, 04, "D264", "Quaal’s feather token, fan");
+	item[2].addStaticRow(05, 05, "M185", "Skill shard, greater");
+	item[2].addStaticRow(06, 06, "M188", "Tanglepatch");
+	item[2].addStaticRow(07, 07, "P124", "Chain shirt, masterwork");
+	item[2].addStaticRow(08, 08, "D221", "Darkwood shield");
+	item[2].addStaticRow(09, 09, "D221", "Darkwood buckler");
+	item[2].addStaticRow(10, 10, "M25", "Crystal of aquatic action, least");
+	item[2].addStaticRow(11, 11, "D255", "Dust of tracelessness");
+	item[2].addStaticRow(12, 12, "D255", "Elixir of hiding");
+	item[2].addStaticRow(13, 13, "D255", "Elixir of sneaking");
+	item[2].addStaticRow(14, 14, "D255", "Elixir of swimming");
+	item[2].addStaticRow(15, 15, "D256", "Elixir of vision");
+	item[2].addStaticRow(16, 16, "M162", "Incense of concentration");
+	item[2].addStaticRow(17, 17, "M162", "Jumping caltrops");
+	item[2].addStaticRow(18, 18, "M131", "Safewing emblem");
+	item[2].addStaticRow(19, 19, "D266", "Silversheen");
+	item[2].addStaticRow(20, 20, "M24", "Crystal of adamant armor, least");
+	item[2].addStaticRow(21, 21, "M64", "Crystal of adamant weaponry, least");
+	item[2].addStaticRow(22, 22, "M153", "Blight stone");
+	item[2].addStaticRow(23, 23, "M65", "Crystal of return, least");
+	item[2].addStaticRow(24, 24, "M65", "Crystal of security, least");
+	item[2].addStaticRow(25, 25, "M26", "Crystal of stamina, least");
+	item[2].addStaticRow(26, 26, "M159", "Elixir of flaming fists");
+	item[2].addStaticRow(27, 27, "M52", "Fountainhead arrow");
+	item[2].addStaticRow(28, 28, "P216", "Oil of darkness");
+	item[2].addStaticRow(29, 29, "P203", "Potion of barkskin +2");
+	item[2].addStaticRow(30, 30, "P203", "Potion of bear’s endurance");
+	item[2].addStaticRow(31, 31, "P206", "Potion of blur");
+	item[2].addStaticRow(32, 32, "P207", "Potion of bull’s strength");
+	item[2].addStaticRow(33, 33, "P208", "Potion of cat’s grace");
+	item[2].addStaticRow(34, 37, "P216", "Potion of cure moderate wounds");
+	item[2].addStaticRow(38, 38, "P216", "Potion of darkvision");
+	item[2].addStaticRow(39, 39, "P217", "Potion of delay poison");
+	item[2].addStaticRow(40, 40, "P225", "Potion of eagle’s splendor");
+	item[2].addStaticRow(41, 41, "P233", "Potion of fox’s cunning");
+	item[2].addStaticRow(42, 42, "P245", "Potion of invisibility");
+	item[2].addStaticRow(43, 44, "P272", "Potion of lesser restoration");
+	item[2].addStaticRow(45, 45, "P248", "Potion of levitate");
+	item[2].addStaticRow(46, 46, "P259", "Potion of owl’s wisdom");
+	item[2].addStaticRow(47, 48, "P271", "Potion of remove paralysis");
+	item[2].addStaticRow(49, 50, "P272", "Potion of resist energy (type) 10");
+	item[2].addStaticRow(51, 51, "P278", "Potion of shield of faith +3");
+	item[2].addStaticRow(52, 52, "P283", "Potion of spider climb");
+	item[2].addStaticRow(53, 53, "D264", "Quaal’s feather token, bird");
+	item[2].addStaticRow(54, 54, "M186", "Stench stone");
+	item[2].addStaticRow(55, 55, "D227", "Screaming bolt");
+	item[2].addStaticRow(56, 58, "M282", "Masterwork weapon");
+	item[2].addStaticRow(59, 59, "D228", "Silver dagger, masterwork");
+	item[2].addStaticRow(60, 60, "D227", "Cold iron longsword, masterwork");
+	item[2].addStaticRow(61, 61, "P124", "Breastplate, masterwork");
+	item[2].addStaticRow(62, 63, "M160", "Everlasting rations");
+	item[2].addStaticRow(64, 64, "P214", "Scroll of create food and water (D)");
+	item[2].addStaticRow(65, 66, "P216", "Scroll of cure serious wounds (D)");
+	item[2].addStaticRow(67, 67, "P216", "Scroll of daylight (A or D)");
+	item[2].addStaticRow(68, 68, "P223", "Scroll of dispel magic (A or D)");
+	item[2].addStaticRow(69, 69, "P231", "Scroll of fireball (A)");
+	item[2].addStaticRow(70, 70, "P232", "Scroll of fly (A)");
+	item[2].addStaticRow(71, 71, "P239", "Scroll of haste (A)");
+	item[2].addStaticRow(72, 72, "P245", "Scroll of invisibility purge (D)");
+	item[2].addStaticRow(73, 73, "P248", "Scroll of lightning bolt (A)");
+	item[2].addStaticRow(74, 74, "P249",
+			"Scroll of magic circle against chaos (A or D)");
+	item[2].addStaticRow(75, 75, "P249",
+			"Scroll of magic circle against evil (A or D)");
+	item[2].addStaticRow(76, 76, "P250",
+			"Scroll of magic circle against good (A or D)");
+	item[2].addStaticRow(77, 77, "P250",
+			"Scroll of magic circle against law (A or D)");
+	item[2].addStaticRow(78, 78, "P257", "Scroll of neutralize poison (D)");
+	item[2].addStaticRow(79, 79, "P266",
+			"Scroll of protection from energy (A or D)");
+	item[2].addStaticRow(80, 80, "P270",
+			"Scroll of remove blindness/deafness (D)");
+	item[2].addStaticRow(81, 81, "P270", "Scroll of remove curse (D)");
+	item[2].addStaticRow(82, 82, "P271", "Scroll of remove disease (D)");
+	item[2].addStaticRow(83, 83, "S193",
+			"Scroll of mass snake’s swiftnessSC (D)");
+	item[2].addStaticRow(84, 84, "P281", "Scroll of speak with dead (D)");
+	item[2].addStaticRow(85, 85, "P294", "Scroll of tongues (A)");
+	item[2].addStaticRow(86, 86, "S229", "Scroll of vigorSC (D)");
+	item[2].addStaticRow(87, 87, "S229", "Scroll of mass lesser vigorSC (D)");
+	item[2].addStaticRow(88, 88, "P300", "Scroll of water breathing (A or D)");
+	item[2].addStaticRow(89, 89, "M70", "Amulet of toxin delay");
+	item[2].addStaticRow(90, 90, "M85", "Charm of countersong");
+	item[2].addStaticRow(91, 91, "M64", "Crystal of illumination, lesser");
+	item[2].addStaticRow(92, 92, "M64", "Crystal of life drinking, least");
+	item[2].addStaticRow(93, 93, "M26", "Crystal of screening, least");
+	item[2].addStaticRow(94, 95, "M158", "Electric eel elixir");
+	item[2].addStaticRow(96, 96, "M159", "Essentia jewel");
+	item[2].addStaticRow(97, 97, "M163", "Life ring");
+	item[2].addStaticRow(98, 99, "D264", "Quaal’s feather token, tree");
+	item[2].addStaticRow(100, 100, "M66", "Revelation crystal, least");
+
+	item[3].addStaticRow(01, 01, "M161", "Glitter stone");
+	item[3].addStaticRow(02, 02, "D264", "Quaal’s feather token, swan boat");
+	item[3].addStaticRow(03, 03, "M68", "Amber amulet of vermin, giant bee");
+	item[3].addStaticRow(04, 04, "M68", "Amulet of aquatic salvation");
+	item[3].addStaticRow(05, 05, "M72", "Arcanist’s gloves");
+	item[3].addStaticRow(06, 06, "M46", "Arrow (or bolt) of biting");
+	item[3].addStaticRow(07, 07, "M77", "Boots of landing");
+	item[3].addStaticRow(08, 08, "M83", "Brute gauntlets");
+	item[3]
+			.addStaticRow(09, 09, "M85",
+					"Chronocharm of the celestial wanderer");
+	item[3].addStaticRow(10, 10, "M85", "Chronocharm of the fateweaver");
+	item[3].addStaticRow(11, 11, "M86", "Chronocharm of the grand master");
+	item[3].addStaticRow(12, 12, "M86", "Chronocharm of the horizon walker");
+	item[3].addStaticRow(13, 13, "M86", "Chronocharm of the laughing rogue");
+	item[3].addStaticRow(14, 14, "M86", "Chronocharm of the uncaring archmage");
+	item[3].addStaticRow(15, 15, "M64", "Crystal of energy assault, least");
+	item[3].addStaticRow(16, 16, "M24", "Clasp of energy protection, least");
+	item[3].addStaticRow(17, 17, "M24", "Crystal of adaptation, least");
+	item[3].addStaticRow(18, 18, "M64", "Crystal of arcane steel, least");
+	item[3].addStaticRow(19, 19, "M25", "Crystal of arrow deflection, least");
+	item[3].addStaticRow(20, 20, "M25", "Crystal of bent sight");
+	item[3].addStaticRow(21, 21, "M25", "Crystal of glancing blows, least");
+	item[3].addStaticRow(22, 22, "M25", "Crystal of mind cloaking, least");
+	item[3].addStaticRow(23, 23, "M158", "Dust of dispersion");
+	item[3].addStaticRow(24, 24, "M158", "Elixir of adamantine blood");
+	item[3].addStaticRow(25, 25, "D256", "Elixir of truth");
+	item[3].addStaticRow(26, 26, "M26", "Iron ward diamond, least");
+	item[3].addStaticRow(27, 27, "M163", "Magic bedroll");
+	item[3].addStaticRow(28, 28, "M65", "Phoenix ash threat, least");
+	item[3].addStaticRow(29, 29, "D264", "Quaal’s feather token, whip");
+	item[3].addStaticRow(30, 30, "M120", "Reach gauntlets");
+	item[3].addStaticRow(31, 31, "M26", "Restful crystal");
+	item[3].addStaticRow(32, 32, "M26", "Rubicund frenzy, least");
+	item[3].addStaticRow(33, 33, "M133", "Shiftweave");
+	item[3].addStaticRow(34, 34, "M139", "Symbol of transfiguration");
+	item[3].addStaticRow(35, 35, "M188", "Talisman of the disk");
+	item[3].addStaticRow(36, 36, "M190", "Troll gut rope");
+	item[3].addStaticRow(37, 37, "M147", "Watch lamp");
+	item[3].addStaticRow(38, 38, "M118", "Necklace of copper dragon scales");
+	item[3].addStaticRow(39, 39, "M76", "Boots of agile leaping");
+	item[3].addStaticRow(40, 40, "M78", "Boots of stomping");
+	item[3].addStaticRow(41, 41, "M113", "Lenses of bright vision");
+	item[3].addStaticRow(42, 42, "M118", "Pearl of speech");
+	item[3].addStaticRow(43, 43, "P203", "Potion of barkskin +3");
+	item[3].addStaticRow(44, 44, "P278", "Potion of shield of faith +4");
+	item[3].addStaticRow(45, 45, "M148", "Wink brooch");
+	item[3].addStaticRow(46, 46, "M68",
+			"Amber amulet of vermin, giant praying mantis");
+	item[3].addStaticRow(47, 47, "M68",
+			"Amber amulet of vermin, giant queen ant");
+	item[3].addStaticRow(48, 48, "M68",
+			"Amber amulet of vermin, Huge monstrous centipede");
+	item[3].addStaticRow(49, 49, "M68",
+			"Amber amulet of vermin, Huge monstrous scorpion");
+	item[3].addStaticRow(50, 50, "M68",
+			"Amber amulet of vermin, Large monstrous spider");
+	item[3].addStaticRow(51, 51, "P272",
+			"Potion of resist energy (type) 20 (A or D)");
+	item[3].addStaticRow(52, 52, "P196", "Scroll of air walk (D)");
+	item[3]
+			.addStaticRow(53, 53, "P215",
+					"Scroll of cure critical woundsSC (D)");
+	item[3].addStaticRow(54, 54, "S59", "Scroll of darkvision, massSC (A)");
+	item[3].addStaticRow(55, 55, "P217", "Scroll of death ward (D)");
+	item[3].addStaticRow(56, 56, "P221",
+			"Scroll of dimensional anchor (A or D)");
+	item[3].addStaticRow(57, 57, "P222", "Scroll of dismissal (D)");
+	item[3].addStaticRow(58, 58, "P233", "Scroll of freedom of movement (D)");
+	item[3].addStaticRow(59, 59, "P243", "Scroll of ice storm (A)");
+	item[3].addStaticRow(60, 60, "P245", "Scroll of greater invisibility (A)");
+	item[3]
+			.addStaticRow(61, 61, "S129",
+					"Scroll of know vulnerabilitiesSC (A)");
+	item[3].addStaticRow(62, 62, "P247",
+			"Scroll of Leomund’s secure shelter (A)");
+	item[3].addStaticRow(63, 63, "S152", "Scroll of panaceaSC (D)");
+	item[3].addStaticRow(64, 64, "P270", "Scroll of remove curse (A or D)");
+	item[3].addStaticRow(65, 65, "S175", "Scroll of revenanceSC (D)");
+	item[3].addStaticRow(66, 66, "P275", "Scroll of sending (D)");
+	item[3].addStaticRow(67, 67, "P294", "Scroll of tongues (D)");
+	item[3].addStaticRow(68, 68, "M186", "Soulvoid orb");
+	item[3].addStaticRow(69, 69, "M90", "Crest of bravery");
+	item[3].addStaticRow(70, 70, "M110", "Healing belt");
+	item[3].addStaticRow(71, 71, "P251", "Oil of greater magic weapon +1");
+	item[3].addStaticRow(72, 72, "P246", "Oil of keen edge");
+	item[3].addStaticRow(73, 73, "P251", "Oil of magic vestment +1");
+	item[3].addStaticRow(74, 75, "P216", "Potion of cure serious wounds");
+	item[3].addStaticRow(76, 76, "P223", "Potion of displacement");
+	item[3].addStaticRow(77, 77, "P232", "Potion of fly");
+	item[3].addStaticRow(78, 78, "P234", "Potion of gaseous form");
+	item[3].addStaticRow(79, 79, "P250", "Potion of greater magic fang +1");
+	item[3].addStaticRow(80, 80, "P239", "Potion of haste");
+	item[3].addStaticRow(81, 81, "P240", "Potion of heroism");
+	item[3].addStaticRow(82, 82, "P249",
+			"Potion of magic circle against chaos/evil/ good/law");
+	item[3].addStaticRow(83, 83, "P257", "Potion of neutralize poison");
+	item[3].addStaticRow(84, 84, "P266", "Potion of protection from energy");
+	item[3].addStaticRow(85, 85, "P270", "Potion of remove blindness/deafness");
+	item[3].addStaticRow(86, 86, "P270", "Potion of remove curse");
+	item[3].addStaticRow(87, 87, "P271", "Potion of remove disease");
+	item[3].addStaticRow(88, 88, "S229", "Potion of vigorSC");
+	item[3].addStaticRow(89, 89, "P300", "Potion of water breathing");
+	item[3].addStaticRow(90, 90, "M169", "Powder of the black veil");
+	item[3].addStaticRow(91, 91, "M184", "Scrying beacon");
+	item[3].addStaticRow(92, 92, "P251",
+			"Wand of magic missile (CL 5th, 10 charges)");
+	item[3].addStaticRow(93, 93, "M68", "Amber amulet of vermin, giant wasp");
+	item[3].addStaticRow(94, 94, "M151", "Bag of endless caltrops");
+	item[3].addStaticRow(95, 95, "M160", "Everlasting feedbag");
+	item[3].addStaticRow(96, 96, "M72", "Armband of elusive action");
+	item[3].addStaticRow(97, 97, "M215", "Ephod of authoritySP");
+	item[3].addStaticRow(98, 98, "M169", "Porcupine elixir");
+	item[3].addStaticRow(99, 99, "M176", "Rope of stone");
+	item[3].addStaticRow(100, 100, "P272", "Scroll of restoration (D)");
+
+	item[4].addStaticRow(01, 01, "P215", "Eternal wand of cure light wounds");
+	item[4].addStaticRow(02, 02, "P226", "Eternal wand of enlarge person");
+	item[4].addStaticRow(03, 03, "P249", "Eternal wand of mage armor");
+	item[4].addStaticRow(04, 04, "P251", "Eternal wand of magic missile");
+	item[4].addStaticRow(05, 05, "P266",
+			"Eternal wand of protection from chaos/evil/good/law");
+	item[4].addStaticRow(06, 06, "P269", "Eternal wand of ray of enfeeblement");
+	item[4].addStaticRow(07, 07, "S173",
+			"Eternal wand of repair light damageSC");
+	item[4].addStaticRow(08, 08, "P278", "Eternal wand of shield");
+	item[4].addStaticRow(09, 09, "D255", "Dust of dryness");
+	item[4].addStaticRow(10, 10, "M67", "Acrobat boots");
+	item[4].addStaticRow(11, 11, "D248", "Bag of tricks, gray");
+	item[4].addStaticRow(12, 12, "M152", "Blast disk");
+	item[4].addStaticRow(13, 13, "M26", "Crystal of stamina, lesser");
+	item[4].addStaticRow(14, 14, "D258", "Hand of the mage");
+	item[4].addStaticRow(15, 15, "M167", "Pearl of brain lock");
+	item[4].addStaticRow(16, 16, "M118", "Piercer cloak");
+	item[4].addStaticRow(17, 17, "P203", "Potion of barkskin +4");
+	item[4].addStaticRow(18, 18, "P203",
+			"Wand of bear’s endurance (10 charges)");
+	item[4].addStaticRow(19, 19, "P206", "Wand of blur (10 charges)");
+	item[4]
+			.addStaticRow(20, 20, "P207",
+					"Wand of bull’s strength (10 charges)");
+	item[4].addStaticRow(21, 21, "P208", "Wand of cat’s grace (10 charges)");
+	item[4].addStaticRow(22, 22, "P216",
+			"Wand of cure moderate wounds (10 charges)");
+	item[4].addStaticRow(23, 23, "P217", "Wand of delay poison (10 charges)");
+	item[4].addStaticRow(24, 24, "P245", "Wand of invisibility (10 charges)");
+	item[4].addStaticRow(25, 25, "P246", "Wand of knock (10 charges)");
+	item[4].addStaticRow(26, 26, "P254", "Wand of mirror image (10 charges)");
+	item[4].addStaticRow(27, 27, "S173",
+			"Wand of repair moderate damageSC (10 charges)");
+	item[4].addStaticRow(28, 28, "P274", "Wand of scorching ray (10 charges)");
+	item[4].addStaticRow(29, 29, "P275",
+			"Wand of see invisibility (10 charges)");
+	item[4].addStaticRow(30, 30, "P284", "Scroll of stoneskin (A)");
+	item[4].addStaticRow(31, 31, "D250", "Bracers of armor +1");
+	item[4].addStaticRow(32, 32, "M82", "Brawler’s gauntlets");
+	item[4].addStaticRow(33, 33, "M83", "Brooch of stability");
+	item[4].addStaticRow(34, 34, "M211", "Burning veilSP");
+	item[4].addStaticRow(35, 35, "M87", "Cloak of elemental protection");
+	item[4].addStaticRow(36, 36, "D253", "Cloak of resistance +1");
+	item[4].addStaticRow(37, 37, "M154", "Cognizance crystal, 1 point");
+	item[4].addStaticRow(38, 38, "M25", "Crystal of aquatic action, lesser");
+	item[4].addStaticRow(39, 39, "M64", "Crystal of illumination, greater");
+	item[4].addStaticRow(40, 40, "M25", "Crystal of lifekeeping, lesser");
+	item[4].addStaticRow(41, 41, "M65", "Crystal of return, lesser");
+	item[4].addStaticRow(42, 42, "M26", "Crystal of screening, lesser");
+	item[4].addStaticRow(43, 43, "M65", "Crystal of security, lesser");
+	item[4].addStaticRow(44, 44, "M65", "Demolition crystal, least");
+	item[4].addStaticRow(45, 45, "M94", "Dispelling cord");
+	item[4].addStaticRow(46, 46, "M158", "Drums of marching");
+	item[4].addStaticRow(47, 47, "M96", "Eagle claw talisman");
+	item[4].addStaticRow(48, 48, "M65", "Fiendslayer crystal, least");
+	item[4].addStaticRow(49, 49, "M102", "Gauntlets of energy transformation");
+	item[4].addStaticRow(50, 50, "M107", "Gloves of spell disruption");
+	item[4].addStaticRow(51, 51, "M204", "Gloves of the starry skySP");
+	item[4].addStaticRow(52, 52, "M161", "Glyph seal");
+	item[4].addStaticRow(53, 53, "M113", "Lightning gauntlets");
+	item[4].addStaticRow(54, 54, "D263", "Pearl of power, 1st-level spell");
+	item[4].addStaticRow(55, 55, "D264", "Phylactery of faithfulness");
+	item[4].addStaticRow(56, 56, "M120", "Reliquary holy symbol");
+	item[4].addStaticRow(57, 57, "M173", "Replenishing skin");
+	item[4].addStaticRow(58, 58, "M66", "Revelation crystal, lesser");
+	item[4].addStaticRow(59, 59, "M122", "Ring of brief blessing");
+	item[4].addStaticRow(60, 60, "D266", "Salve of slipperiness");
+	item[4].addStaticRow(61, 61, "M141", "Third eye improvisation");
+	item[4].addStaticRow(62, 62, "M66", "Truedeath crystal, least");
+	item[4].addStaticRow(63, 63, "M147", "Vest of resistance +1");
+	item[4].addStaticRow(64, 73, "M282", "+1 armor/shield");
+	item[4].addStaticRow(74, 74, "D221", "Mithral heavy shield");
+	item[4].addStaticRow(75, 75, "P237", "Potion of good hope");
+	item[4].addStaticRow(76, 76, "D220", "Mithral shirt");
+	item[4].addStaticRow(77, 77, "D255", "Elixir of fire breath");
+	item[4].addStaticRow(78, 78, "P272", "Potion of resist energy (type) 30");
+	item[4].addStaticRow(79, 79, "P207", "Scroll of break enchantment (A)");
+	item[4].addStaticRow(80, 80, "P212", "Scroll of contact other plane (A)");
+	item[4].addStaticRow(81, 81, "S64",
+			"Scroll of greater dimension doorSC (A)");
+	item[4].addStaticRow(82, 82, "P222", "Scroll of dismissal (A)");
+	item[4].addStaticRow(83, 83, "P223", "Scroll of disrupting weapon (D)");
+	item[4].addStaticRow(84, 84, "S92", "Scroll of fire shield, massSC (A)");
+	item[4].addStaticRow(85, 85, "S96", "Scroll of mass flySC (A)");
+	item[4].addStaticRow(86, 86, "P256",
+			"Scroll of Mordenkainen’s private sanctum (A)");
+	item[4].addStaticRow(87, 87, "P262", "Scroll of plane shift (D)");
+	item[4].addStaticRow(88, 88, "P275", "Scroll of sending (A)");
+	item[4].addStaticRow(89, 89, "P292", "Scroll of teleport (A)");
+	item[4].addStaticRow(90, 90, "S229", "Scroll of vigorous circleSC (D)");
+	item[4].addStaticRow(91, 91, "D264", "Pipes of the sewers");
+	item[4].addStaticRow(92, 92, "M68",
+			"Amber amulet of vermin, giant stag beetle");
+	item[4].addStaticRow(93, 93, "M157", "Dragon’s draught, brass");
+	item[4].addStaticRow(94, 94, "M157", "Dragon’s draught, white");
+	item[4].addStaticRow(95, 95, "D255", "Dust of illusion");
+	item[4].addStaticRow(96, 96, "P251", "Oil of greater magic weapon +2");
+	item[4].addStaticRow(97, 97, "P251", "Oil of magic vestment +2");
+	item[4].addStaticRow(98, 98, "P203", "Potion of barkskin +5");
+	item[4].addStaticRow(99, 99, "P250", "Potion of greater magic fang +2");
+	item[4].addStaticRow(100, 100, "D257", "Goggles of minute seeing");
+
+	item[5].addStaticRow(01, 01, "M151", "Beetle elixir");
+	item[5].addStaticRow(02, 02, "M161", "Fochlucan bandore");
+	item[5].addStaticRow(03, 03, "M116", "Medal of gallantry");
+	item[5].addStaticRow(04, 04, "M183", "Salve of minor spell resistance");
+	item[5].addStaticRow(05, 05, "M184", "Scrying shard");
+	item[5].addStaticRow(06, 06, "M136", "Snakeblood tooth");
+	item[5].addStaticRow(07, 07, "P251",
+			"Wand of magic missile (CL 9th, 10 charges)");
+	item[5].addStaticRow(08, 08, "M148", "Wyrmfang amulet");
+	item[5].addStaticRow(09, 09, "P296", "Scroll of true seeing (D)");
+	item[5].addStaticRow(10, 10, "M24", "Crystal of adamant armor, lesser");
+	item[5].addStaticRow(11, 11, "M64", "Crystal of adamant weaponry, lesser");
+	item[5].addStaticRow(12, 12, "M71", "Anklet of translocation");
+	item[5].addStaticRow(13, 13, "M150", "Arcane thieves’ tools");
+	item[5].addStaticRow(14, 14, "M193", "Armband of confrontationSP");
+	item[5].addStaticRow(15, 15, "M208", "Badge of valorSP");
+	item[5].addStaticRow(16, 16, "M150", "Bag of boulders");
+	item[5].addStaticRow(17, 17, "M75", "Blighter’s hex-eye");
+	item[5].addStaticRow(18, 18, "M81", "Bracers of quick strike");
+	item[5].addStaticRow(19, 19, "M87", "Cloak of predatory vigor");
+	item[5].addStaticRow(20, 20, "M201", "Cobra strapsSP");
+	item[5].addStaticRow(21, 21, "M158", "Ehlonna’s seed pouchR");
+	item[5].addStaticRow(22, 22, "M215", "Lenses of revelationSP");
+	item[5].addStaticRow(23, 23, "M174", "Rod of frost");
+	item[5].addStaticRow(24, 24, "M175", "Rod of sliding");
+	item[5].addStaticRow(25, 26, "M184", "Sending stones (pair)");
+	item[5].addStaticRow(27, 27, "M186", "Spool of endless rope");
+	item[5].addStaticRow(28, 28, "M197", "Standard of valorSP");
+	item[5].addStaticRow(29, 29, "M138", "Steadfast boots");
+	item[5].addStaticRow(30, 30, "M150", "Aroma of dreams");
+	item[5].addStaticRow(31, 31, "M80", "Bracers of great collision");
+	item[5].addStaticRow(32, 32, "D250", "Brooch of shielding");
+	item[5].addStaticRow(33, 33, "M153", "Camouflage paint");
+	item[5].addStaticRow(34, 34, "M24", "Clasp of energy protection, lesser");
+	item[5].addStaticRow(35, 35, "M24", "Crystal of adaptation, lesser");
+	item[5].addStaticRow(36, 36, "M64", "Crystal of life drinking, lesser");
+	item[5]
+			.addStaticRow(37, 37, "M96",
+					"Empowered spellshard, 1st-level spell");
+	item[5].addStaticRow(38, 38, "M97", "Enduring amulet");
+	item[5].addStaticRow(39, 39, "M160", "Exploding spike");
+	item[5].addStaticRow(40, 40, "M161", "Hammersphere");
+	item[5].addStaticRow(41, 41, "M113", "Inquisitor bracers");
+	item[5].addStaticRow(42, 42, "D226", "Javelin of lightning");
+	item[5].addStaticRow(43, 43, "M196", "Medal of steadfast honorSP");
+	item[5].addStaticRow(44, 44, "M164", "Memento magica, 1st-level spell");
+	item[5].addStaticRow(45, 45, "M72", "Artificer’s monocle");
+	item[5].addStaticRow(46, 46, "M72", "Bear helm");
+	item[5].addStaticRow(47, 47, "M74", "Belt of one mighty blow");
+	item[5].addStaticRow(48, 49, "M77", "Boots of dragonstriding");
+	item[5].addStaticRow(50, 51, "M78", "Boots of the mountain king");
+	item[5].addStaticRow(52, 53, "M190", "Tome of worldly memory");
+	item[5].addStaticRow(54, 55, "M110", "Headband of the lorebinder");
+	item[5].addStaticRow(56, 57, "M173", "Rhino elixir");
+	item[5].addStaticRow(58, 59, "P124", "Full plate, masterwork");
+	item[5].addStaticRow(60, 61, "D263", "Necklace of fireballs type I");
+	item[5].addStaticRow(62, 62, "P205", "Scroll of blade barrier (D)");
+	item[5].addStaticRow(63, 63, "P208", "Scroll of chain lightning (A)");
+	item[5].addStaticRow(64, 64, "S48", "Scroll of cloak of the seaSC (A)");
+	item[5].addStaticRow(65, 67, "P222", "Scroll of disintegrate (A)");
+	item[5].addStaticRow(68, 70, "P223",
+			"Scroll of greater dispel magic (A or D)");
+	item[5].addStaticRow(71, 71, "S80", "Scroll of energy immunitySC (D)");
+	item[5].addStaticRow(72, 72, "P230", "Scroll of find the path (D)");
+	item[5].addStaticRow(73, 73, "S103", "Scroll of ghost trapSC (D)");
+	item[5].addStaticRow(74, 76, "P239", "Scroll of harm (D)");
+	item[5].addStaticRow(77, 80, "P239", "Scroll of heal (D)");
+	item[5].addStaticRow(81, 81, "P277", "Scroll of shadow walk (A)");
+	item[5].addStaticRow(82, 83, "P285", "Scroll of stone to flesh (A)");
+	item[5].addStaticRow(84, 85, "P302", "Scroll of wind walk (D)");
+	item[5].addStaticRow(86, 87, "D255", "Dust of appearance");
+	item[5].addStaticRow(88, 88, "M105", "Githborn talisman");
+	item[5].addStaticRow(89, 89, "D258", "Hat of disguise");
+	item[5].addStaticRow(90, 92, "P251", "Oil of greater magic weapon +3");
+	item[5].addStaticRow(93, 94, "P251", "Oil of magic vestment +3");
+	item[5].addStaticRow(95, 95, "D264", "Pipes of sounding");
+	item[5].addStaticRow(96, 97, "P250", "Potion of greater magic fang +3");
+	item[5].addStaticRow(98, 99, "D265", "Quiver of Ehlonna");
+	item[5].addStaticRow(100, 100, "M186", "Sphere of awakening");
+
+	item[6].addStaticRow(01, 01, "M68", "Adamantine mind blade gauntlets");
+	item[6].addStaticRow(02, 02, "D246", "Amulet of natural armor +1");
+	item[6].addStaticRow(03, 03, "M69", "Amulet of retributive healing");
+	item[6].addStaticRow(04, 04, "M70", "Amulet of teamwork");
+	item[6].addStaticRow(05, 05, "M74", "Belt of theft-healing");
+	item[6].addStaticRow(06, 06, "M76", "Boots of the battle charger");
+	item[6].addStaticRow(07, 07, "M80", "Bracers of the entangling blast");
+	item[6].addStaticRow(08, 08, "M84", "Caduceus bracers");
+	item[6].addStaticRow(09, 09, "M84", "Cape of the viper");
+	item[6].addStaticRow(10, 10, "M212", "Caustic veilSP");
+	item[6].addStaticRow(11, 11, "M64", "Crystal of arcane steel, lesser");
+	item[6].addStaticRow(12, 12, "M93", "Devastation gauntlets");
+	item[6].addStaticRow(13, 13, "M94", "Dimension stride boots");
+	item[6].addStaticRow(14, 14, "M95", "Dragon spirit amulet");
+	item[6].addStaticRow(15, 15, "M95", "Dragon spirit cincture");
+	item[6].addStaticRow(16, 16, "M160", "Field provisions box");
+	item[6].addStaticRow(17, 17, "M101", "Gauntlets of arrow reflection");
+	item[6].addStaticRow(18, 18, "M103", "Gauntlets of extended range");
+	item[6].addStaticRow(19, 19, "M103", "Gauntlets of giantfelling");
+	item[6].addStaticRow(20, 20, "M104", "Gauntlets of throwing");
+	item[6].addStaticRow(21, 21, "M105", "Gloves of fortunate striking");
+	item[6].addStaticRow(22, 22, "M106", "Gloves of lightning");
+	item[6].addStaticRow(23, 23, "M108", "Goggles of lifesight");
+	item[6].addStaticRow(24, 24, "M108", "Goodberry bracelet");
+	item[6].addStaticRow(25, 25, "M108", "Greatreach bracers");
+	item[6].addStaticRow(26, 26, "M109", "Headband of conscious effort");
+	item[6].addStaticRow(27, 27, "M111", "Helm of battle");
+	item[6].addStaticRow(28, 28, "M208", "Helm of tacticsSP");
+	item[6].addStaticRow(29, 29, "D259", "Heward’s handy haversack");
+	item[6].addStaticRow(30, 30, "D259", "Horn of fog");
+	item[6].addStaticRow(31, 31, "M26", "Iron ward diamond, lesser");
+	item[6].addStaticRow(32, 32, "M116", "Mask of sweet air");
+	item[6].addStaticRow(33, 33, "M167", "Orb of environmental adaptation");
+	item[6].addStaticRow(34, 34, "M168", "Pearl of breath crisis");
+	item[6].addStaticRow(35, 35, "M65", "Phoenix ash threat, lesser");
+	item[6].addStaticRow(36, 36, "M120", "Rearguard’s cape");
+	item[6].addStaticRow(37, 37, "M122", "Ring of communication");
+	item[6].addStaticRow(38, 38, "M123", "Ring of floating");
+	item[6].addStaticRow(39, 39, "M124", "Ring of four winds");
+	item[6].addStaticRow(40, 40, "M126", "Ring of piercing spells");
+	item[6].addStaticRow(41, 41, "D232", "Ring of protection +1");
+	item[6].addStaticRow(42, 42, "M122", "Ring of the darkhidden");
+	item[6].addStaticRow(43, 43, "M127", "Ring of silent spells");
+	item[6].addStaticRow(44, 44, "M130", "Rock boots");
+	item[6].addStaticRow(45, 45, "M174", "Rod of grievous wounds");
+	item[6].addStaticRow(46, 46, "M176", "Rod of viscid globs");
+	item[6].addStaticRow(47, 47, "M26", "Rubicund frenzy, lesser");
+	item[6].addStaticRow(48, 48, "M133", "Sepulchral vest");
+	item[6].addStaticRow(49, 49, "M136", "Silkslick belt");
+	item[6].addStaticRow(50, 50, "M185", "Slashing sand");
+	item[6].addStaticRow(51, 51, "M138", "Spellsink scarab");
+	item[6].addStaticRow(52, 52, "M143", "Torc of displacement");
+	item[6].addStaticRow(53, 53, "M146", "Vest of defense");
+	item[6].addStaticRow(54, 60, "M282", "+1 weapon");
+	item[6].addStaticRow(61, 61, "M69", "Amulet of incarnum shielding");
+	item[6].addStaticRow(62, 62, "M97", "Enemy spirit pouch");
+	item[6].addStaticRow(63, 63, "M163", "Mac-Fuirmidh cithern");
+	item[6].addStaticRow(64, 64, "M143", "Third eye surge");
+	item[6].addStaticRow(65, 65, "S176", "Scroll of revivifySC (D)");
+	item[6].addStaticRow(66, 66, "M21", "Shield of mercy");
+	item[6].addStaticRow(67, 67, "M105", "Gloves of agile striking");
+	item[6].addStaticRow(68, 68, "D232", "Ring of feather falling");
+	item[6].addStaticRow(69, 69, "D255", "Elemental gem");
+	item[6].addStaticRow(70, 70, "M162", "Healing salve");
+	item[6].addStaticRow(71, 71, "P207", "Wand of call lightning (10 charges)");
+	item[6].addStaticRow(72, 72, "P216",
+			"Wand of cure serious wounds (10 charges)");
+	item[6].addStaticRow(73, 73, "P223", "Wand of dispel magic (10 charges)");
+	item[6].addStaticRow(74, 74, "P223", "Wand of displacement (10 charges)");
+	item[6].addStaticRow(75, 75, "P231", "Wand of fireball (10 charges)");
+	item[6].addStaticRow(76, 76, "P232", "Wand of fly (10 charges)");
+	item[6].addStaticRow(77, 77, "P239", "Wand of haste (10 charges)");
+	item[6].addStaticRow(78, 78, "P245",
+			"Wand of invisibility sphere (10 charges)");
+	item[6].addStaticRow(79, 79, "P248", "Wand of lightning bolt (10 charges)");
+	item[6].addStaticRow(80, 80, "S229",
+			"Wand of mass lesser vigorSC (10 charges)");
+	item[6].addStaticRow(81, 81, "S173",
+			"Wand of repair serious damageSC (10 charges)");
+	item[6].addStaticRow(82, 82, "S229", "Wand of vigorSC (10 charges)");
+	item[6].addStaticRow(83, 83, "P203", "Scroll of banishment (A)");
+	item[6].addStaticRow(84, 84, "S80", "Scroll of energy immunitySC (A)");
+	item[6].addStaticRow(85, 85, "P227", "Scroll of ethereal jaunt (A or D)");
+	item[6].addStaticRow(86, 86, "P245", "Scroll of invisibility, mass (A)");
+	item[6].addStaticRow(87, 87, "P256",
+			"Scroll of Mordenkainen’s magnificent mansion (A)");
+	item[6].addStaticRow(88, 88, "P270", "Scroll of regenerate (D)");
+	item[6].addStaticRow(89, 89, "P282", "Scroll of spell turning (A)");
+	item[6].addStaticRow(90, 90, "P289", "Scroll of sunbeam (D)");
+	item[6].addStaticRow(91, 91, "P293", "Scroll of teleport, greater (A)");
+	item[6].addStaticRow(92, 92, "D228", "Slaying arrow");
+	item[6].addStaticRow(93, 93, "M70", "Amulet of tears");
+	item[6].addStaticRow(94, 94, "M80", "Bracers of arcane freedom");
+	item[6].addStaticRow(95, 95, "M81", "Bracers of opportunity");
+	item[6].addStaticRow(96, 96, "M83", "Brute ring");
+	item[6].addStaticRow(97, 97, "M89", "Cloak of weaponry");
+	item[6].addStaticRow(98, 98, "M174", "Rod of fumbling");
+	item[6].addStaticRow(99, 99, "M121", "Repelling gauntlets");
+	item[6].addStaticRow(100, 100, "M131", "Sandals of sprinting");
+
+	item[7].addStaticRow(01, 01, "S174", "Scroll of restoration, massSC (D)");
+	item[7].addStaticRow(02, 02, "M157", "Dragon’s draught, black");
+	item[7].addStaticRow(03, 03, "M157", "Dragon’s draught, copper");
+	item[7].addStaticRow(04, 04, "P251", "Oil of greater magic weapon +4");
+	item[7].addStaticRow(05, 05, "P251", "Oil of magic vestment +4");
+	item[7].addStaticRow(06, 06, "P250", "Potion of greater magic fang +4");
+	item[7].addStaticRow(07, 07, "D265", "Robe of bones");
+	item[7].addStaticRow(08, 08, "P175", "Scroll of revenanceSC (A)");
+	item[7].addStaticRow(09, 09, "D266", "Sovereign glue");
+	item[7].addStaticRow(10, 10, "D248", "Bag of holding type I");
+	item[7].addStaticRow(11, 11, "D250", "Boots of elvenkind");
+	item[7].addStaticRow(12, 12, "M77", "Boots of jumping");
+	item[7].addStaticRow(13, 13, "D250", "Boots of the winterlands");
+	item[7].addStaticRow(14, 14, "D251", "Candle of truth");
+	item[7].addStaticRow(15, 15, "M153", "Censer of the last breathR");
+	item[7].addStaticRow(16, 16, "D253", "Cloak of elvenkind");
+	item[7].addStaticRow(17, 17, "M87", "Cloak of quills");
+	item[7].addStaticRow(18, 18, "M90", "Counterstrike bracers");
+	item[7].addStaticRow(19, 19, "M155", "Crystal anchor of alertness");
+	item[7].addStaticRow(20, 20, "M91", "Crystal mask of knowledge");
+	item[7].addStaticRow(21, 21, "M91", "Crystal mask of languages");
+	item[7].addStaticRow(22, 22, "M25", "Crystal of arrow deflection, lesser");
+	item[7].addStaticRow(23, 23, "D256", "Eyes of the eagle");
+	item[7].addStaticRow(24, 24, "M105", "Gloves of eldritch admixture");
+	item[7].addStaticRow(25, 25, "M108", "Goggles of foefinding");
+	item[7].addStaticRow(26, 26, "D266", "Golembane scarab");
+	item[7].addStaticRow(27, 27, "M162", "Icy strand of the north");
+	item[7].addStaticRow(28, 28, "D230", "Ring of climbing");
+	item[7].addStaticRow(29, 29, "D232", "Ring of jumping");
+	item[7].addStaticRow(30, 30, "D233", "Ring of sustenance");
+	item[7].addStaticRow(31, 31, "D233", "Ring of swimming");
+	item[7].addStaticRow(32, 32, "M138", "Spellsight spectacles");
+	item[7].addStaticRow(33, 33, "M141", "Third eye dampening");
+	item[7].addStaticRow(34, 34, "M141", "Third eye expose");
+	item[7].addStaticRow(35, 35, "M144", "Tunic of steady spellcasting");
+	item[7].addStaticRow(36, 36, "M145", "Vanisher cloak");
+	item[7].addStaticRow(37, 37, "M202", "Bands of blood rageSP");
+	item[7].addStaticRow(38, 38, "M141", "Third eye freedom");
+	item[7].addStaticRow(39, 39, "M64", "Crystal of energy assault, lesser");
+	item[7].addStaticRow(40, 40, "M26", "Crystal of stamina, greater");
+	item[7].addStaticRow(41, 41, "M165", "Metamagic rod, Substitution, lesser");
+	item[7].addStaticRow(42, 42, "D263", "Necklace of fireballs type II");
+	item[7].addStaticRow(43, 43, "M201", "Panther maskSP");
+	item[7].addStaticRow(44, 44, "D267", "Stone of alarm");
+	item[7].addStaticRow(45, 45, "P275",
+			"Wand of searing light (CL 6th, 10 charges)");
+	item[7].addStaticRow(46, 46, "M149", "Aberrant sphere");
+	item[7].addStaticRow(47, 47, "M77", "Boots of desperation");
+	item[7].addStaticRow(48, 48, "M162", "Infinite scrollcase");
+	item[7].addStaticRow(49, 49, "M53", "Meteoric knife");
+	item[7].addStaticRow(50, 50, "D248", "Bag of tricks, rust");
+	item[7].addStaticRow(51, 51, "D248", "Bead of force");
+	item[7].addStaticRow(52, 52, "M73", "Belt of growth");
+	item[7].addStaticRow(53, 53, "M83", "Burnoose of 1,001 thorns");
+	item[7].addStaticRow(54, 54, "D252", "Chime of opening");
+	item[7].addStaticRow(55, 55, "M87", "Circlet of solace");
+	item[7].addStaticRow(56, 56, "M24", "Clasp of energy protection, greater");
+	item[7].addStaticRow(57, 57, "M90", "Contact medallion");
+	item[7].addStaticRow(58, 58, "M215", "Cord of favorSP");
+	item[7].addStaticRow(59, 59, "M90", "Corsair’s eye patch");
+	item[7].addStaticRow(60, 60, "M24", "Crystal of adaptation, greater");
+	item[7].addStaticRow(61, 61, "M25", "Crystal of aquatic action, greater");
+	item[7].addStaticRow(62, 62, "M25", "Crystal of glancing blows, lesser");
+	item[7].addStaticRow(63, 63, "M26", "Crystal of screening, greater");
+	item[7].addStaticRow(64, 64, "M65", "Crystal of security, greater");
+	item[7].addStaticRow(65, 65, "M65", "Demolition crystal, lesser");
+	item[7]
+			.addStaticRow(66, 66, "M96",
+					"Empowered spellshard, 2nd-level spell");
+	item[7].addStaticRow(67, 67, "M97", "Essentia helm");
+	item[7].addStaticRow(68, 68, "M65", "Fiendslayer crystal, lesser");
+	item[7].addStaticRow(69, 69, "M106", "Gloves of manual prowess");
+	item[7].addStaticRow(70, 70, "M107", "Gloves of object reading");
+	item[7].addStaticRow(71, 71, "M110", "Heartseeking amulet");
+	item[7].addStaticRow(72, 72, "D260", "Horseshoes of speed");
+	item[7].addStaticRow(73, 73, "D236", "Metamagic rod, Enlarge, lesser");
+	item[7].addStaticRow(74, 74, "D236", "Metamagic rod, Extend, lesser");
+	item[7].addStaticRow(75, 75, "M165", "Metamagic rod, Sculpting, lesser");
+	item[7].addStaticRow(76, 76, "D236", "Metamagic rod, Silent, lesser");
+	item[7].addStaticRow(77, 77, "P251", "Oil of greater magic weapon +5");
+	item[7].addStaticRow(78, 78, "P251", "Oil of magic vestment +5");
+	item[7].addStaticRow(79, 79, "P250", "Potion of greater magic fang +5");
+	item[7].addStaticRow(80, 80, "D266", "Rope of climbing");
+	item[7].addStaticRow(81, 81, "S39", "Scroll of brilliant auraSC (D)");
+	item[7].addStaticRow(82, 82, "P215",
+			"Scroll of cure critical wounds, mass (D)");
+	item[7].addStaticRow(83, 83, "P217", "Scroll of death ward, massSC (D)");
+	item[7].addStaticRow(84, 84, "P221", "Scroll of dimensional lock (A or D)");
+	item[7].addStaticRow(85, 85, "P222", "Scroll of discern location (D)");
+	item[7].addStaticRow(86, 86, "P225", "Scroll of earthquake (D)");
+	item[7].addStaticRow(87, 87, "P231", "Scroll of fire storm (D)");
+	item[7].addStaticRow(88, 88, "S130", "Scroll of ghostformSC (A)");
+	item[7].addStaticRow(89, 89, "P242", "Scroll of horrid wilting (A)");
+	item[7].addStaticRow(90, 90, "S125",
+			"Scroll of invisibility, superiorSC (A)");
+	item[7].addStaticRow(91, 91, "P245", "Scroll of iron body (A)");
+	item[7].addStaticRow(92, 92, "P253", "Scroll of mind blank (A)");
+	item[7].addStaticRow(93, 93, "P262", "Scroll of greater plane shift (A)");
+	item[7].addStaticRow(94, 94, "P262", "Scroll of polar ray (A)");
+	item[7].addStaticRow(95, 95, "P289", "Scroll of sunburst (D)");
+	item[7].addStaticRow(96, 96, "M136", "Soulsmite gauntlets");
+	item[7].addStaticRow(97, 97, "M188", "Talisman of undead mastery");
+	item[7].addStaticRow(98, 98, "M141", "Third eye clarity");
+	item[7].addStaticRow(99, 99, "D226", "Adamantine dagger");
+	item[7].addStaticRow(100, 100, "D226", "Adamantine battleaxe");
+
+	item[8].addStaticRow(01, 01, "M82", "Brooch of avoidance");
+	item[8].addStaticRow(02, 02, "D221", "Caster’s shield");
+	item[8].addStaticRow(03, 03, "M154", "Chime of harmonic agony");
+	item[8].addStaticRow(04, 04, "M107", "Gloves of the uldra savant");
+	item[8].addStaticRow(05, 05, "M112", "Hexbands");
+	item[8].addStaticRow(06, 06, "M167", "Orb of mental renewal");
+	item[8].addStaticRow(07, 07, "M168", "Pipes of frenzied revelryR");
+	item[8].addStaticRow(08, 08, "M119", "Rapidstrike bracers");
+	item[8].addStaticRow(09, 09, "M173", "Rod of bodily restoration");
+	item[8].addStaticRow(10, 10, "M187", "Summoner’s totem");
+	item[8].addStaticRow(11, 11, "M145", "Vanguard treads");
+	item[8].addStaticRow(12, 12, "M80", "Bracers of the blast barrier");
+	item[8].addStaticRow(13, 13, "M98", "Eyes of expanded vision");
+	item[8].addStaticRow(14, 14, "M100", "Formless vest");
+	item[8].addStaticRow(15, 15, "M111", "Hellcat gauntlets");
+	item[8].addStaticRow(16, 16, "M119", "Rags of restraint");
+	item[8].addStaticRow(17, 17, "M136", "Skirmisher boots");
+	item[8].addStaticRow(18, 18, "M156", "Domain draught");
+	item[8].addStaticRow(19, 19, "M115", "Mask of blood");
+	item[8].addStaticRow(20, 20, "M120", "Reins of ascension");
+	item[8].addStaticRow(21, 21, "M137", "Spellmight bracers");
+	item[8].addStaticRow(22, 22, "M187", "Survival pouch");
+	item[8].addStaticRow(23, 23, "M143", "Torc of the titans");
+	item[8].addStaticRow(24, 24, "D220", "Dragonhide plate");
+	item[8].addStaticRow(25, 25, "M24", "Crystal of adamant armor, greater");
+	item[8].addStaticRow(26, 26, "M64", "Crystal of adamant weaponry, greater");
+	item[8].addStaticRow(27, 27, "M214", "Badge of glorySP");
+	item[8].addStaticRow(28, 28, "M48", "Bow of the wintermoonR");
+	item[8].addStaticRow(29, 29, "M109", "Hair shirt of suffering");
+	item[8].addStaticRow(30, 30, "M132", "Scout’s headband");
+	item[8].addStaticRow(31, 31, "M20", "Mithralmist shirt");
+	item[8].addStaticRow(32, 32, "M151", "Bag of flames");
+	item[8].addStaticRow(33, 33, "M195", "Crystal of alacritySP");
+	item[8].addStaticRow(34, 34, "M157", "Dragon’s draught, bronze");
+	item[8].addStaticRow(35, 35, "M157", "Dragon’s draught, green");
+	item[8].addStaticRow(36, 36, "D255", "Dust of disappearance");
+	item[8].addStaticRow(37, 37, "M100", "Finned gauntlets");
+	item[8].addStaticRow(38, 38, "D261", "Lens of detection");
+	item[8].addStaticRow(39, 39, "M114", "Lockpicking ring");
+	item[8].addStaticRow(40, 40, "M193", "Mask of masterySP");
+	item[8].addStaticRow(41, 41, "M119", "Quicksilver boots");
+	item[8].addStaticRow(42, 42, "M172", "Radiant sphere");
+	item[8].addStaticRow(43, 43, "M210", "Raptor’s maskSP");
+	item[8].addStaticRow(44, 44, "M126", "Ring of mystic healing");
+	item[8].addStaticRow(45, 45, "M173", "Rod of escape");
+	item[8].addStaticRow(46, 46, "M185", "Shard of the sunR");
+	item[8].addStaticRow(47, 47, "M185", "Sleeping spike");
+	item[8].addStaticRow(48, 48, "M144", "True strike gauntlets");
+	item[8].addStaticRow(49, 49, "M75", "Belt of ultimate athleticism");
+	item[8].addStaticRow(50, 50, "M159", "Enveloping pitR");
+	item[8].addStaticRow(51, 51, "M165", "Mirror of suggestion");
+	item[8].addStaticRow(52, 52, "M117", "Mithral bells");
+	item[8].addStaticRow(53, 53, "M121", "Rending gauntlets");
+	item[8].addStaticRow(54, 54, "M133", "Shadow maniple");
+	item[8].addStaticRow(55, 55, "D256",
+			"Figurine of wondrous power, silver raven");
+	item[8].addStaticRow(56, 56, "P233", "Scroll of freedom (A)");
+	item[8].addStaticRow(57, 57, "P239", "Scroll of heal, mass (D)");
+	item[8].addStaticRow(58, 58, "D246", "Amulet of health +2");
+	item[8].addStaticRow(59, 59, "M79", "Boots of the unending journeyR");
+	item[8].addStaticRow(60, 60, "M79", "Bracers of accuracy");
+	item[8].addStaticRow(61, 61, "D250", "Bracers of armor +2");
+	item[8].addStaticRow(62, 62, "M81", "Bracers of repulsion");
+	item[8].addStaticRow(63, 63, "D253", "Cloak of Charisma +2");
+	item[8].addStaticRow(64, 64, "D253", "Cloak of resistance +2");
+	item[8].addStaticRow(65, 65, "M154", "Cognizance crystal, 3 points");
+	item[8].addStaticRow(66, 66, "M25", "Crystal of mind cloaking, lesser");
+	item[8].addStaticRow(67, 67, "M65", "Crystal of return, greater");
+	item[8].addStaticRow(68, 68, "M94", "Dragon mask");
+	item[8].addStaticRow(69, 69, "M216", "Gauntlets of ghost fightingSP");
+	item[8].addStaticRow(70, 70, "D257", "Gauntlets of ogre power");
+	item[8].addStaticRow(71, 71, "M103", "Gauntlets of the talonR");
+	item[8].addStaticRow(72, 72, "D257", "Gloves of arrow snaring");
+	item[8].addStaticRow(73, 73, "D257", "Gloves of Dexterity +2");
+	item[8].addStaticRow(74, 74, "M161", "Glyph seal, greater");
+	item[8].addStaticRow(75, 75, "M205", "Goggles of the golden sunSP");
+	item[8].addStaticRow(76, 76, "D258", "Headband of intellect +2");
+	item[8].addStaticRow(77, 77, "D260", "Ioun stone, clear spindle");
+	item[8].addStaticRow(78, 78, "D261", "Keoghtom’s ointment");
+	item[8].addStaticRow(79, 79, "M115", "Mask of mental armor");
+	item[8].addStaticRow(80, 80, "M200", "Mask of the tigerSP");
+	item[8].addStaticRow(81, 81, "M118", "Necklace of warning");
+	item[8].addStaticRow(82, 82, "D263", "Nolzur’s marvelous pigments");
+	item[8].addStaticRow(83, 83, "D263", "Pearl of power, 2nd-level spell");
+	item[8].addStaticRow(84, 84, "M118", "Pendant of joy");
+	item[8].addStaticRow(85, 85, "D263", "Periapt of Wisdom +2");
+	item[8].addStaticRow(86, 86, "D230", "Ring of counterspells");
+	item[8].addStaticRow(87, 87, "M175", "Rod of silence");
+	item[8].addStaticRow(88, 88, "M175", "Rod of sure striking");
+	item[8].addStaticRow(89, 89, "M133", "Scry shroud");
+	item[8].addStaticRow(90, 90, "D267", "Stone salve");
+	item[8].addStaticRow(91, 91, "M206", "Stormfire ringSP");
+	item[8].addStaticRow(92, 92, "M139", "Surcoat of valor");
+	item[8].addStaticRow(93, 93, "M143", "Torc of power preservation");
+	item[8].addStaticRow(94, 94, "M213", "Veil of stormsSP");
+	item[8].addStaticRow(95, 95, "M147", "Vest of resistance +2");
+	item[8].addStaticRow(96, 96, "M190", "Wilding clasp");
+	item[8].addStaticRow(97, 100, "M282", "+2 armor/shield");
+
+	item[9].addStaticRow(01, 01, "D228", "Slaying arrow, greater");
+	item[9].addStaticRow(02, 02, "M72", "Armbands of might");
+	item[9].addStaticRow(03, 03, "M156", "Doss lute");
+	item[9].addStaticRow(04, 04, "M49", "Crystal echoblade");
+	item[9].addStaticRow(05, 05, "D220", "Elven chain");
+	item[9].addStaticRow(06, 06, "M16", "Barricade buckler");
+	item[9].addStaticRow(07, 07, "M87", "Circlet of wild surging");
+	item[9].addStaticRow(08, 09, "P215",
+			"Wand of cure critical wounds (10 charges)");
+	item[9].addStaticRow(10, 10, "P217", "Wand of death ward (10 charges)");
+	item[9].addStaticRow(11, 11, "P233",
+			"Wand of freedom of movement (10 charges)");
+	item[9].addStaticRow(12, 12, "P245",
+			"Wand of greater invisibility (10 charges)");
+	item[9].addStaticRow(13, 13, "P243", "Wand of ice storm (10 charges)");
+	item[9].addStaticRow(14, 14, "S173",
+			"Wand of repair critical damageSC (10 charges)");
+	item[9].addStaticRow(15, 15, "M148", "White cloak of the spider");
+	item[9].addStaticRow(16, 16, "D228", "Shatterspike");
+	item[9].addStaticRow(17, 17, "M53", "Living chain");
+	item[9].addStaticRow(18, 18, "D2263", "Necklace of fireballs type III");
+	item[9].addStaticRow(19, 19, "M187", "Strand of lightning");
+	item[9].addStaticRow(20, 20, "M183", "Sacred scabbard");
+	item[9].addStaticRow(21, 21, "M188", "Thorn pouch");
+	item[9].addStaticRow(22, 22, "P206", "Eternal wand of blur");
+	item[9]
+			.addStaticRow(23, 23, "P216",
+					"Eternal wand of cure moderate wounds");
+	item[9].addStaticRow(24, 24, "P245", "Eternal wand of invisibility");
+	item[9].addStaticRow(25, 25, "P254", "Eternal wand of mirror image");
+	item[9].addStaticRow(26, 26, "S173",
+			"Eternal wand of repair moderate damageSC");
+	item[9].addStaticRow(27, 27, "P275", "Eternal wand of see invisibility");
+	item[9].addStaticRow(28, 28, "S193", "Eternal wand of snake’s swiftnessSC");
+	item[9].addStaticRow(29, 29, "P301", "Eternal wand of web");
+	item[9].addStaticRow(30, 30, "P272", "Scroll of greater restoration (D)");
+	item[9].addStaticRow(31, 31, "M150", "Aroma of curdled death");
+	item[9].addStaticRow(32, 32, "M203", "Barbs of retributionSP");
+	item[9].addStaticRow(33, 33, "M73", "Belt of the championR");
+	item[9].addStaticRow(34, 34, "D252", "Circlet of persuasion");
+	item[9].addStaticRow(35, 35, "M157", "Dragon’s draught, blue");
+	item[9].addStaticRow(36, 36, "M157", "Dragon’s draught, silver");
+	item[9].addStaticRow(37, 37, "M104", "Gem of the glitterdepthR");
+	item[9].addStaticRow(38, 38, "M107", "Goggles of day");
+	item[9].addStaticRow(39, 39, "M111", "Helm of the purple plumeR");
+	item[9].addStaticRow(40, 40, "M115", "Mask of lies");
+	item[9].addStaticRow(41, 41, "M128", "Ring of vengeance");
+	item[9].addStaticRow(42, 43, "P223",
+			"Wand of dispel magic (CL 10th, 10 charges)");
+	item[9].addStaticRow(44, 45, "P231",
+			"Wand of fireball (CL 10th, 10 charges)");
+	item[9].addStaticRow(46, 47, "P248",
+			"Wand of lightning bolt (CL 10th, 10 charges)");
+	item[9].addStaticRow(48, 48, "P275",
+			"Wand of searing light (CL 10th, 10 charges)");
+	item[9].addStaticRow(49, 49, "M22", "Shield of the severed handR");
+	item[9].addStaticRow(50, 50, "M48", "Bowstaff");
+	item[9].addStaticRow(51, 51, "M168", "Personal oasis");
+	item[9].addStaticRow(52, 52, "M47", "Bladed crossbow");
+	item[9].addStaticRow(53, 53, "D266", "Slippers of spider climbing");
+	item[9].addStaticRow(54, 54, "P293", "Scroll of teleportation circle (A)");
+	item[9].addStaticRow(55, 55, "D260", "Incense of meditation");
+	item[9].addStaticRow(56, 56, "M69", "Amulet of fortune prevailing");
+	item[9].addStaticRow(57, 57, "D248", "Bag of holding type II");
+	item[9].addStaticRow(58, 58, "M74", "Belt of hidden pouches");
+	item[9].addStaticRow(59, 59, "M75", "Bolt shirt");
+	item[9].addStaticRow(60, 60, "M78", "Boots of swift passage");
+	item[9].addStaticRow(61, 61, "M79", "Boots of tremorsense");
+	item[9].addStaticRow(62, 62, "M194", "Bracers of aerial combatSP");
+	item[9].addStaticRow(63, 63, "D250", "Bracers of archery, lesser");
+	item[9].addStaticRow(64, 64, "M198", "Bracers of blinding strikeSP");
+	item[9].addStaticRow(65, 65, "M82", "Bracers of retaliation");
+	item[9].addStaticRow(66, 66, "M86", "Circlet of mages");
+	item[9].addStaticRow(67, 67, "M88", "Cloak of soulbound resistance");
+	item[9].addStaticRow(68, 68, "M89", "Collar of healing");
+	item[9].addStaticRow(69, 69, "M90", "Crimson dragonhide bracers");
+	item[9].addStaticRow(70, 70, "M25", "Crystal of arrow deflection, greater");
+	item[9].addStaticRow(71, 71, "M25", "Crystal of glancing blows, greater");
+	item[9].addStaticRow(72, 72, "M25", "Crystal of lifekeeping, greater");
+	item[9].addStaticRow(73, 73, "M66", "Truedeath crystal, lesser");
+	item[9].addStaticRow(74, 74, "M93", "Deathstrike bracers");
+	item[9].addStaticRow(75, 75, "M156", "Diamondskin decanter");
+	item[9].addStaticRow(76, 76, "M95", "Dragonscale cloakR");
+	item[9].addStaticRow(77, 77, "M65", "Fiendslayer crystal, greater");
+	item[9].addStaticRow(78, 78, "M99", "Fiery tunic");
+	item[9].addStaticRow(79, 79, "M102", "Gauntlets of eldritch energy");
+	item[9].addStaticRow(80, 80, "M103", "Gauntlets of lassitude");
+	item[9].addStaticRow(81, 81, "M104", "Ghost shroud");
+	item[9].addStaticRow(82, 82, "M109", "Hand of the oak father");
+	item[9].addStaticRow(83, 83, "M111", "Helm of gazes");
+	item[9].addStaticRow(84, 84, "M208", "Horn of resilienceSP");
+	item[9].addStaticRow(85, 85, "D235", "Immovable rod");
+	item[9].addStaticRow(86, 86, "D260", "Ioun stone, dusty rose prism");
+	item[9].addStaticRow(87, 87, "M113", "Ki straps");
+	item[9].addStaticRow(88, 88, "M116", "Mask of silent trickery");
+	item[9].addStaticRow(89, 89, "M166", "Noble pennon");
+	item[9].addStaticRow(90, 90, "M167", "Orb of blinding");
+	item[9].addStaticRow(91, 91, "M119", "Platinum helmR");
+	item[9].addStaticRow(92, 92, "M169", "Portable foxhole");
+	item[9].addStaticRow(93, 93, "M120", "Reciprocal bracers");
+	item[9].addStaticRow(94, 94, "M66", "Revelation crystal, greater");
+	item[9].addStaticRow(95, 95, "M122", "Ring of arming");
+	item[9].addStaticRow(96, 96, "M125", "Ring of master artifice, lesser");
+	item[9].addStaticRow(97, 97, "M60", "Spider fang");
+	item[9].addStaticRow(98, 98, "M144", "Vampire torc");
+	item[9].addStaticRow(99, 99, "M147", "Vestments of ebonsilkR");
+	item[9].addStaticRow(100, 100, "M66", "Witchlight reservoir");
+
+	item[10].addStaticRow(01, 01, "M56", "Raptor arrowR");
+	item[10].addStaticRow(02, 02, "M123", "Ring of the forcewall");
+	item[10].addStaticRow(03, 03, "M101", "Gauntlets of the blood-lordR");
+	item[10].addStaticRow(04, 04, "M52", "Hooked hammer of the hearthfireR");
+	item[10].addStaticRow(05, 05, "D220", "Rhino hide");
+	item[10].addStaticRow(06, 06, "D259",
+			"Helm of comprehend languages and read magic");
+	item[10].addStaticRow(07, 07, "M164", "Map of unseen landsR");
+	item[10].addStaticRow(08, 08, "D268", "Vest of escape");
+	item[10].addStaticRow(09, 09, "M52", "Galeb duhr hammer");
+	item[10].addStaticRow(10, 10, "M46", "Assassin whip");
+	item[10].addStaticRow(11, 11, "M62", "Trident of serenity");
+	item[10].addStaticRow(12, 12, "M53", "Manticore greatsword");
+	item[10].addStaticRow(13, 13, "D256", "Eversmoking bottle");
+	item[10].addStaticRow(14, 14, "D262", "Murlynd’s spoon");
+	item[10].addStaticRow(15, 15, "D263", "Necklace of fireballs type IV");
+	item[10].addStaticRow(16, 16, "D250", "Boots of striding and springing");
+	item[10].addStaticRow(17, 17, "M157", "Dragon’s draught, gold");
+	item[10].addStaticRow(18, 18, "M157", "Dragon’s draught, red");
+	item[10].addStaticRow(19, 19, "M99", "Eyes of truth");
+	item[10].addStaticRow(20, 20, "M176", "Rope of climbing, superior");
+	item[10].addStaticRow(21, 21, "M140", "Tabard of the great crusadeR");
+	item[10].addStaticRow(22, 22, "M189", "Tome of ancient loreR");
+	item[10].addStaticRow(23, 23, "D268", "Wind fan");
+	item[10].addStaticRow(24, 24, "M21", "Shield of the resoluteR");
+	item[10].addStaticRow(25, 25, "D221", "Spined shield");
+	item[10].addStaticRow(26, 26, "M111", "Helm of glorious recovery");
+	item[10].addStaticRow(27, 27, "M111", "Helm of heroes");
+	item[10].addStaticRow(28, 28, "M60", "Staff of the unyielding oakR");
+	item[10].addStaticRow(29, 29, "M199", "Claw glovesSP");
+	item[10].addStaticRow(30, 30, "D263", "Necklace of fireballs type V");
+	item[10].addStaticRow(31, 31, "M68", "Amulet of emergency healing");
+	item[10].addStaticRow(32, 32, "D246", "Amulet of mighty fists +1");
+	item[10].addStaticRow(33, 33, "M71", "Amulet of wordtwisting");
+	item[10].addStaticRow(34, 34, "M74", "Belt of priestly might");
+	item[10].addStaticRow(35, 35, "M76", "Boots of big stepping");
+	item[10].addStaticRow(36, 36, "M78", "Boots of sidestepping");
+	item[10].addStaticRow(37, 37, "M88", "Cloak of the salamander");
+	item[10].addStaticRow(38, 38, "M155", "Conduit rod");
+	item[10].addStaticRow(39, 39, "M155", "Cornucopia of the needfulR");
+	item[10].addStaticRow(40, 40, "M64", "Crystal of arcane steel, greater");
+	item[10].addStaticRow(41, 41, "M64", "Crystal of life drinking, greater");
+	item[10].addStaticRow(42, 42, "M93", "Deathguardian bracers");
+	item[10].addStaticRow(43, 43, "M96",
+			"Empowered spellshard, 3rd-level spell");
+	item[10].addStaticRow(44, 44, "M97", "Executioner’s hoodR");
+	item[10].addStaticRow(45, 45, "M99", "Farspeaking amulet");
+	item[10].addStaticRow(46, 46, "M104", "Gauntlets of weaponry arcane");
+	item[10].addStaticRow(47, 47, "M161", "Globe of sunlight");
+	item[10].addStaticRow(48, 48, "M109", "Gwaeron’s boots");
+	item[10].addStaticRow(49, 49, "D260", "Horseshoes of a zephyr");
+	item[10].addStaticRow(50, 50, "M164", "Memento magica, 2nd-level spell");
+	item[10].addStaticRow(51, 51, "M205", "Periapt of the sullen seaSP");
+	item[10].addStaticRow(52, 52, "M64", "Crystal of energy assault, greater");
+	item[10].addStaticRow(53, 53, "M65", "Demolition crystal, greater");
+	item[10].addStaticRow(54, 54, "M65", "Phoenix ash threat, greater");
+	item[10].addStaticRow(55, 55, "D264", "Pipes of haunting");
+	item[10].addStaticRow(56, 56, "M169", "Psychoactive skin of the celestial");
+	item[10].addStaticRow(57, 57, "M170",
+			"Psychoactive skin of ectoplasmic armor");
+	item[10].addStaticRow(58, 58, "M170", "Psychoactive skin of the fiend");
+	item[10].addStaticRow(59, 59, "M121", "Ring of adamantine touch");
+	item[10].addStaticRow(60, 60, "M123", "Ring of essentia");
+	item[10].addStaticRow(61, 61, "M127", "Ring of thunderclaps");
+	item[10].addStaticRow(62, 62, "M128", "Ring of water breathing");
+	item[10].addStaticRow(63, 63, "M58", "Rod of surprises");
+	item[10].addStaticRow(64, 64, "M175", "Rod of transposition");
+	item[10].addStaticRow(65, 65, "M26", "Rubicund frenzy, greater");
+	item[10].addStaticRow(66, 66, "M184", "Shackles of silence");
+	item[10].addStaticRow(67, 67, "M216", "Shirt of wraith stalkingSP");
+	item[10].addStaticRow(68, 68, "M59", "Spectral dagger");
+	item[10].addStaticRow(69, 69, "M139", "Strongarm bracers");
+	item[10].addStaticRow(70, 70, "M140", "Tabard of the disembodiedR");
+	item[10].addStaticRow(71, 71, "M143", "Torc of heroic sacrifice");
+	item[10].addStaticRow(72, 72, "M144", "Toxic gloves");
+	item[10].addStaticRow(73, 73, "M144", "Transposer cloak");
+	item[10].addStaticRow(74, 74, "M144", "Unicorn pendant");
+	item[10].addStaticRow(75, 77, "P268", "Scroll of raise dead (D)");
+	item[10].addStaticRow(78, 78, "M196", "Shield of vigorSP");
+	item[10].addStaticRow(79, 79, "M24", "Wrapped tower");
+	item[10].addStaticRow(80, 80, "M136", "Skull plaque");
+	item[10].addStaticRow(81, 81, "D257", "Gloves of swimming and climbing");
+	item[10].addStaticRow(82, 82, "D248", "Bag of tricks, tan");
+	item[10].addStaticRow(83, 83, "M101", "Gauntlets of the blazing arc");
+	item[10].addStaticRow(84, 84, "M63", "Whip of webs");
+	item[10].addStaticRow(85, 85, "M50", "Dagger of defiance");
+	item[10].addStaticRow(86, 86, "M201", "Scorpion kamaSP");
+	item[10].addStaticRow(87, 87, "M63", "Viperblade");
+	item[10].addStaticRow(88, 88, "M50", "Death spike");
+	item[10].addStaticRow(89, 89, "M60", "Stonereaver");
+	item[10].addStaticRow(90, 90, "M61", "Swordbow, light");
+	item[10].addStaticRow(91, 91, "M61", "Swordbow");
+	item[10].addStaticRow(92, 92, "D252", "Circlet of blasting, minor");
+	item[10].addStaticRow(93, 93, "M101", "Gauntlet of infinite blades");
+	item[10].addStaticRow(94, 94, "M108", "Greater piwafwi");
+	item[10].addStaticRow(95, 95, "M193", "Helm of wounding sightSP");
+	item[10].addStaticRow(96, 96, "D259", "Horn of goodness/evil");
+	item[10].addStaticRow(97, 97, "M117", "Monocle of perusal");
+	item[10].addStaticRow(98, 98, "M118", "Phoenix helm");
+	item[10].addStaticRow(99, 99, "M215", "Phylactery of virtueSP");
+	item[10].addStaticRow(100, 100, "M130", "Robe of retaliation");
+
+	item[11].addStaticRow(01, 01, "M192", "Gauntlets of destructionSP");
+	item[11].addStaticRow(02, 03, "P284", "Wand of stoneskin (10 charges)");
+	item[11].addStaticRow(04, 04, "M61", "Swordbow, great");
+	item[11].addStaticRow(05, 05, "M78", "Boots of skating");
+	item[11].addStaticRow(06, 06, "M194", "Gloves of endless javelinsSP");
+	item[11].addStaticRow(07, 07, "M105", "Gloves of flame");
+	item[11].addStaticRow(08, 08, "D266", "Robe of useful items");
+	item[11].addStaticRow(09, 09, "M190", "Tomebound eye of Boccob");
+	item[11].addStaticRow(10, 10, "M213", "Veil of whispersSP");
+	item[11].addStaticRow(11, 11, "M51", "The fist");
+	item[11].addStaticRow(12, 12, "M72", "Armband of maximized healing");
+	item[11].addStaticRow(13, 13, "D249", "Folding boat");
+	item[11].addStaticRow(14, 14, "D253", "Cloak of the manta ray");
+	item[11].addStaticRow(15, 15, "D250", "Bottle of air");
+	item[11].addStaticRow(16, 16, "M54", "Morningstar of the manyR");
+	item[11].addStaticRow(17, 17, "M56", "Rod of defiance");
+	item[11].addStaticRow(18, 18, "M60", "Stunshot sling");
+	item[11].addStaticRow(19, 19, "D248", "Bag of holding type III");
+	item[11].addStaticRow(20, 20, "D263", "Periapt of health");
+	item[11].addStaticRow(21, 21, "D250", "Boots of levitation");
+	item[11].addStaticRow(22, 22, "M96", "Dreaming blindfold");
+	item[11].addStaticRow(23, 23, "D258", "Harp of charming");
+	item[11].addStaticRow(24, 24, "M114", "Lore gem");
+	item[11].addStaticRow(25, 25, "M125", "Ring of mystic defiance");
+	item[11].addStaticRow(26, 26, "M125", "Ring of mystic fire");
+	item[11].addStaticRow(27, 27, "M126", "Ring of mystic lightning");
+	item[11].addStaticRow(28, 28, "M189", "Tome of the stilled tongueR");
+	item[11].addStaticRow(29, 31, "D246", "Amulet of natural armor +2");
+	item[11].addStaticRow(32, 32, "M204", "Belt of the wide earthSP");
+	item[11].addStaticRow(33, 33, "M152", "Blast globes");
+	item[11].addStaticRow(34, 34, "M85", "Chasuble of fell power");
+	item[11].addStaticRow(35, 35, "M88", "Cloak of stone");
+	item[11].addStaticRow(36, 36, "M64", "Crystal of energy assault, greater");
+	item[11].addStaticRow(37, 37, "M100", "Flesh ring of scorn");
+	item[11].addStaticRow(38, 38, "M101", "Gauntlet of Gruumsh");
+	item[11].addStaticRow(39, 39, "M52", "Ghost net");
+	item[11].addStaticRow(40, 40, "M105", "Gloves of the balanced hand");
+	item[11].addStaticRow(41, 41, "M106", "Gloves of incarnum theft");
+	item[11].addStaticRow(42, 42, "D258", "Golem manual, flesh");
+	item[11].addStaticRow(43, 43, "D258", "Hand of glory");
+	item[11].addStaticRow(44, 44, "M112", "Horned helm");
+	item[11].addStaticRow(45, 47, "D260", "Ioun stone, deep red sphere");
+	item[11].addStaticRow(48, 50, "D260",
+			"Ioun stone, incandescent blue sphere");
+	item[11].addStaticRow(51, 53, "D260", "Ioun stone, pale blue rhomboid");
+	item[11].addStaticRow(54, 56, "D260", "Ioun stone, pink and green sphere");
+	item[11].addStaticRow(57, 59, "D260", "Ioun stone, pink rhomboid");
+	item[11]
+			.addStaticRow(60, 62, "D260", "Ioun stone, scarlet and blue sphere");
+	item[11].addStaticRow(63, 63, "M26", "Iron ward diamond, greater");
+	item[11].addStaticRow(64, 64, "M114", "Lightning tunic");
+	item[11].addStaticRow(65, 65, "M200", "Mantle of the predatorSP");
+	item[11].addStaticRow(66, 66, "M195", "Medallion of aerial defenseSP");
+	item[11].addStaticRow(67, 67, "M116", "Mesmerist’s gloves");
+	item[11].addStaticRow(68, 68, "M117", "Mindvault");
+	item[11].addStaticRow(69, 69, "M119", "Psionatrix");
+	item[11].addStaticRow(70, 70, "M121", "Ring of antivenom");
+	item[11].addStaticRow(71, 71, "M123", "Ring of entropic deflection");
+	item[11].addStaticRow(72, 72, "D232", "Ring of mind shielding");
+	item[11].addStaticRow(73, 76, "D232", "Ring of protection +2");
+	item[11].addStaticRow(77, 77, "M177", "Runestaff of charming");
+	item[11].addStaticRow(78, 78, "M132", "Scentblinder");
+	item[11].addStaticRow(79, 79, "M183", "Scrolls of uncertain provenanceR");
+	item[11].addStaticRow(80, 80, "M135", "Shirt of the leech");
+	item[11].addStaticRow(81, 81, "M188", "Talisman of undying fortitude");
+	item[11].addStaticRow(82, 82, "M142", "Third eye penetrate");
+	item[11].addStaticRow(83, 83, "M144", "Vambraces of warding");
+	item[11].addStaticRow(84, 100, "M282", "+2 weapon");
+
+	item[12].addStaticRow(01, 01, "M153", "Canaith mandolin");
+	item[12].addStaticRow(02, 02, "D254", "Deck of illusions");
+	item[12].addStaticRow(03, 03, "D263", "Necklace of fireballs type VI");
+	item[12].addStaticRow(04, 04, "M53", "Mace of the dark children");
+	item[12].addStaticRow(05, 05, "M20", "Millennial chainmailR");
+	item[12].addStaticRow(06, 06, "M95", "Dragonfang gauntlets");
+	item[12].addStaticRow(07, 07, "M20", "Owlfeather armor");
+	item[12].addStaticRow(08, 08, "M99", "Fanged mask");
+	item[12].addStaticRow(09, 09, "D226", "Dagger of venom");
+	item[12].addStaticRow(10, 10, "M63", "Warlock’s scepter");
+	item[12].addStaticRow(11, 11, "M48", "Blazing skylance");
+	item[12].addStaticRow(12, 12, "M52", "Forceful skylance");
+	item[12].addStaticRow(13, 13, "M46", "Axe of ancestral virtueR");
+	item[12].addStaticRow(14, 14, "D251", "Candle of invocation");
+	item[12].addStaticRow(15, 15, "M180", "Runestaff of fire");
+	item[12].addStaticRow(16, 16, "M209", "Crown of flamesSP");
+	item[12].addStaticRow(17, 17, "D232", "Ring of force shield");
+	item[12].addStaticRow(18, 18, "D232", "Ring of the ram");
+	item[12].addStaticRow(19, 19, "D263", "Necklace of fireballs type VII");
+	item[12].addStaticRow(20, 20, "M71", "Ankh of ascension");
+	item[12].addStaticRow(21, 21, "M151", "Battle bridle");
+	item[12].addStaticRow(22, 22, "M75", "Blindfold of true darkness");
+	item[12].addStaticRow(23, 23, "D250", "Bracers of armor +3");
+	item[12].addStaticRow(24, 24, "M84", "Cat’s-eye brooch");
+	item[12].addStaticRow(25, 25, "D253", "Cloak of resistance +3");
+	item[12].addStaticRow(26, 26, "M154", "Cognizance crystal, 5 points");
+	item[12].addStaticRow(27, 27, "M155", "Daern’s instant tent");
+	item[12].addStaticRow(28, 28, "D254", "Decanter of endless water");
+	item[12].addStaticRow(29, 29, "M194", "Helm of the hunterSP");
+	item[12].addStaticRow(30, 30, "D236", "Metamagic rod, Empower, lesser");
+	item[12].addStaticRow(31, 31, "M165", "Metamagic rod, Reach, lesser");
+	item[12].addStaticRow(32, 32, "M165", "Mirror of time hop");
+	item[12].addStaticRow(33, 33, "D263", "Necklace of adaptation");
+	item[12].addStaticRow(34, 34, "D263", "Pearl of power, 3rd-level spell");
+	item[12].addStaticRow(35, 35, "M121", "Retributive amulet");
+	item[12].addStaticRow(36, 36, "M57", "Rod of the recluseR");
+	item[12].addStaticRow(37, 37, "M198", "Sandals of the light stepSP");
+	item[12].addStaticRow(38, 38, "M183", "Scepter of the netherworld");
+	item[12].addStaticRow(39, 39, "M134", "Shirt of bone");
+	item[12].addStaticRow(40, 40, "M134", "Shirt of chains");
+	item[12].addStaticRow(41, 41, "M136", "Shirt of the treant");
+	item[12].addStaticRow(42, 42, "M187", "Stunning spike");
+	item[12].addStaticRow(43, 43, "M147", "Vest of resistance +3");
+	item[12].addStaticRow(44, 46, "M282", "+3 armor/shield");
+	item[12].addStaticRow(47, 47, "M51", "Dwarf crusher");
+	item[12].addStaticRow(48, 48, "D256",
+			"Figurine of wondrous power, serpentine owl");
+	item[12].addStaticRow(49, 49, "M23", "Wight hide shield");
+	item[12].addStaticRow(50, 50, "D221", "Lion’s shield");
+	item[12].addStaticRow(51, 51, "M59", "Skewer-of-gnomesR");
+	item[12].addStaticRow(52, 52, "M59", "Spear of retributionR");
+	item[12].addStaticRow(53, 53, "M50", "DawnstarR");
+	item[12].addStaticRow(54, 54, "M54", "Pick of piercing");
+	item[12].addStaticRow(55, 55, "M61", "Sword of virtue beyond reproachR");
+	item[12].addStaticRow(56, 56, "M55", "Rapier of desperate measuresR");
+	item[12].addStaticRow(57, 57, "M55", "Rapier of unerring directionR");
+	item[12].addStaticRow(58, 58, "M60", "Sword of mighty thewsR");
+	item[12].addStaticRow(59, 59, "D267", "Strand of prayer beads, lesser");
+	item[12].addStaticRow(60, 60, "M71", "Angelhelm");
+	item[12].addStaticRow(61, 61, "M177", "Runestaff of the assassin");
+	item[12].addStaticRow(62, 62, "D248", "Bag of holding type IV");
+	item[12].addStaticRow(63, 63, "M82", "Bracers of wind");
+	item[12].addStaticRow(64, 64, "M90", "Crystal mask of detection");
+	item[12].addStaticRow(65, 65, "M90", "Crystal mask of discernment");
+	item[12].addStaticRow(66, 66, "M91", "Crystal mask of dread");
+	item[12].addStaticRow(67, 67, "M92", "Crystal mask of mindarmor");
+	item[12].addStaticRow(68, 68, "M92", "Crystal mask of psionic craft");
+	item[12].addStaticRow(69, 69, "M92", "Crystal mask of visual insight");
+	item[12].addStaticRow(70, 70, "M25", "Crystal of mind cloaking, greater");
+	item[12].addStaticRow(71, 71, "D268", "Druid’s vestment");
+	item[12].addStaticRow(72, 72, "M98", "Eyes of power leech");
+	item[12].addStaticRow(73, 73, "M99", "Fiendhelm");
+	item[12].addStaticRow(74, 74, "D256",
+			"Figurine of wondrous power, bronze griffon");
+	item[12].addStaticRow(75, 75, "D256",
+			"Figurine of wondrous power, ebony fly");
+	item[12].addStaticRow(76, 76, "M104", "Ghoul gauntlets");
+	item[12].addStaticRow(77, 77, "D257", "Glove of storing");
+	item[12].addStaticRow(78, 78, "D260", "Ioun stone, dark blue rhomboid");
+	item[12].addStaticRow(79, 79, "M113", "Lenses of true form");
+	item[12].addStaticRow(80, 80, "M117", "Mind blade gauntlet, lesser");
+	item[12].addStaticRow(81, 81, "M171", "Psychoactive skin of power damping");
+	item[12].addStaticRow(82, 82, "M122", "Ring of avoidance");
+	item[12].addStaticRow(83, 83, "D230", "Ring of improved climbing");
+	item[12].addStaticRow(84, 84, "D232", "Ring of improved jumping");
+	item[12].addStaticRow(85, 85, "D233", "Ring of improved swimming");
+	item[12].addStaticRow(86, 86, "M126", "Ring of self-sufficiency");
+	item[12].addStaticRow(87, 87, "M127", "Ring of soulbound protection");
+	item[12].addStaticRow(88, 88, "M130", "Robe of mysterious conjuration");
+	item[12].addStaticRow(89, 89, "M174", "Rod of reversalR");
+	item[12].addStaticRow(90, 90, "M175", "Rod of undead mastery");
+	item[12].addStaticRow(91, 91, "M131", "Sandals of springing");
+	item[12].addStaticRow(92, 92, "M185", "Soul anchor");
+	item[12].addStaticRow(93, 93, "M137", "Soulstone");
+	item[12].addStaticRow(94, 94, "D267", "Stone horse, courser");
+	item[12].addStaticRow(95, 95, "M140", "Third eye aware");
+	item[12].addStaticRow(96, 96, "M141", "Third eye concentrate");
+	item[12].addStaticRow(97, 97, "M141", "Third eye gather");
+	item[12].addStaticRow(98, 98, "M142", "Third eye powerthieve");
+	item[12].addStaticRow(99, 99, "M66", "Truedeath crystal, greater");
+	item[12].addStaticRow(100, 100, "M146", "Vest of the master evoker");
+
+	item[13].addStaticRow(01, 01, "D252", "Cape of the mountebank");
+	item[13].addStaticRow(02, 02, "D229", "Trident of warning");
+	item[13].addStaticRow(03, 04, "M18", "Foxhide armor");
+	item[13].addStaticRow(05, 05, "M18", "Ghoul shell armor");
+	item[13].addStaticRow(06, 07, "D219", "Adamantine breastplate");
+	item[13].addStaticRow(08, 08, "M210", "Talon scepterSP");
+	item[13].addStaticRow(09, 09, "M47", "Axe of the sea reavers");
+	item[13].addStaticRow(10, 10, "M165", "Metamagic rod, Substitution");
+	item[13].addStaticRow(11, 11, "D236", "Rod of metal and mineral detection");
+	item[13].addStaticRow(12, 12, "M56", "Rod of cats");
+	item[13].addStaticRow(13, 14, "M139", "Storm gauntlets");
+	item[13].addStaticRow(15, 15, "M187", "Strand of acid pearls");
+	item[13]
+			.addStaticRow(16, 19, "P216", "Eternal wand of cure serious wounds");
+	item[13].addStaticRow(20, 20, "P223", "Eternal wand of displacement");
+	item[13]
+			.addStaticRow(21, 22, "P245", "Eternal wand of invisibility sphere");
+	item[13].addStaticRow(23, 25, "P248", "Eternal wand of lightning bolt");
+	item[13].addStaticRow(26, 26, "S193",
+			"Eternal wand of mass snake’s swiftnessSC");
+	item[13].addStaticRow(27, 27, "S173",
+			"Eternal wand of repair serious damageSC");
+	item[13].addStaticRow(28, 28, "D230", "Ring of animal friendship");
+	item[13].addStaticRow(29, 29, "M69", "Amulet of inviolate form");
+	item[13].addStaticRow(30, 31, "M79", "Boots of tracklessness");
+	item[13].addStaticRow(32, 32, "M206", "Bracers of lightningSP");
+	item[13].addStaticRow(33, 33, "M89", "Cloak of turn resistance");
+	item[13].addStaticRow(34, 34, "M103", "Gauntlets of mindfire");
+	item[13].addStaticRow(35, 35, "D236", "Metamagic rod, Enlarge");
+	item[13].addStaticRow(36, 36, "D236", "Metamagic rod, Extend");
+	item[13].addStaticRow(37, 37, "M165", "Metamagic rod, Sculpting");
+	item[13].addStaticRow(38, 38, "D236", "Metamagic rod, Silent");
+	item[13].addStaticRow(39, 39, "D264", "Phylactery of undead turning");
+	item[13].addStaticRow(40, 40, "D234", "Rod of cancellation");
+	item[13].addStaticRow(41, 42, "M178", "Runestaff of eyes");
+	item[13].addStaticRow(43, 43, "M212", "Veil of doorsSP");
+	item[13].addStaticRow(44, 44, "D257", "Gauntlet of rust");
+	item[13].addStaticRow(45, 46, "M125", "Ring of lightning flashes");
+	item[13].addStaticRow(47, 48, "M73", "Belt of battle");
+	item[13].addStaticRow(49, 49, "M203", "Blood claw chokerSP");
+	item[13].addStaticRow(50, 51, "D250", "Boots of speed");
+	item[13].addStaticRow(52, 52, "M156", "Dove’s harp");
+	item[13].addStaticRow(53, 53, "M160", "Flesheater");
+	item[13].addStaticRow(54, 54, "D258", "Goggles of night");
+	item[13].addStaticRow(55, 55, "D258", "Golem manual, clay");
+	item[13].addStaticRow(56, 56, "M162", "Horn of plenty");
+	item[13].addStaticRow(57, 57, "M115", "Mantle of second chances");
+	item[13].addStaticRow(58, 58, "D262", "Medallion of thoughts");
+	item[13].addStaticRow(59, 59, "D264", "Pipes of pain");
+	item[13].addStaticRow(60, 60, "M170", "Psychoactive skin of the claw");
+	item[13].addStaticRow(61, 61, "M121", "Riding boots");
+	item[13].addStaticRow(62, 64, "D232", "Ring of energy resistance, minor");
+	item[13].addStaticRow(65, 66, "M127", "Ring of spell-battle");
+	item[13].addStaticRow(67, 68, "D237", "Rod of wonder");
+	item[13].addStaticRow(69, 69, "M131", "Ruby cincture of immutability");
+	item[13].addStaticRow(70, 70, "M178", "Runestaff of entrapment");
+	item[13].addStaticRow(71, 71, "M181", "Runestaff of size alteration");
+	item[13].addStaticRow(72, 72, "M135", "Shirt of resilience");
+	item[13].addStaticRow(73, 73, "M137", "Spare hand");
+	item[13].addStaticRow(74, 75, "M198", "Vest of free movementSP");
+	item[13].addStaticRow(76, 76, "M147", "Wand bracelet");
+	item[13].addStaticRow(77, 77, "M148", "Water cloak");
+	item[13].addStaticRow(78, 79, "M195", "Winged vestSP");
+	item[13].addStaticRow(80, 80, "M20", "Serpent armor");
+	item[13].addStaticRow(81, 81, "M19", "Hawkfeather armor");
+	item[13].addStaticRow(82, 84, "P272", "Scroll of resurrection (D)");
+	item[13].addStaticRow(85, 85, "M49", "Chromatic rodR");
+	item[13].addStaticRow(86, 86, "M58", "Rogue blade");
+	item[13].addStaticRow(87, 87, "M48", "Bow of songs");
+	item[13].addStaticRow(88, 88, "D249", "Boccob’s blessed book");
+	item[13].addStaticRow(89, 89, "M109", "Hat of anonymity");
+	item[13].addStaticRow(90, 91, "D230", "Ring of chameleon power");
+	item[13].addStaticRow(92, 92, "D228", "Shifter’s sorrow");
+	item[13].addStaticRow(93, 93, "M84", "Cannith goggles");
+	item[13].addStaticRow(94, 94, "M88",
+			"Cloak of soulbound resistance, greater");
+	item[13].addStaticRow(95, 95, "M100", "Fireflower pendant");
+	item[13].addStaticRow(96, 96, "D257", "Gem of brightness");
+	item[13].addStaticRow(97, 97, "D261", "Lyre of building");
+	item[13].addStaticRow(98, 99, "D248", "Monk’s belt");
+	item[13].addStaticRow(100, 100, "D236", "Python rod");
+
+	item[14].addStaticRow(01, 01, "M19", "Kyton armor");
+	item[14].addStaticRow(02, 02, "M192", "Breastplate of terrorSP");
+	item[14].addStaticRow(03, 03, "M164", "Memento magica, 3rd-level spell");
+	item[14].addStaticRow(04, 04, "M216", "Choker of life protectionSP");
+	item[14].addStaticRow(05, 05, "D252", "Cloak of arachnida");
+	item[14].addStaticRow(06, 06, "M107", "Gloves of the titan’s grip");
+	item[14].addStaticRow(07, 07, "M162", "Harrow rod");
+	item[14].addStaticRow(08, 08, "M165", "Metamagic rod, Chaining, lesser");
+	item[14].addStaticRow(09, 09, "D236", "Metamagic rod, Maximize, lesser");
+	item[14].addStaticRow(10, 10, "M181", "Runestaff of night");
+	item[14].addStaticRow(11, 11, "M61", "Tentacle rod");
+	item[14].addStaticRow(12, 12, "M145", "Veil of allure");
+	item[14].addStaticRow(13, 13, "M17", "Electric eel hide");
+	item[14].addStaticRow(14, 14, "M23", "Wight armor");
+	item[14].addStaticRow(15, 15, "M16", "Bearskin armor");
+	item[14].addStaticRow(16, 16, "D267", "Stone horse, destrier");
+	item[14].addStaticRow(17, 17, "D248", "Belt of dwarvenkind");
+	item[14].addStaticRow(18, 18, "M72", "Badge of the svirfneblin");
+	item[14].addStaticRow(19, 19, "M151", "Banner of the storm’s eye");
+	item[14].addStaticRow(20, 20, "M75", "Blindhelm");
+	item[14].addStaticRow(21, 21, "M86", "Circlet of rapid casting");
+	item[14].addStaticRow(22, 22, "M93", "Desperation chain");
+	item[14].addStaticRow(23, 23, "M112", "Incarnum focus (DM’s choice)");
+	item[14].addStaticRow(24, 24, "M118", "Moonstone mask");
+	item[14].addStaticRow(25, 25, "D264", "Periapt of wound closure");
+	item[14].addStaticRow(26, 26, "M171", "Psychoactive skin of nimbleness");
+	item[14].addStaticRow(27, 27, "M170", "Psychoactive skin of the chameleon");
+	item[14].addStaticRow(28, 28, "M172", "Quiver of energy");
+	item[14].addStaticRow(29, 29, "D233", "Ring of water walking");
+	item[14].addStaticRow(30, 30, "D235", "Rod of flame extinguishing");
+	item[14].addStaticRow(31, 31, "M58", "Rod of whips");
+	item[14].addStaticRow(32, 32, "M181", "Runestaff of opening");
+	item[14].addStaticRow(33, 33, "M134", "Shirt of angels");
+	item[14].addStaticRow(34, 34, "M134", "Shirt of demonskin");
+	item[14].addStaticRow(35, 35, "M134", "Shirt of the fey");
+	item[14].addStaticRow(36, 36, "M134", "Shirt of the inevitable");
+	item[14].addStaticRow(37, 37, "M135", "Shirt of ironskin");
+	item[14].addStaticRow(38, 38, "M135", "Shirt of slaadskin");
+	item[14].addStaticRow(39, 39, "M135", "Shirt of the moon");
+	item[14].addStaticRow(40, 40, "M186", "Spider rod");
+	item[14].addStaticRow(41, 41, "M142", "Third eye repudiate");
+	item[14].addStaticRow(42, 42, "D260", "Horn of the tritons");
+	item[14].addStaticRow(43, 43, "D263", "Pearl of the sirines");
+	item[14].addStaticRow(44, 44, "D256",
+			"Figurine of wondrous power, onyx dog");
+	item[14].addStaticRow(45, 45, "M68", "Amulet of catapsi");
+	item[14].addStaticRow(46, 46, "D246", "Amulet of health +4");
+	item[14].addStaticRow(47, 47, "D248", "Belt of giant strength +4");
+	item[14].addStaticRow(48, 48, "D250", "Bracers of armor +4");
+	item[14].addStaticRow(49, 49, "D253", "Cloak of Charisma +4");
+	item[14].addStaticRow(50, 50, "D253", "Cloak of resistance +4");
+	item[14].addStaticRow(51, 51, "M154", "Cognizance crystal, 7 points");
+	item[14].addStaticRow(52, 52, "D257", "Gloves of Dexterity +4");
+	item[14].addStaticRow(53, 53, "M107", "Goggles of draconic vision");
+	item[14].addStaticRow(54, 54, "D258", "Headband of intellect +4");
+	item[14].addStaticRow(55, 55, "D263", "Pearl of power, 4th-level spell");
+	item[14].addStaticRow(56, 56, "D263", "Periapt of Wisdom +4");
+	item[14].addStaticRow(57, 57, "M122", "Ring of dragon friendship");
+	item[14].addStaticRow(58, 58, "M124", "Ring of greater counterspells");
+	item[14].addStaticRow(59, 59, "M182", "Runestaff of the undying");
+	item[14].addStaticRow(60, 60, "M182", "Runestaff of vision");
+	item[14].addStaticRow(61, 61, "D266", "Scabbard of keen edges");
+	item[14].addStaticRow(62, 62, "M212", "Serpent veilSP");
+	item[14].addStaticRow(63, 63, "M133", "Shadow veil");
+	item[14].addStaticRow(64, 64, "M147", "Vest of resistance +4");
+	item[14].addStaticRow(65, 65, "M147", "War wizard cloak");
+	item[14].addStaticRow(66, 66, "D250", "Winged boots");
+	item[14].addStaticRow(67, 70, "M282", "+4 armor/shield");
+	item[14].addStaticRow(71, 71, "M24", "Zombie hide armor");
+	item[14].addStaticRow(72, 72, "D256",
+			"Figurine of wondrous power, golden lions");
+	item[14].addStaticRow(73, 73, "D220", "Dwarven plate");
+	item[14].addStaticRow(74, 74, "D244", "Staff of charming");
+	item[14].addStaticRow(75, 75, "D252", "Chime of interruption");
+	item[14].addStaticRow(76, 76, "M16", "Armor of the fallen leavesR");
+	item[14].addStaticRow(77, 77, "D250", "Broom of flying");
+	item[14].addStaticRow(78, 78, "D256",
+			"Figurine of wondrous power, marble elephant");
+	item[14].addStaticRow(79, 79, "M22", "Tigerskin armor");
+	item[14].addStaticRow(80, 80, "D221", "Winged shield");
+	item[14].addStaticRow(81, 81, "D246", "Amulet of natural armor +3");
+	item[14].addStaticRow(82, 82, "M85", "Chasuble of fell power, greater");
+	item[14].addStaticRow(83, 83, "M157", "Dragondoom scepter");
+	item[14].addStaticRow(84, 84, "M108", "Goggles of the ebon hunter");
+	item[14].addStaticRow(85, 85, "D260", "Ioun stone, iridescent spindle");
+	item[14].addStaticRow(86, 86, "M122", "Ring of divergence");
+	item[14].addStaticRow(87, 87, "M124", "Ring of the icy soul");
+	item[14].addStaticRow(88, 88, "D232", "Ring of protection +3");
+	item[14].addStaticRow(89, 89, "D233", "Ring of spell storing, minor");
+	item[14].addStaticRow(90, 90, "M130", "Rogue’s vest");
+	item[14].addStaticRow(91, 91, "M180", "Runestaff of forced happiness");
+	item[14].addStaticRow(92, 92, "M139", "Surge crystal");
+	item[14].addStaticRow(93, 100, "M282", "+3 weapon");
+
+	item[15].addStaticRow(01, 01, "D226", "Assassin’s dagger");
+	item[15].addStaticRow(02, 02, "M154", "Cli lyre");
+	item[15].addStaticRow(03, 03, "M17", "Dragonrider armor");
+	item[15].addStaticRow(04, 04, "M57", "Rod of enervating strike");
+	item[15].addStaticRow(05, 05, "M57", "Rod of freedom");
+	item[15].addStaticRow(06, 06, "D229", "Trident of fish command");
+	item[15].addStaticRow(07, 07, "D220", "Banded mail of luck");
+	item[15].addStaticRow(08, 08, "D250", "Bracelet of friends");
+	item[15].addStaticRow(09, 09, "M180", "Runestaff of illusion");
+	item[15].addStaticRow(10, 10, "M182", "Runestaff of transportation");
+	item[15].addStaticRow(11, 11, "D237", "Viper rod");
+	item[15].addStaticRow(12, 12, "M73", "Beholder crown");
+	item[15].addStaticRow(13, 13, "M75", "Bone ring");
+	item[15].addStaticRow(14, 15, "D252", "Carpet of flying, 5 ft. by 5 ft.");
+	item[15].addStaticRow(16, 17, "M84", "Casting glove");
+	item[15].addStaticRow(18, 18, "M91", "Crystal mask of insight");
+	item[15].addStaticRow(19, 19, "M98", "Eyes of power leech, vampiric");
+	item[15].addStaticRow(20, 20, "D259", "Horn of blasting");
+	item[15]
+			.addStaticRow(21, 22, "D260", "Ioun stone, pale lavender ellipsoid");
+	item[15].addStaticRow(23, 24, "D260", "Ioun stone, pearly white spindle");
+	item[15].addStaticRow(25, 25, "M163", "Lens of the desert");
+	item[15].addStaticRow(26, 27, "D264", "Portable hole");
+	item[15].addStaticRow(28, 28, "M121", "Ring of arcane might");
+	item[15].addStaticRow(29, 29, "D232", "Ring of invisibility");
+	item[15].addStaticRow(30, 30, "D233", "Ring of wizardry I");
+	item[15].addStaticRow(31, 31, "M180", "Runestaff of frost");
+	item[15].addStaticRow(32, 32, "M132", "Scarab of stabilization");
+	item[15].addStaticRow(33, 33, "D267", "Stone of good luck");
+	item[15].addStaticRow(34, 34, "M63", "Water whip");
+	item[15].addStaticRow(35, 35, "M50", "Dagger of denialR");
+	item[15].addStaticRow(36, 36, "M58", "Ruby bladeR");
+	item[15].addStaticRow(37, 37, "M49", "Cudgel that never forgetsR");
+	item[15].addStaticRow(38, 38, "M48", "Chain of obeisanceR");
+	item[15].addStaticRow(39, 39, "D226", "Flame tongue");
+	item[15].addStaticRow(40, 40, "D256",
+			"Figurine of wondrous power, ivory goats");
+	item[15].addStaticRow(41, 41, "M109", "Gwaeron’s belt");
+	item[15].addStaticRow(42, 42, "M129", "Robe of arcane might");
+	item[15].addStaticRow(43, 43, "D266", "Rope of entanglement");
+	item[15].addStaticRow(44, 44, "M177", "Runestaff of divination");
+	item[15].addStaticRow(45, 45, "M18", "Exoskeleton armor");
+	item[15].addStaticRow(46, 46, "M78", "Boots of the mountain king, greater");
+	item[15].addStaticRow(47, 47, "M87", "Cloak of battle");
+	item[15].addStaticRow(48, 48, "D258", "Golem manual, stone");
+	item[15].addStaticRow(49, 49, "D262", "Mask of the skull");
+	item[15].addStaticRow(50, 50, "M212", "Turquoise veilSP");
+	item[15].addStaticRow(51, 51, "D227", "Luck blade (0 wishes)");
+	item[15].addStaticRow(52, 52, "M53", "Lash of sands");
+	item[15].addStaticRow(53, 53, "D228", "Sword of subtlety");
+	item[15].addStaticRow(54, 54, "D228", "Sword of the planes");
+	item[15].addStaticRow(55, 55, "D220", "Celestial armor");
+	item[15].addStaticRow(56, 56, "M176", "Runestaff of the artisan");
+	item[15].addStaticRow(57, 57, "D227", "Nine lives stealer");
+	item[15].addStaticRow(58, 58, "D262", "Mattock of the titans");
+	item[15].addStaticRow(59, 59, "D235", "Rod of enemy detection");
+	item[15].addStaticRow(60, 60, "D252", "Circlet of blasting, major");
+	item[15].addStaticRow(61, 61, "D246", "Amulet of mighty fists +2");
+	item[15].addStaticRow(62, 62, "D253", "Cloak of displacement, minor");
+	item[15].addStaticRow(63, 63, "D259", "Helm of underwater action");
+	item[15].addStaticRow(64, 64, "M164", "Memento magica, 4th-level spell");
+	item[15].addStaticRow(65, 65, "M117", "Mind blade gauntlet");
+	item[15].addStaticRow(66, 66, "M170",
+			"Psychoactive skin of celestial embrace");
+	item[15].addStaticRow(67, 67, "M170",
+			"Psychoactive skin of fiendish embrace");
+	item[15].addStaticRow(68, 68, "M178", "Runestaff of earth and stone");
+	item[15].addStaticRow(69, 69, "M136", "Shroud of scales");
+	item[15].addStaticRow(70, 70, "M142", "Third eye sense");
+	item[15].addStaticRow(71, 71, "M20", "Overhead shield");
+	item[15].addStaticRow(72, 72, "M165",
+			"Metamagic rod, Substitution, greater");
+	item[15].addStaticRow(73, 73, "D236", "Metamagic rod, Enlarge, greater");
+	item[15].addStaticRow(74, 74, "D236", "Metamagic rod, Extend, greater");
+	item[15].addStaticRow(75, 75, "M165", "Metamagic rod, Sculpting, greater");
+	item[15].addStaticRow(76, 76, "D236", "Metamagic rod, Silent, greater");
+	item[15].addStaticRow(77, 77, "M54", "Quarterstaff of battle");
+	item[15].addStaticRow(78, 78, "D220", "Plate armor of the deep");
+	item[15].addStaticRow(79, 79, "D245", "Staff of swarming insects");
+	item[15].addStaticRow(80, 80, "D250", "Bracers of archery, greater");
+	item[15].addStaticRow(81, 81, "D250", "Bracers of armor +5");
+	item[15].addStaticRow(82, 83, "D253", "Cloak of resistance +5");
+	item[15].addStaticRow(84, 84, "M154", "Cognizance crystal, 9 points");
+	item[15].addStaticRow(85, 85, "D256", "Eyes of doom");
+	item[15].addStaticRow(86, 86, "M164", "Magic siphon");
+	item[15].addStaticRow(87, 87, "D263", "Pearl of power, 5th-level spell");
+	item[15].addStaticRow(88, 88, "D232", "Ring of evasion");
+	item[15].addStaticRow(89, 89, "M125", "Ring of master artifice");
+	item[15].addStaticRow(90, 90, "D233", "Ring of X-ray vision");
+	item[15].addStaticRow(91, 91, "D236", "Rod of splendor");
+	item[15].addStaticRow(92, 92, "D237", "Rod of withering");
+	item[15].addStaticRow(93, 93, "M177", "Runestaff of conjuration");
+	item[15].addStaticRow(94, 94, "M178", "Runestaff of evocation");
+	item[15].addStaticRow(95, 95, "M182", "Runestaff of transmutation");
+	item[15].addStaticRow(96, 96, "M147", "Vest of resistance +5");
+	item[15].addStaticRow(97, 100, "M282", "+5 armor/shield");
+
+	item[16].addStaticRow(01, 01, "D262", "Maul of the titans");
+	item[16].addStaticRow(02, 02, "D220", "Breastplate of command");
+	item[16].addStaticRow(03, 03, "D227", "Oathbow");
+	item[16].addStaticRow(04, 04, "D228", "Sword of life stealing");
+	item[16].addStaticRow(05, 05, "M80", "Bracers of dawn");
+	item[16].addStaticRow(06, 06, "D252", "Cloak of the bat");
+	item[16].addStaticRow(07, 07, "M88", "Cloak of thorns");
+	item[16].addStaticRow(08, 08, "D261", "Iron bands of Bilarro");
+	item[16].addStaticRow(09, 09, "M127",
+			"Ring of soulbound protection, greater");
+	item[16].addStaticRow(10, 10, "M177", "Runestaff of cacophony");
+	item[16].addStaticRow(11, 11, "M59", "Scourge of pain");
+	item[16].addStaticRow(12, 12, "D220", "Mithral full plate of speed");
+	item[16].addStaticRow(13, 13, "D253", "Cube of frost resistance");
+	item[16].addStaticRow(14, 14, "D259", "Helm of telepathy");
+	item[16].addStaticRow(15, 15, "D263", "Periapt of proof against poison");
+	item[16].addStaticRow(16, 16, "D230", "Ring of blinking");
+	item[16].addStaticRow(17, 17, "D265", "Robe of scintillating colors");
+	item[16].addStaticRow(18, 18, "M177", "Runestaff of destruction");
+	item[16].addStaticRow(19, 20, "D261", "Manual of bodily health +1");
+	item[16].addStaticRow(21, 22, "D262", "Manual of gainful exercise +1");
+	item[16].addStaticRow(23, 24, "D262", "Manual of quickness in action +1");
+	item[16].addStaticRow(25, 26, "D268", "Tome of clear thought +1");
+	item[16]
+			.addStaticRow(27, 28, "D268", "Tome of leadership and influence +1");
+	item[16].addStaticRow(29, 30, "D268", "Tome of understanding +1");
+	item[16].addStaticRow(31, 32, "D244", "Staff of healing");
+	item[16].addStaticRow(33, 33, "D255", "Dimensional shackles");
+	item[16].addStaticRow(34, 35, "D232", "Ring of energy resistance, major");
+	item[16].addStaticRow(36, 36, "D256",
+			"Figurine of wondrous power, obsidian steed");
+	item[16].addStaticRow(37, 38, "D244", "Staff of fire");
+	item[16].addStaticRow(39, 45, "P296", "Scroll of true resurrection (D)");
+	item[16].addStaticRow(46, 46, "D245", "Staff of size alteration");
+	item[16].addStaticRow(47, 47, "D255", "Drums of panic");
+	item[16].addStaticRow(48, 49, "D260", "Ioun stone, orange prism");
+	item[16].addStaticRow(50, 51, "D260", "Ioun stone, pale green prism");
+	item[16].addStaticRow(52, 53, "D261", "Lantern of revealing");
+	item[16].addStaticRow(54, 54, "M128", "Ring of vanishing");
+	item[16].addStaticRow(55, 56, "M128", "Rings of force armor (pair)");
+	item[16].addStaticRow(57, 57, "D265", "Robe of blending");
+	item[16].addStaticRow(58, 58, "M176", "Runestaff of the architect");
+	item[16].addStaticRow(59, 59, "M178", "Runestaff of ethereal action");
+	item[16].addStaticRow(60, 62, "D246", "Amulet of natural armor +4");
+	item[16].addStaticRow(63, 63, "M170", "Psychoactive skin of the defender");
+	item[16].addStaticRow(64, 66, "D232", "Ring of protection +4");
+	item[16].addStaticRow(67, 67, "M176", "Runestaff of abjuration");
+	item[16].addStaticRow(68, 68, "M178", "Runestaff of enchantment");
+	item[16].addStaticRow(69, 69, "M180", "Runestaff of necromancy");
+	item[16].addStaticRow(70, 87, "M282", "+4 weapon");
+	item[16].addStaticRow(88, 88, "M150", "Anstruth harp");
+	item[16].addStaticRow(89, 89, "D236", "Metamagic rod, Empower");
+	item[16].addStaticRow(90, 90, "M165", "Metamagic rod, Reach");
+	item[16].addStaticRow(91, 91, "D237", "Rod of thunder and lightning");
+	item[16].addStaticRow(92, 92, "M112", "Impervious vestment");
+	item[16].addStaticRow(93, 93, "M180", "Runestaff of illumination");
+	item[16].addStaticRow(94, 94, "D247",
+			"Amulet of proof against detection and location");
+	item[16].addStaticRow(95, 96, "D252", "Carpet of flying, 5 ft. by 10 ft.");
+	item[16].addStaticRow(97, 97, "D258", "Golem manual, iron");
+	item[16].addStaticRow(98, 98, "D236", "Metamagic rod, Quicken, lesser");
+	item[16].addStaticRow(99, 100, "M182", "Runestaff of time");
+
+	item[17].addStaticRow(01, 03, "D246", "Amulet of health +6");
+	item[17].addStaticRow(04, 06, "D248", "Belt of giant strength +6");
+	item[17].addStaticRow(07, 08, "D250", "Bracers of armor +6");
+	item[17].addStaticRow(09, 11, "D253", "Cloak of Charisma +6");
+	item[17].addStaticRow(12, 12, "M88", "Cloak of the salamander, greater");
+	item[17].addStaticRow(13, 13, "M154", "Cognizance crystal, 11 points");
+	item[17].addStaticRow(14, 16, "D257", "Gloves of Dexterity +6");
+	item[17].addStaticRow(17, 19, "D258", "Headband of intellect +6");
+	item[17].addStaticRow(20, 20, "D260", "Ioun stone, vibrant purple prism");
+	item[17].addStaticRow(21, 22, "D263", "Pearl of power, 6th-level spell");
+	item[17].addStaticRow(23, 25, "D263", "Periapt of Wisdom +6");
+	item[17].addStaticRow(26, 27, "M126", "Ring of negative protection");
+	item[17].addStaticRow(28, 29, "M126", "Ring of positive protection");
+	item[17].addStaticRow(30, 30, "M190", "Truelight lantern");
+	item[17].addStaticRow(31, 39, "M282", "+6 armor/shield");
+	item[17].addStaticRow(40, 40, "M23", "Vampire hide armor");
+	item[17].addStaticRow(41, 41, "M129", "Robe of the inferno");
+	item[17].addStaticRow(42, 43, "D236", "Rod of negation");
+	item[17].addStaticRow(44, 45, "M182", "Runestaff of the undead slayer");
+	item[17].addStaticRow(46, 47, "M164", "Memento magica, 5th-level spell");
+	item[17].addStaticRow(48, 49, "M206", "Robe of thunderSP");
+	item[17].addStaticRow(50, 51, "D266", "Scarab of protection");
+	item[17].addStaticRow(52, 52, "M51", "Explosive sling");
+	item[17].addStaticRow(53, 54, "M181", "Runestaff of power");
+	item[17].addStaticRow(55, 55, "D227", "Mace of terror");
+	item[17].addStaticRow(56, 57, "M56", "Rod of celestial might");
+	item[17].addStaticRow(58, 59, "M70", "Amulet of second chances");
+	item[17].addStaticRow(60, 62, "D260",
+			"Ioun stone, lavender and green ellipsoid");
+	item[17].addStaticRow(63, 63, "M171", "Psychoactive skin of iron");
+	item[17].addStaticRow(64, 64, "M172", "Psychoactive skin of the spider");
+	item[17].addStaticRow(65, 65, "D265", "Ring gates");
+	item[17].addStaticRow(66, 71, "D232", "Ring of freedom of movement");
+	item[17].addStaticRow(72, 73, "D233", "Ring of wizardry II");
+	item[17].addStaticRow(74, 75, "M132", "Scarab of invulnerability");
+	item[17].addStaticRow(76, 76, "D227", "Life-drinker");
+	item[17].addStaticRow(77, 78, "M17", "Earthplate armor");
+	item[17].addStaticRow(79, 79, "D253", "Crystal ball");
+	item[17].addStaticRow(80, 80, "M117", "Mind blade gauntlet, greater");
+	item[17].addStaticRow(81, 82, "M79", "Boots of temporal acceleration");
+	item[17].addStaticRow(83, 83, "D258", "Golem manual, greater stone");
+	item[17].addStaticRow(84, 88, "D232", "Ring of energy resistance, greater");
+	item[17].addStaticRow(89, 90, "M126", "Ring of nine lives");
+	item[17].addStaticRow(91, 92, "D267", "Strand of prayer beads");
+	item[17].addStaticRow(93, 95, "M180", "Runestaff of insanity");
+	item[17].addStaticRow(96, 97, "D229", "Sylvan scimitar");
+	item[17].addStaticRow(98, 98, "D263", "Orb of storms");
+	item[17].addStaticRow(99, 99, "M178", "Runestaff of fiendish darkness");
+	item[17].addStaticRow(100, 100, "M62", "Tentacle rod, greater");
+
+	item[18].addStaticRow(01, 01, "D244", "Staff of illumination");
+	item[18].addStaticRow(02, 02, "D250", "Boots of teleportation");
+	item[18].addStaticRow(03, 05, "D250", "Bracers of armor +7");
+	item[18].addStaticRow(06, 06, "M154", "Cognizance crystal, 13 points");
+	item[18].addStaticRow(07, 07, "D263", "Pearl of power, 7th-level spell");
+	item[18].addStaticRow(08, 13, "M282", "+7 armor/shield");
+	item[18].addStaticRow(14, 14, "D246", "Amulet of natural armor +5");
+	item[18].addStaticRow(15, 15, "D253", "Cloak of displacement, major");
+	item[18].addStaticRow(16, 16, "M206", "Cloudwalker ankletsSP");
+	item[18].addStaticRow(17, 17, "D253", "Crystal ball with see invisibility");
+	item[18].addStaticRow(18, 18, "D260", "Horn of Valhalla");
+	item[18].addStaticRow(19, 19, "M210", "Phoenix cloakSP");
+	item[18].addStaticRow(20, 20, "D232", "Ring of friend shield (pair)");
+	item[18].addStaticRow(21, 24, "D232", "Ring of protection +5");
+	item[18].addStaticRow(25, 25, "D232", "Ring of shooting stars");
+	item[18].addStaticRow(26, 26, "D233", "Ring of spell storing");
+	item[18].addStaticRow(27, 27, "D234", "Rod of absorption");
+	item[18].addStaticRow(28, 28, "D235", "Rod of flailing");
+	item[18].addStaticRow(29, 42, "M282", "+5 weapon");
+	item[18].addStaticRow(43, 43, "M166", "Ollamh harp");
+	item[18].addStaticRow(44, 44, "D221", "Absorbing shield");
+	item[18].addStaticRow(45, 45, "D227", "Rapier of puncturing");
+	item[18].addStaticRow(46, 46, "D228", "Sun blade");
+	item[18].addStaticRow(47, 47, "D253", "Crystal ball with detect thoughts");
+	item[18].addStaticRow(48, 48, "D220", "Demon armor");
+	item[18].addStaticRow(49, 49, "D246", "Amulet of mighty fists +3");
+	item[18].addStaticRow(50, 50, "M164", "Memento magica, 6th-level spell");
+	item[18].addStaticRow(51, 51, "M165", "Metamagic rod, Chaining");
+	item[18].addStaticRow(52, 53, "D236", "Metamagic rod, Maximize");
+	item[18].addStaticRow(54, 54, "D268", "Wings of flying");
+	item[18].addStaticRow(55, 55, "D226", "Frost brand");
+	item[18].addStaticRow(56, 56, "D253", "Cloak of etherealness");
+	item[18].addStaticRow(57, 57, "D254", "Daern’s instant fortress");
+	item[18].addStaticRow(58, 58, "M95", "Dragon’s eye amulet");
+	item[18].addStaticRow(59, 60, "D261", "Manual of bodily health +2");
+	item[18].addStaticRow(61, 62, "D262", "Manual of gainful exercise +2");
+	item[18].addStaticRow(63, 64, "D262", "Manual of quickness in action +2");
+	item[18].addStaticRow(65, 66, "D268", "Tome of clear thought +2");
+	item[18]
+			.addStaticRow(67, 68, "D268", "Tome of leadership and influence +2");
+	item[18].addStaticRow(69, 70, "D268", "Tome of understanding +2");
+	item[18].addStaticRow(71, 71, "D256", "Eyes of charming");
+	item[18].addStaticRow(72, 72, "D244", "Staff of frost");
+	item[18].addStaticRow(73, 73, "D265", "Robe of stars");
+	item[18].addStaticRow(74, 74, "D244", "Staff of defense");
+	item[18].addStaticRow(75, 76, "D252", "Carpet of flying, 10 ft. by 10 ft.");
+	item[18].addStaticRow(77, 77, "D254", "Darkskull");
+	item[18]
+			.addStaticRow(78, 78, "M171", "Psychoactive skin of fiery response");
+	item[18].addStaticRow(79, 81, "M128",
+			"Ring of universal energy resistance, minor");
+	item[18].addStaticRow(82, 82, "M173", "Rod of force");
+	item[18].addStaticRow(83, 83, "D236", "Rod of rulership");
+	item[18].addStaticRow(84, 84, "D226", "Dwarven thrower");
+	item[18].addStaticRow(85, 85, "M172", "Psychoactive skin of the troll");
+	item[18].addStaticRow(86, 86, "M125", "Ring of master artifice, greater");
+	item[18].addStaticRow(87, 87, "D236", "Rod of security");
+	item[18].addStaticRow(88, 88, "D253", "Cube of force");
+	item[18].addStaticRow(89, 89, "D227", "Luck blade (1 wish)");
+	item[18].addStaticRow(90, 93, "D250", "Bracers of armor +8");
+	item[18].addStaticRow(94, 94, "M154", "Cognizance crystal, 15 points");
+	item[18].addStaticRow(95, 95, "D263", "Pearl of power, 8th-level spell");
+	item[18].addStaticRow(96, 100, "M282", "+8 armor/shield");
+
+	item[19].addStaticRow(01, 03, "D243", "Staff of abjuration");
+	item[19].addStaticRow(04, 06, "D244", "Staff of conjuration");
+	item[19].addStaticRow(07, 09, "D244", "Staff of enchantment");
+	item[19].addStaticRow(10, 12, "D244", "Staff of evocation");
+	item[19].addStaticRow(13, 15, "D244", "Staff of illusion");
+	item[19].addStaticRow(16, 18, "D244", "Staff of necromancy");
+	item[19].addStaticRow(19, 21, "D245", "Staff of transmutation");
+	item[19].addStaticRow(22, 23, "D253", "Crystal ball with telepathy");
+	item[19].addStaticRow(24, 25, "D259", "Horn of blasting, greater");
+	item[19].addStaticRow(26, 28, "D263", "Pearl of power, two spells");
+	item[19].addStaticRow(29, 32, "D233", "Ring of wizardry III");
+	item[19].addStaticRow(33, 36, "D235", "Rod of lordly might");
+	item[19].addStaticRow(37, 52, "M282", "+6 weapon");
+	item[19].addStaticRow(53, 56, "D236", "Metamagic rod, Empower, greater");
+	item[19].addStaticRow(57, 60, "M165", "Metamagic rod, Reach, greater");
+	item[19].addStaticRow(61, 62, "D259", "Helm of teleportation");
+	item[19].addStaticRow(63, 66, "M164", "Memento magica, 7th-level spell");
+	item[19].addStaticRow(67, 70, "D244", "Staff of divination");
+	item[19].addStaticRow(71, 73, "D257", "Gem of seeing");
+	item[19].addStaticRow(74, 77, "D233", "Ring of telekinesis");
+	item[19].addStaticRow(78, 81, "D265", "Robe of the archmagi");
+	item[19].addStaticRow(82, 85, "M181", "Runestaff of passage");
+	item[19].addStaticRow(86, 87, "D227", "Mace of smiting");
+	item[19].addStaticRow(88, 91, "D236", "Metamagic rod, Quicken");
+	item[19].addStaticRow(92, 94, "D261", "Mantle of faith");
+	item[19].addStaticRow(95, 96, "M171", "Psychoactive skin of the hero");
+	item[19].addStaticRow(97, 100, "D253", "Crystal ball with true seeing");
+
+	item[20].addStaticRow(01, 03, "D244", "Staff of earth and stone");
+	item[20].addStaticRow(04, 05, "M154", "Cognizance crystal, 17 points");
+	item[20].addStaticRow(06, 08, "D263", "Pearl of power, 9th-level spell");
+	item[20].addStaticRow(09, 14, "M282", "+9 armor/shield");
+	item[20].addStaticRow(15, 15, "D268", "Well of many worlds");
+	item[20].addStaticRow(16, 19, "D261", "Manual of bodily health +3");
+	item[20].addStaticRow(20, 23, "D262", "Manual of gainful exercise +3");
+	item[20].addStaticRow(24, 27, "D262", "Manual of quickness in action +3");
+	item[20].addStaticRow(28, 31, "D268", "Tome of clear thought +3");
+	item[20]
+			.addStaticRow(32, 35, "D268", "Tome of leadership and influence +3");
+	item[20].addStaticRow(36, 39, "D268", "Tome of understanding +3");
+	item[20].addStaticRow(40, 42, "D234", "Rod of alertness");
+	item[20].addStaticRow(43, 43, "D247", "Apparatus of Kwalish");
+	item[20].addStaticRow(44, 47, "D261", "Mantle of spell resistance");
+	item[20].addStaticRow(48, 49, "M172", "Psychoactive skin of the psion");
+	item[20].addStaticRow(50, 53, "D232", "Ring of regeneration");
+	item[20].addStaticRow(54, 55, "D262", "Mirror of opposition");
+	item[20].addStaticRow(56, 57, "D267", "Strand of prayer beads, greater");
+	item[20].addStaticRow(58, 59, "D246", "Amulet of mighty fists +4");
+	item[20].addStaticRow(60, 61, "M164", "Memento magica, 8th-level spell");
+	item[20].addStaticRow(62, 65, "D233", "Ring of three wishes");
+	item[20].addStaticRow(66, 67, "D256", "Eyes of petrification");
+	item[20].addStaticRow(68, 82, "M282", "+7 weapon");
+	item[20].addStaticRow(83, 84, "D233", "Ring of spell turning");
+	item[20]
+			.addStaticRow(85, 86, "D250", "Bowl of commanding water elementals");
+	item[20].addStaticRow(87, 88, "D250",
+			"Brazier of commanding fire elementals");
+	item[20].addStaticRow(89, 90, "D252",
+			"Censer of controlling air elementals");
+	item[20].addStaticRow(91, 92, "D233", "Ring of wizardry IV");
+	item[20].addStaticRow(93, 94, "D267",
+			"Stone of controlling earth elementals");
+	item[20].addStaticRow(95, 100, "M282", "+10 armor/shield");
+
+	item[21].addStaticRow(01, 06, "D245", "Staff of the woodlands");
+	item[21].addStaticRow(07, 14, "D227", "Luck blade (2 wishes)");
+	item[21].addStaticRow(15, 23, "D261", "Manual of bodily health +4");
+	item[21].addStaticRow(24, 32, "D262", "Manual of gainful exercise +4");
+	item[21].addStaticRow(33, 41, "D262", "Manual of quickness in action +4");
+	item[21].addStaticRow(42, 50, "D268", "Tome of clear thought +4");
+	item[21]
+			.addStaticRow(51, 59, "D268", "Tome of leadership and influence +4");
+	item[21].addStaticRow(60, 68, "D268", "Tome of understanding +4");
+	item[21].addStaticRow(69, 74, "D247", "Amulet of the planes");
+	item[21].addStaticRow(75, 83, "M128",
+			"Ring of universal energy resistance, major");
+	item[21].addStaticRow(84, 90, "D265", "Robe of eyes");
+	item[21].addStaticRow(91, 95, "M141", "Third eye conceal");
+	item[21].addStaticRow(96, 100, "M141", "Third eye dominate");
+
+	item[22].addStaticRow(01, 10, "D226", "Holy avenger");
+	item[22].addStaticRow(11, 15, "M164", "Memento magica, 9th-level spell");
+	item[22].addStaticRow(16, 20, "M165", "Metamagic rod, Chaining, greater");
+	item[22].addStaticRow(21, 25, "D236", "Metamagic rod, Maximize, greater");
+	item[22].addStaticRow(26, 29, "D258", "Helm of brilliance");
+	item[22].addStaticRow(30, 33, "D230", "Ring of djinni calling");
+	item[22].addStaticRow(34, 58, "M282", "+8 weapon");
+	item[22].addStaticRow(59, 65, "D261", "Manual of bodily health +5");
+	item[22].addStaticRow(66, 72, "D262", "Manual of gainful exercise +5");
+	item[22].addStaticRow(73, 79, "D262", "Manual of quickness in action +5");
+	item[22].addStaticRow(80, 86, "D268", "Tome of clear thought +5");
+	item[22]
+			.addStaticRow(87, 93, "D268", "Tome of leadership and influence +5");
+	item[22].addStaticRow(94, 100, "D268", "Tome of understanding +5");
+
+	item[23].addStaticRow(01, 25, "D227", "Luck blade (3 wishes)");
+	item[23].addStaticRow(26, 43, "D255", "Efreeti bottle");
+	item[23].addStaticRow(44, 63, "D246", "Amulet of mighty fists +5");
+	item[23].addStaticRow(64, 83, "D244", "Staff of life");
+	item[23].addStaticRow(84, 100, "D252", "Chaos diamond");
+
+	item[24].addStaticRow(01, 30, "M282", "+9 weapon");
+	item[24].addStaticRow(31, 40, "D254", "Cubic gate");
+	item[24].addStaticRow(41, 51, "D261", "Iron flask");
+	item[24].addStaticRow(52, 61, "D236", "Metamagic rod, Quicken, greater");
+	item[24].addStaticRow(62, 73, "D245", "Staff of passage");
+	item[24].addStaticRow(74, 81, "D262", "Mirror of mental prowess");
+	item[24].addStaticRow(82, 100, "M128",
+			"Ring of universal energy resistance, greater");
+
+	item[25].addStaticRow(01, 08, "D262", "Mirror of life trapping");
+	item[25].addStaticRow(09, 16, "D231", "Ring of elemental command (air)");
+	item[25].addStaticRow(17, 24, "D231", "Ring of elemental command (earth)");
+	item[25].addStaticRow(25, 32, "D231", "Ring of elemental command (fire)");
+	item[25].addStaticRow(33, 40, "D231", "Ring of elemental command (water)");
+	item[25].addStaticRow(41, 50, "D233", "Ring of spell storing, major");
+	item[25].addStaticRow(51, 58, "M145", "Vest of the archmagi");
+	item[25].addStaticRow(59, 88, "M282", "+10 weapon");
+	item[25].addStaticRow(89, 100, "D245", "Staff of power");
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// VALIDATE
+
+	for ( var i = 1; i <= 20; i++) {
+		treasure_table[i].picker.validate();
+	}
+
+	for ( var i = 0; i <= 25; i++) {
+		item[i].picker.validate();
+	}
+	
+	weapons.picker.validate();
+	
+	armour_or_shield.picker.validate();
+	
+	for(var i = 1; i<=5; i++) {
+		wprop_table[i].rangedPicker.validate();
+		wprop_table[i].meleePicker.validate();
+		asprop_table[i].armourPicker.validate();
+		asprop_table[i].shieldPicker.validate();
+	}
+	
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// OK. Now the web page arifacts ////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	function controller(c) {
+		while(c) {
+			if(c.controller) return c.controller;
+			c = c.parentNode;
+		}
+	}
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	function TreasureBlock(div, treasureTable) {
+ 		this.treasureTable = treasureTable;
+ 		this.div = div;
+		div.controller = this;
+		div.innerHTML = div.innerHTML + "<hr><div>" + this.treasureTable + " Treasure <button onclick='controller(this).reroll()'>reroll</button><button onclick='controller(this).delete()'>delete</button></div>";
+		
+		this.genArea = document.createElement("div");
+		div.appendChild(this.genArea);
+		
+		this.reroll();
+	}
+	
+	TreasureBlock.prototype.reroll = function() {
+		this.treasureTableGen = this.treasureTable.gen();
+		this.update();
+	}
+
+	TreasureBlock.prototype.update = function() {
+		this.genArea.innerHTML = "";
+		var div = document.createElement("div");
+		this.genArea.appendChild(div);
+		new CurrencyBlock(div, this.treasureTableGen);
+		
+		
+ 		for(var i = 0; i<this.treasureTableGen.item.items.length; i++) {
+			div = document.createElement("div");
+			this.genArea.appendChild(div);
+			new ItemBlock(div, this.treasureTableGen, i);
+		}
+ 		
+	}
+	
+	TreasureBlock.prototype.delete = function() {
+		this.genArea.innerHTML = "";
+		this.div.parentNode.removeChild(this.div);
+	}
+	
+	TreasureBlock.prototype.toString = function() {
+		return "TreasureBlock " + this.div;
+	}
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	function CurrencyBlock(div, treasureTableGen) {
+		this.div = div;
+		this.treasureTableGen = treasureTableGen;
+		
+		div.controller = this;
+		div.innerHTML = div.innerHTML + "Currency &amp; Gems: ";
+		
+		this.genArea = document.createElement("span");
+		div.appendChild(this.genArea);
+		
+		this.update();
+	}
+	
+	CurrencyBlock.prototype.toString = function() {
+		return "CurrencyBlock " + this.div;
+	}
+
+	CurrencyBlock.prototype.reroll = function() {
+		this.treasureTableGen.generated.rerollWealth();
+		this.update();
+	}
+
+	CurrencyBlock.prototype.update = function() {
+		var gold =  this.treasureTableGen.generated.gold;
+		var gems =  this.treasureTableGen.generated.gems;
+
+		var s = "";
+		s = s + gold.amt() + gold.gen.cur.s;
+		var gemgp = 0;
+		for(var i = 0; i< gems.length; i++) {
+			var g = gems[i];
+			s = s + ", " + g.gold.gpValue() + "gp ("+g.gen.s+")";
+			gemgp += g.gold.gpValue();
+		}
+		
+		s = s + ". TOTAL " + gold.gpValue() + " gold + " + gemgp + " gems = " +(gold.gpValue()+gemgp) +"gp.";
+		s = s + " <button onclick='controller(this).reroll()'>reroll</button>";
+		
+		this.genArea.innerHTML = s;
+		
+	}
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	function ItemBlock(div, treasureTableGen, index) {
+		this.div = div;
+		this.treasureTableGen = treasureTableGen;
+		this.index = index;
+		
+		this.itemTbl = treasureTableGen.item.items[index];
+		this.itemRow = treasureTableGen.generated.items[index];
+		
+		div.controller = this;
+		this.genArea = div;
+		
+		this.update();
+
+	}
+	
+	ItemBlock.prototype.reroll = function() {
+		this.treasureTableGen.generated.rerollItem(this.index);
+		this.itemRow = this.treasureTableGen.generated.items[this.index];
+		this.update();
+		
+	}
+	
+	ItemBlock.prototype.update = function() {
+		this.genArea.innerHTML = "";
+		
+		var s = "";
+		s = s + "Lvl " + this.itemTbl.lev;
+		s = s + ". <button onclick='controller(this).reroll()'>reroll</button>";
+		
+		s =s + " " +  this.itemRow.generated.page;
+		s =s + " " +  this.itemRow.generated.text;
+		
+		this.genArea.innerHTML = s;
+
+	}
+	
+	
+</script>
+
+
+<body>
+	Press a button to generate treasure.
+	<br>
+	<button onclick="gen(1)">CR 1</button>
+	<button onclick="gen(2)">CR 2</button>
+	<button onclick="gen(3)">CR 3</button>
+	<button onclick="gen(4)">CR 4</button>
+	<button onclick="gen(5)">CR 5</button>
+	<button onclick="gen(6)">CR 6</button>
+	<button onclick="gen(7)">CR 7</button>
+	<button onclick="gen(8)">CR 8</button>
+	<button onclick="gen(9)">CR 9</button>
+	<button onclick="gen(10)">CR 10</button>
+	<button onclick="gen(11)">CR 11</button>
+	<button onclick="gen(12)">CR 12</button>
+	<button onclick="gen(13)">CR 13</button>
+	<button onclick="gen(14)">CR 14</button>
+	<button onclick="gen(15)">CR 15</button>
+	<button onclick="gen(16)">CR 16</button>
+	<button onclick="gen(17)">CR 17</button>
+	<button onclick="gen(18)">CR 18</button>
+	<button onclick="gen(19)">CR 19</button>
+	<button onclick="gen(20)">CR 20</button>
+
+	<div id="MAIN"></div>
+
+
+</body>
+</html>
