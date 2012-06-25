@@ -394,7 +394,7 @@
 	GeneratedArmourOrShield.prototype.updateText = function() {
 		this.text = "";
 		if(this.bonus==0) this.text += "Masterwork"; else this.text +=  "+" + this.bonus;
-		this.text += " ("+this.props.length+" props go here) " + this.type.item.text;
+		this.text += " ("+this.props.length+" props go here)";
 		this.text += " " + this.type.item.text;
 	}
 	
@@ -453,7 +453,7 @@
 	GeneratedWeapon.prototype.updateText = function() {
 		this.text = "";
 		if(this.bonus==0) this.text += "Masterwork"; else this.text +=  "+" + this.bonus;
-		this.text += " ("+this.props.length+" props go here) " + this.type.item.text;
+		this.text += " ("+this.props.length+" props go here)";
 		this.text += " " + this.type.item.text;
 	}	
 	
@@ -566,22 +566,22 @@
 		this.picker = new D100Picker(this);
 	}
 
-	BonusTable.prototype.add = function(a, b, enhancment, props) {
-		var row = new BonusTableRow(a, b, enhancment, props);
+	BonusTable.prototype.add = function(a, b, enhancement, props) {
+		var row = new BonusTableRow(a, b, enhancement, props);
 		this.picker.add(a,b,row);
 		return row;
 	}
 
 	BonusTable.prototype.toString = function() {return "Bonus Table" + this.lvl;}
 
-	function BonusTableRow (a, b, enhancment, props) {
+	function BonusTableRow (a, b, enhancement, props) {
 		this.a = a;
 		this.b = b;
-		this.enhancment = enhancment;
+		this.enhancement = enhancement;
 		this.props = props;
 	}
 	
-	BonusTableRow.prototype.toString = function() {return "Bonus Table Row" + this.a + "-" + this.b + " +" + this.enhancment + ", " + this.props;}
+	BonusTableRow.prototype.toString = function() {return "Bonus Table Row" + this.a + "-" + this.b + " +" + this.enhancement + ", " + this.props;}
 
 	BonusTableRow.prototype.gen = function() {
 		return this;
@@ -3189,11 +3189,9 @@
 	
 	// DEBUGGING FORCE!!!!
 	
- 	for ( var i = 0; i <= 25; i+=2) {
-		item[i].addWeaponRow(1,100,0);
-	}
- 	for ( var i = 1; i <= 25; i+=2) {
-		item[i].addArmourOrShieldRow(1,100,0);
+ 	for ( var i = 0; i <= 25; i++) {
+		item[i].addWeaponRow(1,50,i % 11);
+		item[i].addArmourOrShieldRow(51,100, i % 11);
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3393,22 +3391,48 @@
 	
 	ItemBlock.prototype.updateArmourOrShield = function(span) {
 		var item = this.itemRow.generated;
-
-		string s = 
-		span.innerHTML = "+" + item.bonus + " armour/shield: " + item.text;
+		
+		var s = "";
+		span.innerHTML = "+" + item.bonus + " armour/shield: ";
+		
+		var subspan = document.createElement("span");
+		span.appendChild(subspan);
+		subspan.innerHTML ="<button onclick='controller(this).rerollEnhancement()'>reroll</button> " + (item.enhancement==0?"Masterwork":"+"+item.enhancement) + " ";
+		
+		subspan = document.createElement("span");
+		span.appendChild(subspan);
+		subspan.innerHTML ="(properties go here) ";
+		
+		subspan = document.createElement("span");
+		span.appendChild(subspan);
+		subspan.innerHTML ="<button onclick='controller(this).rerollType()'>reroll</button> " + item.type.item.text + " ";
+		
 	}
 	
 	ItemBlock.prototype.updateWeapon = function(span) {
 		var item = this.itemRow.generated;
 
-		span.innerHTML = "+" + item.bonus + " weapon: " + item.text;
+		var s = "";
+		span.innerHTML = "+" + item.bonus + " weapon: ";
+		
+		var subspan = document.createElement("span");
+		span.appendChild(subspan);
+		subspan.innerHTML ="<button onclick='controller(this).rerollEnhancement()'>reroll</button> " + (item.enhancement==0?"Masterwork":"+"+item.enhancement) + " ";
+		
+		subspan = document.createElement("span");
+		span.appendChild(subspan);
+		subspan.innerHTML ="(properties go here) ";
+		
+		subspan = document.createElement("span");
+		span.appendChild(subspan);
+		subspan.innerHTML ="<button onclick='controller(this).rerollType()'>reroll</button> " + item.type.item.text + " ";
 	}
 	
 	ItemBlock.prototype.rerollType = function(span) {
 		alert("reroll type");
 	}
 
-	ItemBlock.prototype.rerollEncancement = function(span) {
+	ItemBlock.prototype.rerollEnhancement = function(span) {
 		alert("reroll enhancement");
 	}
 </script>
