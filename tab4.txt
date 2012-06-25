@@ -1,0 +1,26 @@
+
+function BonusTable() {
+	this.picker = new D100Picker(this);
+}
+
+BonusTable.prototype.add = function(a, b, enhancement, props) {
+	BonusTableRow r = new BonusTableRow(enhancement, props);
+	this.picker.add(a,b,r)
+	return r;
+}
+
+ASTable.prototype.toString() = function() {return "Armour/Sheild Table";}
+
+function ASTableRow (a, b, isMetal, isLight, isTower) {
+	this.a = a;
+	this.b = b;
+	this.text = text;
+	this.isMeatl = isMetal;
+	this.isLight = isLight;
+	if(isTower) { // catches "undefined"
+		this.isTower = true;
+	}
+	else {
+		this.isTower = false;
+	}
+}
