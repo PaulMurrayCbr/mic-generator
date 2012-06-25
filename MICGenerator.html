@@ -3227,13 +3227,22 @@
 		s = s + "Lvl " + this.itemTbl.lev;
 		s = s + ". <button onclick='controller(this).reroll()'>reroll</button>";
 		
-		s =s + " " +  this.itemRow.generated.page;
-		s =s + " " +  this.itemRow.generated.text;
-		
 		this.genArea.innerHTML = s;
 
+		var span = document.createElement("span");
+		this.genArea.appendChild(span);
+		
+		if(this.itemRow.generated.constructor == StaticItem) {
+			this.updateStaticItem(span);
+		}
+		else {
+			span.innerHTML = "OTHER ITEM " + this.itemRow.generated.toString();
+		}
 	}
 	
+	ItemBlock.prototype.updateStaticItem = function(span) {
+		span.innerHTML = this.itemRow.generated.page + " " +  this.itemRow.generated.text;
+	}
 	
 </script>
 
