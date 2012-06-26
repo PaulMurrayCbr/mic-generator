@@ -134,7 +134,7 @@
 		this.row = this.v[roll.amt];
 		this.item = this.row.item;
 		
-		this.generated = this.item.gen();
+		this.generated = this.item.gen(gen);
 	}
 
 	D100Pick.prototype.toString = function() {try{
@@ -435,7 +435,7 @@
 	
 	GeneratedWeapon.prototype.rerollType = function() {
 		this.type = weapons.picker.gen();
-		this.rerollAllProperties();
+//		this.rerollAllProperties();
 	}
 	
 	GeneratedWeapon.prototype.rerollBonuses = function() {
@@ -447,16 +447,17 @@
 	
 	GeneratedWeapon.prototype.rerollAllProperties = function() {
 		this.generatedProps = [];
-		this.updateText();
+		
+		for(var i = 0; i< this.bonuses.item.props.length; i++) {
+			if(this.type.isMelee) {
+				this.generatedProps[i] = this.bonuses.item.props[i].meleePicker.gen();
+			}
+			else {
+				this.generatedProps[i] = this.bonuses.item.props[i].rangedPicker.gen();
+			}
+		}
 	}
-	
-	GeneratedWeapon.prototype.updateText = function() {
-		this.text = "";
-		if(this.bonus==0) this.text += "Masterwork"; else this.text +=  "+" + this.bonus;
-		this.text += " ("+this.props.length+" props go here)";
-		this.text += " " + this.type.item.text;
-	}	
-	
+		
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -477,9 +478,9 @@
 	
 	
 	ASPropertyTable.prototype.add = function(arm_a, arm_b, shld_a, shld_b, page, text, caveats) {
-		row = new ASPropertyTableRow(this, page, text, caveats);
-		armourPicker.add(arm_a, arm_b, row);
-		shieldPicker.add(shld_a, shld_b, row);
+		var row = new ASPropertyTableRow(this, page, text, caveats);
+		this.armourPicker.add(arm_a, arm_b, row);
+		this.shieldPicker.add(shld_a, shld_b, row);
 	}
 	
 	function ASPropertyTableRow(tbl, page, text, caveats) {
@@ -519,16 +520,22 @@
 	
 	WPropertyTable.prototype.toString = function() {
 		try {
-			return "Armour/Shield bonus +" + this.lvl;
+			return "Weapon bonus +" + this.lvl;
 		} catch (ex) {
 			return ex.toString();
 		}
 	}
 	
 	WPropertyTable.prototype.add = function(arm_a, arm_b, shld_a, shld_b, page, text, caveats) {
-		row = new WPropertyTableRow(this, page, text. caveats);
-		meleePicker.add(arm_a, arm_b, row);
-		rangedPicker.add(shld_a, shld_b, row);
+		var row = new WPropertyTableRow(this, page, text, caveats);
+		this.meleePicker.add(arm_a, arm_b, row);
+		this.rangedPicker.add(shld_a, shld_b, row);
+	}
+	
+	WPropertyTable.prototype.addRecursive = function(arm_a, arm_b, shld_a, shld_b, subprops) {
+		var row = new WRecursivePropertyTableRow(this, subprops);
+		this.meleePicker.add(arm_a, arm_b, row);
+		this.rangedPicker.add(shld_a, shld_b, row);
 	}
 	
 	function WPropertyTableRow(tbl, page, text, caveats) {
@@ -556,6 +563,51 @@
 		}
 	}
 	
+	function WRecursivePropertyTableRow(tbl, subprops) {
+		this.tbl = tbl;
+		this.subprops = subprops;
+	}
+	
+	WRecursivePropertyTableRow.prototype.gen = function(context) {
+		var generated = [];
+		
+		var ranged = context.v.rangedPicker == context;
+		
+		for(var i = 0; i< this.subprops.length; i++) {
+			var tt = wprop_table[this.subprops[i]];
+			generated[i] = ranged ? tt.rangedPicker.gen() : tt.meleePicker.gen();
+		}
+		
+		var prop = new WRecursiveProperty(this, generated);
+		
+		return prop;
+	}
+
+	WRecursivePropertyTableRow.prototype.toString = function() {
+		try {
+			return "WRecursivePropertyTableRow(" +  this.subprops + ")";
+		} catch (ex) {
+			return ex.toString();
+		}
+	}
+	
+	function WRecursiveProperty(row, generated) {
+		this.row = row;
+		this.generated = generated;
+	}
+	
+	WRecursiveProperty.prototype.toString = function() {
+		try {
+			return "WRecursiveProperty(from " +  this.row + ": " + this.generated + ")";
+		} catch (ex) {
+			return ex.toString();
+		}
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -579,6 +631,7 @@
 		this.b = b;
 		this.enhancement = enhancement;
 		this.props = props;
+		if(!props) this.props=[];
 	}
 	
 	BonusTableRow.prototype.toString = function() {return "Bonus Table Row" + this.a + "-" + this.b + " +" + this.enhancement + ", " + this.props;}
@@ -699,12 +752,12 @@
 		return "WeaponTableRow " + this.a + "-" + this.b + " " + this.text;
 	}
 	
-	WeaponTable.prototype.caveatMelee = function(w) {
-		return w.isMelee;
+	WeaponTable.prototype.caveatNotMelee = function(w) {
+		return !w.isMelee;
 	}
 	
-	WeaponTable.prototype.caveatRanged = function(w) {
-		return w.isRanged;
+	WeaponTable.prototype.caveatNotRanged = function(w) {
+		return !w.isRanged;
 	}
 	
 	WeaponTable.prototype.caveat1 = function(w) {
@@ -1467,6 +1520,166 @@
 	asbonus_table[10].add(51, 85, 5 , [asprop_table[5]]);
 	asbonus_table[10].add(86, 100, 4 , [asprop_table[3],asprop_table[3]]);
 
+
+	wprop_table[1].add(01, 01, 01, 01, "M36", "Illuminating");
+	wprop_table[1].add(02, 02, 02, 02, "M28", "Aquatic");
+	wprop_table[1].add(03, 04, 00, 00, "M31", "Changeling<sup>1</sup>", 1);
+	wprop_table[1].add(05, 05, 03, 03, "M34", "Everbright");
+	wprop_table[1].add(06, 06, 04, 05, "M36", "Hideaway");
+	wprop_table[1].add(07, 07, 06, 07, "M43", "Shadowstrike");
+	wprop_table[1].add(08, 09, 08, 09, "M43", "Sizing");
+	wprop_table[1].add(10, 11, 10, 11, "M43", "Slow burst");
+	wprop_table[1].add(00, 00, 12, 13, "M28", "Arcane might<sup>2</sup>", 2);
+	wprop_table[1].add(12, 13, 14, 15, "D224", "Bane (roll on table in DMG)");
+	wprop_table[1].add(14, 14, 00, 00, "M29", "Berserker<sup>3</sup>", 3);
+	wprop_table[1].add(15, 15, 16, 16, "M29", "Binding");
+	wprop_table[1].add(16, 16, 17, 18, "M29", "Blessed");
+	wprop_table[1].add(17, 18, 00, 00, "M29", "Bloodfeeding");
+	wprop_table[1].add(19, 19, 00, 00, "M29", "Bloodstone");
+	wprop_table[1].add(20, 20, 00, 00, "M30", "Brash");
+	wprop_table[1].add(21, 21, 00, 00, "M30", "Brutal surge");
+	wprop_table[1].add(22, 22, 00, 00, "M31", "Chargebreaker");
+	wprop_table[1].add(23, 23, 00, 00, "M31", "Charging");
+	wprop_table[1].add(24, 25, 19, 20, "M31", "Corrosive");
+	wprop_table[1].add(26, 26, 21, 22, "M32", "Deadly precision");
+	wprop_table[1].add(27, 28, 00, 00, "D224", "Defending");
+	wprop_table[1].add(29, 29, 00, 00, "M32", "Defensive surge");
+	wprop_table[1].add(30, 30, 23, 24, "M32", "Dessicating");
+	wprop_table[1].add(31, 32, 25, 25, "M32", "Dislocator");
+	wprop_table[1].add(33, 33, 26, 27, "M33", "Dispelling");
+	wprop_table[1].add(00, 00, 28, 29, "D224", "Distance");
+	wprop_table[1].add(34, 34, 30, 31, "M33", "Divine wrath");
+	wprop_table[1].add(35, 35, 00, 00, "M33", "Dragondoom");
+	wprop_table[1].add(00, 00, 32, 33, "M33", "Dragonhunter");
+	wprop_table[1].add(36, 37, 00, 00, "M34", "Eager");
+	wprop_table[1].add(38, 40, 34, 36, "D224", "Flaming");
+	wprop_table[1].add(41, 43, 37, 39, "D224", "Frost");
+	wprop_table[1].add(44, 45, 00, 00, "D224", "Ghost touch");
+	wprop_table[1].add(46, 46, 00, 00, "M35", "Harmonizing");
+	wprop_table[1].add(47, 48, 40, 41, "M36", "Heavenly burst");
+	wprop_table[1].add(49, 49, 42, 43, "M36", "Hunting");
+	wprop_table[1].add(50, 50, 44, 45, "M36", "Illusion bane");
+	wprop_table[1].add(51, 52, 46, 47, "M37", "Impact<sup>5</sup>", 5);
+	wprop_table[1].add(53, 53, 00, 00, "M37", "Impaling<sup>6</sup>", 6);
+	wprop_table[1].add(54, 57, 00, 00, "D225", "Keen<sup>7</sup>", 7);
+	wprop_table[1].add(58, 58, 00, 00, "D225", "Ki focus");
+	wprop_table[1].add(59, 59, 48, 49, "M38", "Knockback");
+	wprop_table[1].add(60, 61, 50, 51, "M38", "Lucky");
+	wprop_table[1].add(62, 62, 52, 53, "M38", "Magebane");
+	wprop_table[1].add(63, 63, 54, 55, "M38", "Maiming");
+	wprop_table[1].add(64, 64, 56, 56, "D225", "Merciful");
+	wprop_table[1].add(65, 66, 00, 00, "D225", "Mighty cleaving");
+	wprop_table[1].add(67, 67, 00, 00, "M39", "Mighty smiting");
+	wprop_table[1].add(68, 68, 57, 58, "M39", "Mindfeeder");
+	wprop_table[1].add(69, 70, 59, 60, "M39", "Morphing<sup>8</sup>", 8);
+	wprop_table[1].add(71, 71, 00, 00, "M39", "Paralyzing");
+	wprop_table[1].add(72, 72, 61, 61, "M40", "Power storing");
+	wprop_table[1].add(00, 00, 62, 64, "M40", "Precise");
+	wprop_table[1].add(73, 73, 65, 66, "M40", "Profane");
+	wprop_table[1].add(74, 74, 67, 68, "M41", "Psychokinetic");
+	wprop_table[1].add(00, 00, 69, 71, "M41", "Quick loading<sup>9</sup>", 9);
+	wprop_table[1].add(75, 75, 00, 00, "M42", "Resounding");
+	wprop_table[1].add(00, 00, 72, 73, "D225", "Returning");
+	wprop_table[1].add(76, 76, 74, 75, "M42", "Revealing");
+	wprop_table[1].add(77, 77, 76, 77, "M42", "Sacred");
+	wprop_table[1].add(78, 78, 78, 79, "M42", "Screaming");
+	wprop_table[1].add(00, 00, 80, 81, "D225", "Seeking");
+	wprop_table[1].add(79, 79, 82, 83, "M43", "Shattermantle");
+	wprop_table[1].add(80, 80, 00, 00, "M43", "Shielding<sup>10</sup>", 10);
+	wprop_table[1].add(81, 83, 84, 85, "D225", "Shock");
+	wprop_table[1].add(84, 84, 86, 86, "M43", "Soulbound");
+	wprop_table[1].add(85, 87, 00, 00, "D225", "Spell storing");
+	wprop_table[1].add(88, 88, 87, 87, "M44", "Spellstrike");
+	wprop_table[1].add(89, 89, 88, 89, "M44", "Stunning surge");
+	wprop_table[1].add(90, 90, 90, 91, "M44", "Stygian");
+	wprop_table[1].add(91, 91, 00, 00, "M44", "Sundering");
+	wprop_table[1].add(92, 92, 00, 00, "M44", "Sweeping");
+	wprop_table[1].add(93, 93, 00, 00, "D226", "Throwing");
+	wprop_table[1].add(94, 94, 92, 94, "D225", "Thundering");
+	wprop_table[1].add(95, 95, 95, 96, "M45", "Venomous");
+	wprop_table[1].add(96, 97, 00, 00, "D226", "Vicious");
+	wprop_table[1].add(98, 98, 97, 98, "M46", "Warning");
+	wprop_table[1].add(99, 99, 99, 100, "M46", "Weakening");
+	wprop_table[1].add(100, 100, 00, 00, "M46", "Whirling");
+
+	wprop_table[2].add(01, 01, 00, 00, "M45", "Vanishing");
+	wprop_table[2].add(02, 02, 01, 01, "M38", "Manifester");
+	wprop_table[2].add(03, 04, 02, 04, "M28", "Acidic burst<sup>S</sup>");
+	wprop_table[2].add(05, 06, 05, 06, "D223", "Anarchic");
+	wprop_table[2].add(07, 07, 07, 07, "M28", "Aquan");
+	wprop_table[2].add(08, 08, 08, 08, "M28", "Auran");
+	wprop_table[2].add(09, 10, 09, 10, "D223", "Axiomatic");
+	wprop_table[2].add(11, 12, 11, 12, "M28", "Banishing");
+	wprop_table[2].add(13, 14, 13, 15, "M29", "Blindsighted");
+	wprop_table[2].add(15, 16, 00, 00, "M29", "Blurstrike");
+	wprop_table[2].add(17, 18, 16, 17, "M31", "Collision");
+	wprop_table[2].add(19, 20, 18, 19, "M31", "Consumptive");
+	wprop_table[2].add(21, 22, 20, 21, "M32", "Dessicating burst<sup>S</sup>");
+	wprop_table[2].add(23, 23, 22, 23, "M32", "Disarming");
+	wprop_table[2].add(24, 25, 24, 26, "M33", "Dislocator, great<sup>S</sup>");
+	wprop_table[2].add(26, 27, 27, 28, "M33", "Dispelling, greater<sup>S</sup>");
+	wprop_table[2].add(28, 29, 00, 00, "D224", "Disruption<sup>5</sup>", 5);
+	wprop_table[2].add(30, 31, 29, 30, "M33", "Domineering");
+	wprop_table[2].add(32, 33, 31, 33, "M33", "Doom burst");
+	wprop_table[2].add(34, 35, 34, 36, "M34", "Energy aura");
+	wprop_table[2].add(36, 37, 00, 00, "M34", "Energy surge<sup>S,4</sup>", 4);
+	wprop_table[2].add(38, 39, 37, 38, "M34", "Enervating");
+	wprop_table[2].add(40, 41, 39, 40, "M35", "Fiercebane<sup>S</sup>");
+	wprop_table[2].add(42, 44, 41, 45, "D224", "Flaming burst");
+	wprop_table[2].add(45, 46, 00, 00, "M35", "Fleshgrinding<sup>7</sup>", 7);
+	wprop_table[2].add(00, 00, 46, 48, "M35", "Force");
+	wprop_table[2].add(47, 48, 00, 00, "M35", "Ghost strike<sup>S</sup>");
+	wprop_table[2].add(49, 51, 49, 51, "D225", "Holy");
+	wprop_table[2].add(52, 54, 52, 56, "D225", "Icy burst");
+	wprop_table[2].add(55, 55, 57, 57, "M36", "Ignan");
+	wprop_table[2].add(56, 57, 58, 60, "M37", "Impedance");
+	wprop_table[2].add(58, 59, 00, 00, "M38", "Incorporeal binding<sup>S</sup>");
+	wprop_table[2].add(60, 61, 61, 63, "M38", "Metalline");
+	wprop_table[2].add(62, 63, 64, 65, "M39", "Mindcrusher");
+	wprop_table[2].add(64, 65, 66, 67, "M39", "Paralytic burst");
+	wprop_table[2].add(66, 67, 68, 69, "M40", "Parrying");
+	wprop_table[2].add(68, 69, 70, 71, "M40", "Profane burst<sup>S</sup>");
+	wprop_table[2].add(70, 71, 72, 73, "M41", "Psibane");
+	wprop_table[2].add(72, 73, 74, 75, "M41", "Psychic");
+	wprop_table[2].add(74, 75, 76, 77, "M41", "Psychokinetic burst<sup>S</sup>");
+	wprop_table[2].add(76, 77, 78, 79, "M42", "Sacred burst<sup>S</sup>");
+	wprop_table[2].add(78, 79, 80, 82, "M42", "Screaming burst<sup>S</sup>");
+	wprop_table[2].add(80, 83, 83, 88, "D225", "Shocking burst");
+	wprop_table[2].add(84, 86, 89, 91, "M44", "Stunning<sup>S</sup>");
+	wprop_table[2].add(87, 88, 92, 92, "M45", "Terran");
+	wprop_table[2].add(89, 91, 93, 96, "M45", "Transmuting");
+	wprop_table[2].add(92, 93, 97, 98, "D226", "Unholy");
+	wprop_table[2].add(94, 95, 00, 00, "M45", "Vampiric");
+	wprop_table[2].add(96, 98, 00, 00, "D226", "Wounding");
+	wprop_table[2].addRecursive(99, 100, 99, 100, [1,1]);
+
+	wprop_table[3].add(01, 09, 01, 12, "M40", "Prismatic burst");
+	wprop_table[3].add(10, 17, 13, 23, "M30", "Bodyfeeder");
+	wprop_table[3].add(18, 25, 24, 32, "M31", "Cursespewing");
+	wprop_table[3].add(26, 32, 00, 00, "M34", "Ethereal reaver");
+	wprop_table[3].add(33, 39, 00, 00, "M36", "Holy surge<sup>S</sup>");
+	wprop_table[3].add(40, 47, 33, 45, "M37", "Implacable");
+	wprop_table[3].add(48, 54, 00, 00, "M39", "Necrotic focus");
+	wprop_table[3].add(55, 57, 46, 53, "M43", "Soulbound, greater<sup>S</sup>");
+	wprop_table[3].add(58, 61, 54, 59, "M44", "Soulbreaker<sup>S</sup>");
+	wprop_table[3].add(62, 66, 60, 64, "M44", "Souldrinking<sup>S</sup>");
+	wprop_table[3].add(67, 76, 65, 78, "D225", "Speed");
+	wprop_table[3].add(77, 84, 00, 00, "M45", "Unholy surge<sup>S</sup>");
+	wprop_table[3].add(85, 92, 79, 89, "M37", "Illusion theft<sup>S</sup>");
+	wprop_table[3].addRecursive(93, 100, 90, 100, [2,1]);
+
+	wprop_table[4].add(01, 19, 01, 31, "D224", "Brilliant energy");
+	wprop_table[4].add(20, 41, 00, 00, "D224", "Dancing");
+	wprop_table[4].addRecursive(42, 64, 32, 61, [3,1]);
+	wprop_table[4].addRecursive(65, 83, 62, 82, [2,2]);
+	wprop_table[4].addRecursive(84, 100, 83, 100, [2,1,1]);
+
+	wprop_table[5].add(01, 20, 00, 00, "D226", "Vorpal<sup>11</sup>", 11);
+	wprop_table[5].addRecursive(21, 40, 01, 38, [4,1]);
+	wprop_table[5].addRecursive(41, 60, 39, 71, [3,2]);
+	wprop_table[5].addRecursive(61, 80, 72, 91, [2,2,1]);
+	wprop_table[5].addRecursive(81, 100, 92, 100,[2,1,1,1]);
+	
 	item[0].addStaticRow(01, 01, "P128", "Acid");
 	item[0].addStaticRow(02, 03, "P126", "Lantern, bullseye");
 	item[0].addStaticRow(04, 04, "S42", "Scroll of caltrops<sup>SC</sup> (A)");
@@ -3253,6 +3466,10 @@
 		item[i].addArmourOrShieldRow(51,100, i % 11);
 	}
  */
+   	for ( var i = 0; i <= 25; i++) {
+	item[i].addWeaponRow(1,100,i % 11);
+}
+
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3474,18 +3691,38 @@
 		var s = "";
 		span.innerHTML = "+" + item.bonus + " weapon: ";
 		
-		var subspan = document.createElement("span");
+		var subspan;
+		
+		subspan = document.createElement("span");
 		span.appendChild(subspan);
 		subspan.innerHTML ="<button onclick='controller(this).rerollBonuses()'>reroll</button> " + (item.enhancement==0?"Masterwork":"+"+item.enhancement) + " ";
 		
-		subspan = document.createElement("span");
-		span.appendChild(subspan);
-		subspan.innerHTML ="(properties go here) ";
+		ItemBlock.prototype.updateWeaponProps(span, item.generatedProps);
 		
 		subspan = document.createElement("span");
 		span.appendChild(subspan);
-		subspan.innerHTML ="<button onclick='controller(this).rerollType()'>reroll</button> " + item.type.item.text + " ";
+		subspan.innerHTML ="<button onclick='controller(this).rerollType()'>reroll</button> " + item.type.item.text;
 	}
+	
+	ItemBlock.prototype.updateWeaponProps = function(span, props) {
+		for(var i = 0; i<props.length; i++) {
+			var p = props[i].generated;
+			var subspan;
+			subspan = document.createElement("span");
+			if(p.constructor == WPropertyTableRow) {
+				subspan.innerHTML = p.text + "<sub>" + p.page + "</sub>";
+			}
+			else {
+				subspan.appendChild(document.createTextNode("("));
+				this.updateWeaponProps(subspan, p.generated);
+				subspan.appendChild(document.createTextNode(")"));
+			}
+			
+			span.appendChild(subspan);
+			span.appendChild(document.createTextNode(" "));
+		}
+	}
+
 	
 	ItemBlock.prototype.rerollType = function(span) {
 		var item = this.itemRow.generated.rerollType();
