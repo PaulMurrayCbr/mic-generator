@@ -16,6 +16,14 @@
 	(like, yeah right: I will totally sic my lawyers onto you if you diss my rights)
 	
  -->
+ 
+<style type="text/css">
+  .money { border: thin solid gray; text-align:right; padding-left: .5em; padding-right:.5em; }
+  .centercell { border: thin solid gray;text-align:center; padding-left: .5em; padding-right:.5em; }
+  .cell { border: thin solid gray; text-align:left; padding-left: .5em; padding-right:.5em; }
+  .cellNoB {text-align:left; padding-left: .5em; padding-right:.5em; }
+</style> 
+ 
 </head>
 <script type="text/javascript">
 
@@ -494,8 +502,8 @@
 		}
 	}
 	
-	ASPropertyTable.prototype.add = function(arm_a, arm_b, shld_a, shld_b, page, text, caveats) {
-		var row = new ASPropertyTableRow(this, page, text, caveats);
+	ASPropertyTable.prototype.add = function(arm_a, arm_b, shld_a, shld_b, page, text, caveat) {
+		var row = new ASPropertyTableRow(this, page, text, caveat, arm_a == 0, shld_a == 0);
 		this.armourPicker.add(arm_a, arm_b, row);
 		this.shieldPicker.add(shld_a, shld_b, row);
 	}
@@ -506,16 +514,24 @@
 		this.shieldPicker.add(shld_a, shld_b, row);
 	}
 
-	function ASPropertyTableRow(tbl, page, text, caveats) {
+	function ASPropertyTableRow(tbl, page, text, caveat, notForArmour, notForShield) {
 		this.tbl = tbl;
 		this.page = page;
 		this.text = text;
-		if(!caveats) this.caveats = [];
-		else this.caveats = caveats;
+		this.caveat = caveat;
+		this.notForArmour = notForArmour;
+		this.notForShield = notForShield;
+		
 	}
 	
 	ASPropertyTableRow.prototype.checkCaveats = function(a) {
-		for(var i = 0; i<this.caveats.length;i++) if(!this.caveats[i](a)) return false;
+		if(this.caveat) {
+			if(!armourCaveats[this.caveat](a)) return false;
+		}
+		
+		if(this.notForArmour && a.isArmour) return false;
+		if(this.notForShield && a.isShield) return false;
+		
 		return true;
 	}
 
@@ -565,6 +581,13 @@
 		this.generated = generated;
 	}
 	
+	ASRecursiveProperty.prototype.checkCaveats = function(a) {
+		for(i = 0; i< this.generated.length; i++) {
+			if(!this.generated[i].checkCaveats(a)) return false;
+		}
+		return true;
+	}
+
 	ASRecursiveProperty.prototype.toString = function() {
 		try {
 			return "ASRecursiveProperty(from " +  this.row + ": " + this.generated + ")";
@@ -591,8 +614,8 @@
 		}
 	}
 	
-	WPropertyTable.prototype.add = function(melee_a, melee_b, ranged_a, ranged_b, page, text, caveats) {
-		var row = new WPropertyTableRow(this, page, text, caveats);
+	WPropertyTable.prototype.add = function(melee_a, melee_b, ranged_a, ranged_b, page, text, caveat) {
+		var row = new WPropertyTableRow(this, page, text, caveat, melee_a == 0, ranged_a == 0);
 		this.meleePicker.add(melee_a, melee_b, row);
 		this.rangedPicker.add(ranged_a, ranged_b, row);
 	}
@@ -603,16 +626,23 @@
 		this.rangedPicker.add(ranged_a, ranged_b, row);
 	}
 	
-	function WPropertyTableRow(tbl, page, text, caveats) {
+	function WPropertyTableRow(tbl, page, text, caveat, notForMelee, notForRanged) {
 		this.tbl = tbl;
 		this.page = page;
 		this.text = text;
-		if(!caveats) this.caveats = [];
-		else this.caveats = caveats;
+		this.caveat = caveat;
+		this.notForMelee = notForMelee;
+		this.notForRanged = notForRanged;
 	}
 	
-	WPropertyTableRow.prototype.checkCaveats = function(e) {
-		for(var i = 0; i<this.caveats.length;i++) if(!this.caveats[i](e)) return false;
+	WPropertyTableRow.prototype.checkCaveats = function(w) {
+		if(this.caveat) {
+			if(!weaponCaveats[this.caveat](w)) return false;
+		}
+		
+		if(this.notForMelee && w.isMelee) return false;
+		if(this.notForRanged && w.isRanged) return false;
+		
 		return true;
 	}
 
@@ -661,6 +691,13 @@
 		this.generated = generated;
 	}
 	
+	WRecursiveProperty.prototype.checkCaveats = function(a) {
+		for(i = 0; i< this.generated.length; i++) {
+			if(!this.generated[i].checkCaveats(a)) return false;
+		}
+		return true;
+	}
+
 	WRecursiveProperty.prototype.toString = function() {
 		try {
 			return "WRecursiveProperty(from " +  this.row + ": " + this.generated + ")";
@@ -743,28 +780,24 @@
 		return this;
 	}
 	
-	ASTable.prototype.caveat1 = function(a) {
+	var armourCaveats = [];
+	
+	armourCaveats[1] = function(a) {
 		return a.isMetal;
 	}
 
-	ASTable.prototype.caveat2 = function(a) {
+	armourCaveats[2] = function(a) {
 		return a.isLight;
 	}
 
-	ASTable.prototype.caveat4 = function(a) {
+	armourCaveats[3] = function(a) {
+		return true;
+	}
+
+	armourCaveats[4] = function(a) {
 		return a.isTower;
 	}
 	
-	ASTable.prototype.caveatArmour = function(a) {
-		return a.isArmour;
-	}
-	
-	ASTable.prototype.caveatShield = function(a) {
-		return a.isShieid;
-	}
-	
-	
-
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -789,6 +822,8 @@
 		
 		// X, B, R, T, M, -
 		
+		this.isDMsChoice = type.indexOf('*') != -1;
+
 		this.isSlashing = type.indexOf('S') != -1;
 		this.isBludgeoning = type.indexOf('B') != -1;
 		this.isPiercing = type.indexOf('P') != -1;
@@ -817,62 +852,58 @@
 	WeaponTableRow.prototype.toString = function() {
 		return "WeaponTableRow " + this.a + "-" + this.b + " " + this.text;
 	}
+
+	var weaponCaveats = [];
+
 	
-	WeaponTable.prototype.caveatNotMelee = function(w) {
-		return !w.isMelee;
+	weaponCaveats[1] = function(w) {
+		return w.isDMsChoice || w.isSpear;
 	}
 	
-	WeaponTable.prototype.caveatNotRanged = function(w) {
-		return !w.isRanged;
-	}
-	
-	WeaponTable.prototype.caveat1 = function(w) {
-		return w.isSpear;
-	}
-	
-	WeaponTable.prototype.caveat2 = function(w) {
-		return w.isBow;
+	weaponCaveats[2] = function(w) {
+		return w.isDMsChoice || w.isBow;
 	}
 
-	WeaponTable.prototype.caveat3 = function(w) {
-		return w.isTwoHanded;
+	weaponCaveats[3] = function(w) {
+		return w.isDMsChoice || w.isTwoHanded;
 	}
 	
-	WeaponTable.prototype.caveat5 = function(w) {
-		return w.isBludgeoning;
+	weaponCaveats[4] = function(w) {
+		return true;
 	}
 	
-	WeaponTable.prototype.caveat6 = function(w) {
-		return w.isPiercing;
+	weaponCaveats[5] = function(w) {
+		return w.isDMsChoice || w.isBludgeoning;
 	}
 	
-	WeaponTable.prototype.caveat7 = function(w) {
-		return w.isPiercing || w.isSlashing;
+	weaponCaveats[6] = function(w) {
+		return w.isDMsChoice || w.isPiercing;
 	}
 	
-	WeaponTable.prototype.caveat8 = function(w) {
-		return w.isMelee || w.isThrown;
+	weaponCaveats[7] = function(w) {
+		return w.isDMsChoice || w.isPiercing || w.isSlashing;
 	}
 	
-	WeaponTable.prototype.caveat9 = function(w) {
-		return w.isCrossbow;
+	weaponCaveats[8] = function(w) {
+		return w.isDMsChoice || w.isMelee || w.isThrown;
 	}
 	
-	WeaponTable.prototype.caveat10 = function(w) {
-		return w.isLight;
+	weaponCaveats[9] = function(w) {
+		return w.isDMsChoice || w.isCrossbow;
 	}
 	
-	WeaponTable.prototype.caveat11 = function(w) {
-		return w.isSlashing;
+	weaponCaveats[10] = function(w) {
+		return w.isDMsChoice || w.isLight;
+	}
+	
+	weaponCaveats[11] = function(w) {
+		return w.isDMsChoice || w.isSlashing;
 	}
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	
-	
-	
+		
 	function TreasureTable(cr) {
 		this.cr = cr;
 		this.picker = new D100Picker(this);
@@ -1000,8 +1031,7 @@
 	
 	var weapons = new WeaponTable();
 	var armour_or_shield = new ASTable();
-
-
+	
 	for ( var i = 1; i <= 20; i++) {
 		treasure_table[i] = new TreasureTable(i);
 	}
@@ -1103,7 +1133,7 @@
 	weapons.add(97, 97, "Waraxe, dwarven", "S");
 	weapons.add(98, 98, "Warhammer", "B");
 	weapons.add(99, 99, "Whip", "SL");
-	weapons.add(100, 100, "Other/DM’s choice", "");
+	weapons.add(100, 100, "Other/DM’s choice", "*");
 	
 	
 	armour_or_shield.add(01, 02, "Padded", false, true, false);
@@ -1745,6 +1775,7 @@
 	wprop_table[5].addRecursive(41, 60, 39, 71, [3,2]);
 	wprop_table[5].addRecursive(61, 80, 72, 91, [2,2,1]);
 	wprop_table[5].addRecursive(81, 100, 92, 100,[2,1,1,1]);
+	
 	
 	asprop_table[1].add(01, 02, 00, 00, "M6", "Agility");
 	asprop_table[1].add(03, 04, 00, 00, "M15", "Stamina");
@@ -3643,14 +3674,6 @@
 	item[25].addStaticRow(89, 100, "D245", "Staff of power");
 
 
-	
-	// DEBUGGING FORCE!!!!
-	
-    	for ( var i = 0; i <= 25; i++) {
-			item[i].addArmourOrShieldRow(1,50,i % 11);
-			item[i].addWeaponRow(51,100,i % 11);
-		}
-
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3706,13 +3729,13 @@
 		
 		this.genArea = document.createElement("div");
 		div.appendChild(this.genArea);
-		
 		this.reroll();
 	}
 	
 	TreasureBlock.prototype.reroll = function() {
 		this.treasureTableGen = this.treasureTable.gen();
 		this.update();
+		recalcTotals();
 	}
 
 	TreasureBlock.prototype.update = function() {
@@ -3733,6 +3756,7 @@
 	TreasureBlock.prototype.delete = function() {
 		this.genArea.innerHTML = "";
 		this.div.parentNode.removeChild(this.div);
+		recalcTotals() ;
 	}
 	
 	TreasureBlock.prototype.toString = function() {
@@ -3763,6 +3787,7 @@
 	CurrencyBlock.prototype.reroll = function() {
 		this.treasureTableGen.generated.rerollWealth();
 		this.update();
+		recalcTotals();
 	}
 
 	CurrencyBlock.prototype.update = function() {
@@ -3808,7 +3833,7 @@
 		this.treasureTableGen.generated.rerollItem(this.index);
 		this.itemRow = this.treasureTableGen.generated.items[this.index];
 		this.update();
-		
+		recalcTotals();
 	}
 	
 	ItemBlock.prototype.update = function() {
@@ -3856,7 +3881,7 @@
 		span.appendChild(subspan);
 		subspan.innerHTML ="<button onclick='controller(this).rerollBonuses()'>reroll</button> " + (item.enhancement==0?"Masterwork":"+"+item.enhancement) + " ";
 		
-		this.updateArmourProps(span, item.generatedProps);
+		this.updateArmourProps(span, item.generatedProps, item.type.generated);
 		
 		subspan = document.createElement("span");
 		span.appendChild(subspan);
@@ -3864,17 +3889,20 @@
 		
 	}
 	
-	ItemBlock.prototype.updateArmourProps = function(span, props) {
+	ItemBlock.prototype.updateArmourProps = function(span, props, a) {
 		for(var i = 0; i<props.length; i++) {
 			var p = props[i].generated;
 			var subspan;
 			subspan = document.createElement("span");
 			if(p.constructor == ASPropertyTableRow) {
-				subspan.innerHTML = p.text + "<sub>" + p.page + "</sub>";
+				if(!p.checkCaveats(a))
+					subspan.innerHTML = "<S>" + p.text + "<sub>" + p.page + "</sub></S>";
+				else
+					subspan.innerHTML = p.text + "<sub>" + p.page + "</sub>";
 			}
 			else {
 				subspan.appendChild(document.createTextNode("("));
-				this.updateArmourProps(subspan, p.generated);
+				this.updateArmourProps(subspan, p.generated, a);
 				subspan.appendChild(document.createTextNode(")"));
 			}
 			
@@ -3895,24 +3923,28 @@
 		span.appendChild(subspan);
 		subspan.innerHTML ="<button onclick='controller(this).rerollBonuses()'>reroll</button> " + (item.enhancement==0?"Masterwork":"+"+item.enhancement) + " ";
 		
-		this.updateWeaponProps(span, item.generatedProps);
+		this.updateWeaponProps(span, item.generatedProps, item.type.generated);
 		
 		subspan = document.createElement("span");
 		span.appendChild(subspan);
 		subspan.innerHTML ="<button onclick='controller(this).rerollType()'>reroll</button> " + item.type.item.text;
 	}
 	
-	ItemBlock.prototype.updateWeaponProps = function(span, props) {
+	ItemBlock.prototype.updateWeaponProps = function(span, props, w) {
 		for(var i = 0; i<props.length; i++) {
 			var p = props[i].generated;
 			var subspan;
 			subspan = document.createElement("span");
 			if(p.constructor == WPropertyTableRow) {
-				subspan.innerHTML = p.text + "<sub>" + p.page + "</sub>";
+				if(!p.checkCaveats(w)) 
+					subspan.innerHTML = "<S>" +  p.text + "<sub>" + p.page + "</sub>" + "</S>";
+				else 
+					subspan.innerHTML = p.text + "<sub>" + p.page + "</sub>";
+				
 			}
 			else {
 				subspan.appendChild(document.createTextNode("("));
-				this.updateWeaponProps(subspan, p.generated);
+				this.updateWeaponProps(subspan, p.generated, w);
 				subspan.appendChild(document.createTextNode(")"));
 			}
 			
@@ -3925,11 +3957,214 @@
 	ItemBlock.prototype.rerollType = function(span) {
 		var item = this.itemRow.generated.rerollType();
 		this.update();
+		recalcTotals();
 	}
 
 	ItemBlock.prototype.rerollBonuses = function(span) {
 		var item = this.itemRow.generated.rerollBonuses();
 		this.update();
+		recalcTotals();
+	}
+	
+	function recalcTotals() {
+		var maindiv = document.getElementById("MAIN");
+		
+		var gem_table = document.getElementById("gem_table");
+		while(gem_table.firstChild) {
+			gem_table.removeChild(gem_table.firstChild);
+		}
+		
+		var item_table = document.getElementById("item_table");
+		while(item_table.firstChild) {
+			item_table.removeChild(item_table.firstChild);
+		}
+		
+		var weapon_table = document.getElementById("weapon_table");
+		while(weapon_table.firstChild) {
+			weapon_table.removeChild(weapon_table.firstChild);
+		}
+		
+		var armour_table = document.getElementById("armour_table");
+		while(armour_table.firstChild) {
+			armour_table.removeChild(armour_table.firstChild);
+		}
+
+
+		var totalAmt = [];
+		var totalCp = [];
+		var totalGold = 0;
+		var totalGem = 0;
+		
+		totalAmt[cp.s] = 0;
+		totalAmt[sp.s] = 0;
+		totalAmt[gp.s] = 0;
+		totalAmt[pp.s] = 0;
+		
+		var GG = ['A','B','C','D','E','F','G','H','I'];
+		
+		for(i=0; i<9;i++) {
+			totalAmt[GG[i]] = 0;
+			totalCp[GG[i]] = 0;
+		}
+		
+		for(var tdiv = maindiv.firstChild; tdiv; tdiv = tdiv.nextSibling) {
+			var gen = tdiv.controller.treasureTableGen.generated;
+			var gold = gen.gold;
+			totalAmt[gold.gen.cur.s] += gold.amt();
+			totalGold += gold.amt() * gold.gen.cur.v;
+			
+			for(var i = 0; i< gen.gems.length; i++) {
+				var gem = gen.gems[i];
+				totalAmt[gem.gen.s] ++;
+				totalCp[gem.gen.s] += gem.cpValue();
+				totalGem += gem.cpValue();
+
+				
+				var tr = document.createElement("TR");
+				tr.innerHTML = "<TD class='centercell'>" + gem.gen.s + "</TD><TD class='money'>" +  gem.gpValue() + "</TD>";
+				gem_table.appendChild(tr);
+
+			}
+			
+			for(var i = 0; i< gen.items.length; i++) {
+				var item = gen.items[i].generated;
+				
+				var tr = document.createElement("TR");
+				
+
+				if(item.constructor == StaticItem) {
+					tr.innerHTML = "<TD  class='cellNoB'>" + item.text + "</TD><TD  class='cellNoB'>" + item.page + "</TD>";
+					item_table.appendChild(tr)
+				}
+				else 
+				if(item.constructor == GeneratedArmourOrShield) {
+					tr.innerHTML = "<TD class='cellNoB'>" 
+					+ (item.enhancement==0?"Masterwork":"+"+item.enhancement) 
+					+ " " + armourPropString(item.generatedProps, item.type.generated) 
+					+ item.type.item.text + "</TD>"
+					+ "<TD class='cellNoB'>"+armourPropPagesString(item.generatedProps, item.type.generated)+"</TD>" ;
+					
+					armour_table.appendChild(tr)
+				}
+				else 
+				if(item.constructor == GeneratedWeapon) {
+					tr.innerHTML = "<TD class='cellNoB'>" 
+					+ (item.enhancement==0?"Masterwork":"+"+item.enhancement) 
+					+ " " + weaponPropString(item.generatedProps, item.type.generated) 
+					+ item.type.item.text + "</TD><TD class='cellNoB'>"+weaponPropPagesString(item.generatedProps, item.type.generated)+"</TD>";
+					
+					weapon_table.appendChild(tr)
+				}
+				else {
+					tr.innerHTML = "<TD class='cellNoB'>" + item + "</TD>";
+					item_table.appendChild(tr)
+				}
+			}
+		}
+
+		document.getElementById("cp_amt").innerHTML = totalAmt.cp;
+		document.getElementById("sp_amt").innerHTML = totalAmt.sp;
+		document.getElementById("gp_amt").innerHTML = totalAmt.gp;
+		document.getElementById("pp_amt").innerHTML = totalAmt.pp;
+		
+		document.getElementById("cp_value").innerHTML = (totalAmt.cp * cp.v / 100).toFixed(2);
+		document.getElementById("sp_value").innerHTML = (totalAmt.sp * sp.v / 100).toFixed(2);
+		document.getElementById("gp_value").innerHTML = (totalAmt.gp * gp.v / 100).toFixed(2);
+		document.getElementById("pp_value").innerHTML = (totalAmt.pp * pp.v / 100).toFixed(2);
+		
+		document.getElementById("currency_value").innerHTML = (totalGold / 100).toFixed(2);
+		
+		var s = "";
+		for(var i = 0; i<9; i++) {
+			if(totalAmt[GG[i]] != 0) {
+				if(s != "") s += ", ";
+				s += totalAmt[GG[i]] + " " + GG[i];
+			}
+		}
+		document.getElementById("gem_amt").innerHTML = s;
+
+		document.getElementById("gem_value").innerHTML = (totalGem / 100).toFixed(2);
+		document.getElementById("total_value").innerHTML = ((totalGold+totalGem) / 100).toFixed(2);
+		
+		
+		
+	}
+	
+	function armourPropString(props, a) {
+		if(!a) throw "armourPropString("+props+", "+a+")";
+	
+		s = "";
+
+		for(var i = 0; i<props.length; i++) {
+			var p = props[i].generated;
+			if(p.constructor == ASPropertyTableRow) {
+				if(!p.checkCaveats(a)) s += "<S>";
+				s += p.text + " ";
+				if(!p.checkCaveats(a)) s += "</S>";
+			}
+			else {
+				s += armourPropString(p.generated, a);
+			}
+		}
+		
+		return s;
+	}
+
+	function weaponPropString(props, w) {
+		if(!w) throw "weaponPropString("+props+", "+w+")";
+		s = "";
+		
+		for(var i = 0; i<props.length; i++) {
+			var p = props[i].generated;
+			if(p.constructor == WPropertyTableRow) {
+				if(!p.checkCaveats(w)) s += "<S>";
+				s += p.text + " ";
+				if(!p.checkCaveats(w)) s += "</S>";
+			}
+			else {
+				s += weaponPropString(p.generated, w);
+			}
+		}
+
+		return s;
+	}
+	
+	function armourPropPagesString(props, a) {
+		if(!a) throw "armourPropPagesString("+props+", "+a+")";
+		s = "";
+
+		for(var i = 0; i<props.length; i++) {
+			var p = props[i].generated;
+			if(p.constructor == ASPropertyTableRow) {
+				if(!p.checkCaveats(a)) s += "<S>";
+				s += p.page + " ";
+				if(!p.checkCaveats(a)) s += "</S>";
+			}
+			else {
+				s += armourPropPagesString(p.generated, a);
+			}
+		}
+		
+		return s;
+	}
+
+	function weaponPropPagesString(props, w) {
+		if(!w) throw "weaponPropPagesString("+props+", "+w+")";
+		s = "";
+		
+		for(var i = 0; i<props.length; i++) {
+			var p = props[i].generated;
+			if(p.constructor == WPropertyTableRow) {
+				if(!p.checkCaveats(w)) s += "<S>";
+				s += p.page + " ";
+				if(!p.checkCaveats(w)) s += "</S>";
+			}
+			else {
+				s += weaponPropPagesString(p.generated, w);
+			}
+		}
+
+		return s;
 	}
 </script>
 
@@ -3958,10 +4193,63 @@
 	<button onclick="gen(19)">CR 19</button>
 	<button onclick="gen(20)">CR 20</button>
 	
-	<div id="MAIN"></div>
-
 	<hr>
+
+	<div style="float:left; margin:1em; padding:1em; border:thin solid black;">
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr><TD></TD><TH>Amt</TH><TH>Value</TH></tr>
+	<tr><TD>CP</TD><TD id="cp_amt" class="money">0</TD><TD id="cp_value" class="money">0.00</TD></tr>
+	<tr><TD>SP</TD><TD id="sp_amt" class="money">0</TD><TD id="sp_value" class="money">0.00</TD></tr>
+	<tr><TD>GP</TD><TD id="gp_amt" class="money">0</TD><TD id="gp_value" class="money">0.00</TD></tr>
+	<tr><TD>PP</TD><TD id="pp_amt" class="money">0</TD><TD id="pp_value" class="money">0.00</TD></tr>
+	<tr height="2"></tr>
+	<tr><TD colspan="2">Total</TD></TD><TD id="currency_value" class="money">0.00</TD></tr>
+	<tr><TD >Gems</TD><TD id="gem_amt" class="centercell"></TD><TD id="gem_value" class="money">0.00</TD></tr>
+	<tr height="2"></tr>
+	<tr><TD colspan="2">Total</TD><TD id="total_value" class="money">0.00</TD></tr>
+	</table>
+	</div>
 	
+	<div style="float:left; margin:1em; padding: 1em; border: thin solid black;">
+	<table border="0" cellspacing="0" cellpadding="0">
+	<caption>Gems</caption>
+	<tbody id="gem_table">
+	</tbody>
+	</table>
+	</div>
+	
+	<div style="float:left; margin:1em; padding: 1em; border: thin solid black;">
+	<table border="0" cellspacing="0" cellpadding="0">
+	<caption>Items</caption>
+	<tbody id="item_table">
+	</tbody>
+	</table>
+	</div>
+	
+	<div style="float:left; ">
+	<div style="margin:1em; padding: 1em; border: thin solid black;">
+	<table border="0" cellspacing="0" cellpadding="0">
+	<caption>Weapons</caption>
+	<tbody id="weapon_table">
+	</tbody>
+	</table>
+	</div>
+	
+	<div style="margin:1em; padding: 1em; border: thin solid black;">
+	<table border="0" cellspacing="0" cellpadding="0">
+	<caption>Armour</caption>
+	<tbody id="armour_table">
+	</tbody>
+	</table>
+	</div>
+	</div>
+	
+	<div style="clear:both; "></div>
+	
+	<div id="MAIN" margin:1em; ></div>
+	
+	<div style="clear:both; "><hr></div>
+
 	<font size="-1">
 	WotC data used without permission. Using this generator without owning a paid-for copy of the MIC is a chaotic act!
 	Also, this generator won't be much use to you without one.<br>
