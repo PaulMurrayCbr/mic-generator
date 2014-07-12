@@ -273,6 +273,62 @@
 		try {
 			this.overallBlock = overallBlock;
 			this.div = div;
+			div.controller = this;
+			var dd;
+			
+			dd = document.createElement('div');
+			div.appendChild(dd);
+			
+			function creaturetype(name, treasure, extra, extratreasure) {
+				var lbl = document.createElement('span');
+				lbl.appendChild(document.createTextNode(name))
+				
+				if(extra) {
+					var lbl2 = document.createElement('span');
+					lbl2.appendChild(document.createTextNode(" (" + extra + ")"))
+					lbl.appendChild(lbl2);
+					lbl2.onclick = function(event) { 
+						try {
+							controller(this).selectTreasureType(treasure + extratreasure); 
+							event.cancelBubble = true;
+						} catch (e) {
+							alert("lbl2.onclick: " + e);
+						}
+					}
+				}
+				lbl.style.border = 'thin solid darkGray';
+				lbl.style.margin = '2px';
+				lbl.style.padding = '1px';
+				lbl.style.cursor = 'pointer';
+				lbl.onclick = function(event) { 
+					try {
+						controller(this).selectTreasureType(treasure); 
+					} catch (e) {
+						alert("lbl.onclick: " + e);
+					}
+				}
+				dd.appendChild(lbl);
+			}
+			
+			creaturetype('Aberration', 'ABE', 'cunning', 'FHG');
+			creaturetype('Animal', 'ABDE');
+			creaturetype('Construct', 'EF', 'guarding loot', 'BCH');
+			creaturetype('Dragon', 'ABCHI');
+			creaturetype('Fey', 'BCDG');
+			creaturetype('Humanoid', 'ABDEFG', 'entire community', 'H');
+			creaturetype('Magical beast', 'ABDE');
+			creaturetype('Monstrous humanoid', 'ABCDEH');
+			creaturetype('Ooze', 'ABD');
+			creaturetype('Outsider', '');
+			creaturetype('Plant', 'ABDE');
+			creaturetype('Undead', 'ABDE', 'intelligent', 'FG');
+			creaturetype('Vermin', 'ABD');
+			
+			dd = document.createElement('div');
+			div.appendChild(dd);
+
+			this.checkboxes = new Object();
+			var thischeckboxes = this.checkboxes;
 			
 			function foo(type, label) {
 				var lbl = document.createElement('span');
@@ -289,15 +345,20 @@
 				lbl.style.cursor = 'pointer';
 				lbl.mycheckbox = checkbox;
 				
+				thischeckboxes[type] = checkbox;
+				
 				lbl.onclick = function() {
 					this.mycheckbox.checked = !this.mycheckbox.checked;
 					controller(this).reroll();
+					return true;
 				}
 				
-				div.appendChild(lbl);
+				dd.appendChild(lbl);
 				
-				checkbox.onchange = function() {
+				checkbox.onclick = function() {
+					this.checked = !this.checked;
 					controller(this).reroll();
+					return true;
 				}
 			}
 			
@@ -313,8 +374,26 @@
 			
 		} catch (e) {
 			alert("TreasureTypeSelector(): " + e);
+		}
+	}
+	
+	TreasureTypeSelector.prototype.selectTreasureType = function(types) {
+		try {
+			this.checkboxes["A"].checked = types.indexOf("A") != -1
+			this.checkboxes["B"].checked = types.indexOf("B") != -1
+			this.checkboxes["C"].checked = types.indexOf("C") != -1
+			this.checkboxes["D"].checked = types.indexOf("D") != -1
+			this.checkboxes["E"].checked = types.indexOf("E") != -1
+			this.checkboxes["F"].checked = types.indexOf("F") != -1
+			this.checkboxes["G"].checked = types.indexOf("G") != -1
+			this.checkboxes["H"].checked = types.indexOf("H") != -1
+			this.checkboxes["I"].checked = types.indexOf("I") != -1
+			this.overallBlock.reroll();
+		} catch (e) {
+			alert("TreasureTypeSelector.prototye.selecttypes: " + e);
 
 		}
+			
 	}
 	
 	// find the innermost enclosing node that has a "controller" object
