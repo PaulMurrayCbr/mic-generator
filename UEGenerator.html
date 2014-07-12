@@ -47,13 +47,9 @@
 </head>
 <script type="text/javascript">
 	function initAll() {
-		try {
 			mainTreasureBlock = new OverallTreasureBlock(document
 					.getElementById("MAIN-TREASURE"), 0);
 			recalcTotalTreasureBudget();
-		} catch (e) {
-			alert("initAll " + e);
-		}
 	}
 
 	// a global.
@@ -76,169 +72,130 @@
 	var npcList = new Array();
 
 	function recalcTotalTreasureBudget() {
-		try {
-			var apl = parseInt(document.getElementById("APL").value);
-			var track;
-			if (document.getElementById("AdvancementRate").value == 'slow') {
-				track = t7_1_slow;
-			} else if (document.getElementById("AdvancementRate").value == 'fast') {
-				track = t7_1_fast;
-			} else {
-				track = t7_1_medium;
-			}
-
-			totalTreasureBudget = track[apl];
-
-			if (document.getElementById("APLMultiplier").value == 'incidental') {
-				totalTreasureBudget /= 2;
-			} else if (document.getElementById("APLMultiplier").value == 'double') {
-				totalTreasureBudget *= 2;
-			} else if (document.getElementById("APLMultiplier").value == 'triple') {
-				totalTreasureBudget *= 3;
-			}
-
-			document.getElementById("totaltreasurebudget").innerHTML = totalTreasureBudget;
-			
-			var mainBudget = totalTreasureBudget;
-			
-			for(var i = 0; i<npcCount; i++) {
-				mainBudget -= npcList[i].budget;
-			}
-
-			mainTreasureBlock.setBudget(mainBudget);
-
-		} catch (e) {
-			alert("recalcTotalTreasureBudget: " + e);
+		var apl = parseInt(document.getElementById("APL").value);
+		var track;
+		if (document.getElementById("AdvancementRate").value == 'slow') {
+			track = t7_1_slow;
+		} else if (document.getElementById("AdvancementRate").value == 'fast') {
+			track = t7_1_fast;
+		} else {
+			track = t7_1_medium;
 		}
+
+		totalTreasureBudget = track[apl];
+
+		if (document.getElementById("APLMultiplier").value == 'incidental') {
+			totalTreasureBudget /= 2;
+		} else if (document.getElementById("APLMultiplier").value == 'double') {
+			totalTreasureBudget *= 2;
+		} else if (document.getElementById("APLMultiplier").value == 'triple') {
+			totalTreasureBudget *= 3;
+		}
+
+		document.getElementById("totaltreasurebudget").innerHTML = totalTreasureBudget;
+		
+		var mainBudget = totalTreasureBudget;
+		
+		for(var i = 0; i<npcCount; i++) {
+			mainBudget -= npcList[i].budget;
+		}
+
+		mainTreasureBlock.setBudget(mainBudget);
 	}
 	
 	function repopulateSummary() {
-		try {
-		} catch (e) {
-			alert("repopulateSummary: " + e);
-		}
-		
 	}
 	
 	function addNPCBlock() {
-		try {
-			var div = document.createElement('div');
-			npcList[npcCount] = new OverallTreasureBlock(div, 100, true, npcCount);
-			npcCount ++;
-			document.getElementById('NPC-TREASURES').appendChild(div);
-			recalcTotalTreasureBudget();
-		} catch (e) {
-			alert("addNPCBlock: " + e);
-		}
+		var div = document.createElement('div');
+		npcList[npcCount] = new OverallTreasureBlock(div, 100, true, npcCount);
+		npcCount ++;
+		document.getElementById('NPC-TREASURES').appendChild(div);
+		recalcTotalTreasureBudget();
 	}
 	
 	var T7_2 = [0,260,390,780,1650,2400,3450,4650,6000,7800,10050,12750,16350,21000,27000,34800,45000,58500,75000,96000,123000,159000];
 	
 	function OverallTreasureBlock(div, budget, isNPCBlock, npcIndex) {
-		try {
-			this.div = div;
-			this.isNPCBlock = isNPCBlock;
-			this.npcIndex = npcIndex;
-			div.controller = this;
+		this.div = div;
+		this.isNPCBlock = isNPCBlock;
+		this.npcIndex = npcIndex;
+		div.controller = this;
 
-			this.treasures = new Array();
-			this.treasuresCount = 0;
-			
-			var e;
-			var ee;
-			var eee;
+		this.treasures = new Array();
+		this.treasuresCount = 0;
+		
+		var e;
+		var ee;
+		var eee;
 
-			div.appendChild(document.createElement("hr"));
+		div.appendChild(document.createElement("hr"));
 
-			if(isNPCBlock) {
-				e = document.createElement("span")
-				e.appendChild(document.createTextNode("NPC Level: "));
-				ee = document.createElement("select");
-				for(var i = 1; i<=21;i++) {
-					eee = document.createElement("option");
-					eee.text = i;
-					eee.value = i;
-					ee.appendChild(eee);
-				}
-				e.appendChild(ee);
-				ee.onchange = function() {
-					try {
-						controller(this).setBudget(T7_2[parseInt(ee.value)]);
-						recalcTotalTreasureBudget();
-					}
-					catch(ex)  {
-						alert("npc level onchange: " + ex);	
-					}
-				};
-				
-				div.appendChild(e);
-				budget = T7_2[1];
-			}
-			
-			
+		if(isNPCBlock) {
 			e = document.createElement("span")
-			e.appendChild(document.createTextNode("Budget: "))
-			this.budgetSpan = document.createElement("span");
-			e.appendChild(this.budgetSpan);
-			e.appendChild(document.createTextNode(", Consumed: "))
-			this.budgetConsumedSpan = document.createElement("span");
-			e.appendChild(this.budgetConsumedSpan);
-
-			div.appendChild(e);
-
-			var treasureType = document.createElement("div");
-			div.appendChild(treasureType);
-			
-			this.chooseTypeArea = document.createElement("div");
-			div.appendChild(this.chooseTypeArea);
-			this.treasureTypeSelector = new TreasureTypeSelector(this, this.chooseTypeArea);
-			
-			e = document.createElement("button");
-			e.innerHTML = "add one treasure";
-			e.onclick = function() {
-				try {
-					controller(this).addOne();
-				}
-				catch(e) {
-					alert("addOne onclick: " + e);
-				}
-			};
-			div.appendChild(e);
-
-			e = document.createElement("button");
-			e.innerHTML = "reroll all";
-			e.onclick = function() {
-				try {
-					controller(this).reroll();
-				}
-				catch(e) {
-					alert("reroll onclick: " + e);
-				}
-			};
-			div.appendChild(e);
-
-			if(isNPCBlock) {
-				e = document.createElement("button");
-				e.innerHTML = "delete NPC";
-				e.onclick = function() {
-					try {
-						controller(this).delete();
-					}
-					catch(e) {
-						alert("reroll delete: " + e);
-					}
-				};
-				div.appendChild(e);
+			e.appendChild(document.createTextNode("NPC Level: "));
+			ee = document.createElement("select");
+			for(var i = 1; i<=21;i++) {
+				eee = document.createElement("option");
+				eee.text = i;
+				eee.value = i;
+				ee.appendChild(eee);
 			}
-
-			this.genArea = document.createElement("div");
-			div.appendChild(this.genArea);
-
-			this.setBudget(budget);
-		} catch (e) {
-			alert("OverallTreasureBlock(div, budget): " + e);
-
+			e.appendChild(ee);
+			ee.onchange = function() {
+				controller(this).setBudget(T7_2[parseInt(ee.value)]);
+				recalcTotalTreasureBudget();
+			};
+			
+			div.appendChild(e);
+			budget = T7_2[1];
 		}
+		
+		
+		e = document.createElement("span")
+		e.appendChild(document.createTextNode("Budget: "))
+		this.budgetSpan = document.createElement("span");
+		e.appendChild(this.budgetSpan);
+		e.appendChild(document.createTextNode(", Consumed: "))
+		this.budgetConsumedSpan = document.createElement("span");
+		e.appendChild(this.budgetConsumedSpan);
+
+		div.appendChild(e);
+
+		var treasureType = document.createElement("div");
+		div.appendChild(treasureType);
+		
+		this.chooseTypeArea = document.createElement("div");
+		div.appendChild(this.chooseTypeArea);
+		this.treasureTypeSelector = new TreasureTypeSelector(this, this.chooseTypeArea);
+		
+		e = document.createElement("button");
+		e.innerHTML = "add one treasure";
+		e.onclick = function() {
+			controller(this).addOne();
+		};
+		div.appendChild(e);
+
+		e = document.createElement("button");
+		e.innerHTML = "reroll all";
+		e.onclick = function() {
+			controller(this).reroll();
+		};
+		div.appendChild(e);
+
+		if(isNPCBlock) {
+			e = document.createElement("button");
+			e.innerHTML = "delete NPC";
+			e.onclick = function() {
+					controller(this).delete();
+			};
+			div.appendChild(e);
+		}
+
+		this.treasuresArea = document.createElement("div");
+		div.appendChild(this.treasuresArea);
+
+		this.setBudget(budget);
 	}
 
 	OverallTreasureBlock.prototype.toString = function() {
@@ -246,220 +203,193 @@
 	}
 	
 	OverallTreasureBlock.prototype.reroll = function() {
-		try {
-			this.genArea.innerHTML = new Date();
-			this.calculateBudgetConsumed();
-			repopulateSummary();
-		} catch (e) {
-			alert("OverallTreasureBlock.prototype.reroll: " + e);
-
+		while(this.treasuresCount > 0) {
+			this.treasures[0].delete();
 		}
+		
+		while(this.budgetConsumed < this.budget) {
+			if(!this.addOne()) {
+				break;
+			}
+		}
+		
+		this.treasuresArea.appendChild(document.createTextNode(new Date()));
+		this.calculateBudgetConsumed();
+		repopulateSummary();
 	}
 
 	OverallTreasureBlock.prototype.addOne = function() {
-		try {
-			if(this.budgetConsumed >= this.budget) {
-				alert("no budget remaining");
-				return;
-			}
-			
-			this.genArea.innerHTML = new Date();
-			this.calculateBudgetConsumed();
-			repopulateSummary();
-		} catch (e) {
-			alert("OverallTreasureBlock.prototype.addOne: " + e);
-
+		if(this.budgetConsumed >= this.budget) {
+			alert("no budget remaining");
+			return false;
 		}
+
+		var d = document.createElement('div');
+		this.treasuresArea.appendChild(d);
+		this.treasures[this.treasuresCount] = new TreasureBlock(d, this, this.treasuresCount);
+		this.treasuresCount++;
+		this.treasures[this.treasuresCount-1].reroll();
+		
+		return true;
 	}
 
 	OverallTreasureBlock.prototype.calculateBudgetConsumed = function() {
-		try {
-			this.budgetConsumed = 0;
-			
-			for(var i =0; i<this.treasuresCount; i++) {
-				this.budgetConsumed += this.treasures.getValue();
-			}
-			
-			this.budgetConsumedSpan.innerHTML = this.budgetConsumed;
-			
-			// if we are recalculating the budget consumed, then something has changed.
-			repopulateSummary();
-		} catch (e) {
-			alert("OverallTreasureBlock.prototype.reroll: " + e);
-
+		this.budgetConsumed = 0;
+		
+		for(var i =0; i<this.treasuresCount; i++) {
+			this.budgetConsumed += this.treasures[i].getValue();
 		}
+		
+		this.budgetConsumedSpan.innerHTML = this.budgetConsumed;
+		
+		// if we are recalculating the budget consumed, then something has changed.
+		repopulateSummary();
 	}
 
 	OverallTreasureBlock.prototype.delete = function() {
-		try {
-			for(var i = this.npcIndex; i<npcCount-1; i++) {
-				npcList[i] = npcList[i+1];
-				npcList[i].npcIndex = i;
-			}
-			
-			var tt = document.getElementById('NPC-TREASURES');
-			while(tt.childNodes.length != 0) {
-				tt.removeChild(tt.firstChild);
-			}
-			npcCount --;
-			
-			for(var i = 0; i<npcCount; i++) {
-				tt.appendChild(npcList[i].div);
-			}
-			
-			repopulateSummary(); // redundant, because recalc does this anyway.
-			
-			recalcTotalTreasureBudget();
-		} catch (e) {
-			alert("OverallTreasureBlock.prototype.delete: " + e);
+		for(var i = this.npcIndex; i<npcCount-1; i++) {
+			npcList[i] = npcList[i+1];
+			npcList[i].npcIndex = i;
 		}
+		
+		var tt = document.getElementById('NPC-TREASURES');
+		while(tt.childNodes.length != 0) {
+			tt.removeChild(tt.firstChild);
+		}
+		npcCount --;
+		
+		for(var i = 0; i<npcCount; i++) {
+			tt.appendChild(npcList[i].div);
+		}
+		
+		repopulateSummary(); // redundant, because recalc does this anyway.
+		
+		recalcTotalTreasureBudget();
 	}
 	
 	OverallTreasureBlock.prototype.setBudget = function(budget) {
-		try {
-			this.budget = budget;
-			this.budgetSpan.innerHTML = budget;
-			this.reroll();
-		} catch (e) {
-			alert("OverallTreasureBlock.prototype.setBudge: " + e);
-
-		}
+		this.budget = budget;
+		this.budgetSpan.innerHTML = budget;
+		this.reroll();
 	}
 	
 	var radioButtonSeq = 0;
 	
 	function TreasureTypeSelector(overallBlock, div) {
-		try {
-			this.overallBlock = overallBlock;
-			this.div = div;
-			div.controller = this;
-			var dd;
+		this.overallBlock = overallBlock;
+		this.div = div;
+		div.controller = this;
+		var dd;
+		
+		dd = document.createElement('div');
+		div.appendChild(dd);
+		dd.style.margin = ".5em 0 .5em 0";
+		
+		function creaturetype(name, treasure, extra, extratreasure) {
+			var lbl = document.createElement('span');
+			lbl.appendChild(document.createTextNode(name))
 			
-			dd = document.createElement('div');
-			div.appendChild(dd);
-			dd.style.margin = ".5em 0 .5em 0";
-			
-			function creaturetype(name, treasure, extra, extratreasure) {
-				var lbl = document.createElement('span');
-				lbl.appendChild(document.createTextNode(name))
-				
-				if(extra) {
-					var lbl2 = document.createElement('span');
-					lbl2.appendChild(document.createTextNode(" (" + extra + ")"))
-					lbl.appendChild(lbl2);
-					lbl2.onclick = function(event) { 
-						try {
-							controller(this).selectTreasureType(treasure + extratreasure); 
-							event.cancelBubble = true;
-						} catch (e) {
-							alert("lbl2.onclick: " + e);
-						}
-					}
-				}
-				lbl.style.border = 'thin solid darkGray';
-				lbl.style.margin = '1px';
-				lbl.style.padding = '1px';
-				lbl.style.cursor = 'pointer';
-				lbl.onclick = function(event) { 
-					try {
-						controller(this).selectTreasureType(treasure); 
-					} catch (e) {
-						alert("lbl.onclick: " + e);
-					}
-				}
-				dd.appendChild(lbl);
-			}
-			
-			creaturetype('Aberration', 'ABE', 'cunning', 'FHG');
-			creaturetype('Animal', 'ABDE');
-			creaturetype('Construct', 'EF', 'guarding loot', 'BCH');
-			creaturetype('Dragon', 'ABCHI');
-			creaturetype('Fey', 'BCDG');
-			creaturetype('Humanoid', 'ABDEFG', 'entire community', 'H');
-			creaturetype('Magical beast', 'ABDE');
-			creaturetype('Monstrous humanoid', 'ABCDEH');
-			creaturetype('Ooze', 'ABD');
-			creaturetype('Outsider', '');
-			creaturetype('Plant', 'ABDE');
-			creaturetype('Undead', 'ABDE', 'intelligent', 'FG');
-			creaturetype('Vermin', 'ABD');
-			
-			dd = document.createElement('div');
-			dd.style.margin = ".5em 0 .5em 0";
-			div.appendChild(dd);
-
-			this.checkboxes = new Object();
-			var thischeckboxes = this.checkboxes;
-			
-			function foo(type, label) {
-				var lbl = document.createElement('span');
-				var checkbox = document.createElement('input');
-				checkbox.type = "checkbox";
-				lbl.appendChild(checkbox);
-				lbl.appendChild(document.createTextNode(type + " - " + label));
-				lbl.style.border = 'thin solid darkGray';
-				lbl.style.margin = '1px';
-				lbl.style.padding = '1px';
-				lbl.style.cursor = 'pointer';
-				lbl.mycheckbox = checkbox;
-				
-				thischeckboxes[type] = checkbox;
-				
-				lbl.onclick = function() {
-					this.mycheckbox.checked = !this.mycheckbox.checked;
-//					controller(this).overallBlock.reroll();
-					return true;
-				}
-				
-				dd.appendChild(lbl);
-				
-				checkbox.onclick = function() {
-					this.checked = !this.checked;
-//					controller(this).overallBlock.reroll();
-					return true;
+			if(extra) {
+				var lbl2 = document.createElement('span');
+				lbl2.appendChild(document.createTextNode(" (" + extra + ")"))
+				lbl.appendChild(lbl2);
+				lbl2.onclick = function(event) { 
+					controller(this).selectTreasureType(treasure + extratreasure); 
+					event.cancelBubble = true;
 				}
 			}
-			
-			foo('A','Coins');
-			foo('B','Coins/Gems');
-			foo('C','Art');
-			foo('D','Coins/Small objects');
-			foo('E','Armour and weapons');
-			foo('F','Combat gear');
-			foo('G','Spellcaster gear');
-			foo('H','Lair treasure');
-			foo('I','Hoard');
-			
-			dd = document.createElement('div');
-			dd.style.margin = ".5em 0 .5em 0";
-			div.appendChild(dd);
-
-			dd.appendChild(document.createTextNode("Max treasure value"));
-			
-			function addMaxTreasureValue(pct) {
-				var radio = document.createElement('input');
-				radio.type = "radio";
-				radio.name = radioButtonSeq + '-radio';
-				radio.value = "value";
-				if(pct==100) radio.checked = true;
-				dd.appendChild(radio);
-				dd.appendChild(document.createTextNode(pct + "%"));
+			lbl.style.border = 'thin solid darkGray';
+			lbl.style.margin = '1px';
+			lbl.style.padding = '1px';
+			lbl.style.cursor = 'pointer';
+			lbl.onclick = function(event) { 
+				controller(this).selectTreasureType(treasure); 
 			}
-			
-			addMaxTreasureValue(100);
-			addMaxTreasureValue(80);
-			addMaxTreasureValue(66);
-			addMaxTreasureValue(50);
-			addMaxTreasureValue(25);
-			addMaxTreasureValue(10);
-			
-			radioButtonSeq++;
-
-			
-			
-		} catch (e) {
-			alert("TreasureTypeSelector(): " + e);
+			dd.appendChild(lbl);
 		}
+		
+		creaturetype('Aberration', 'ABE', 'cunning', 'FHG');
+		creaturetype('Animal', 'ABDE');
+		creaturetype('Construct', 'EF', 'guarding loot', 'BCH');
+		creaturetype('Dragon', 'ABCHI');
+		creaturetype('Fey', 'BCDG');
+		creaturetype('Humanoid', 'ABDEFG', 'entire community', 'H');
+		creaturetype('Magical beast', 'ABDE');
+		creaturetype('Monstrous humanoid', 'ABCDEH');
+		creaturetype('Ooze', 'ABD');
+		creaturetype('Outsider', '');
+		creaturetype('Plant', 'ABDE');
+		creaturetype('Undead', 'ABDE', 'intelligent', 'FG');
+		creaturetype('Vermin', 'ABD');
+		
+		dd = document.createElement('div');
+		dd.style.margin = ".5em 0 .5em 0";
+		div.appendChild(dd);
+
+		this.checkboxes = new Object();
+		var thischeckboxes = this.checkboxes;
+		
+		function foo(type, label) {
+			var lbl = document.createElement('span');
+			var checkbox = document.createElement('input');
+			checkbox.type = "checkbox";
+			lbl.appendChild(checkbox);
+			lbl.appendChild(document.createTextNode(type + " - " + label));
+			lbl.style.border = 'thin solid darkGray';
+			lbl.style.margin = '1px';
+			lbl.style.padding = '1px';
+			lbl.style.cursor = 'pointer';
+			lbl.mycheckbox = checkbox;
+			
+			thischeckboxes[type] = checkbox;
+			
+			lbl.onclick = function() {
+				this.mycheckbox.checked = !this.mycheckbox.checked;
+				return true;
+			}
+			
+			dd.appendChild(lbl);
+			
+			checkbox.onclick = function() {
+				this.checked = !this.checked;
+				return true;
+			}
+		}
+		
+		foo('A','Coins');
+		foo('B','Coins/Gems');
+		foo('C','Art');
+		foo('D','Coins/Small objects');
+		foo('E','Armour and weapons');
+		foo('F','Combat gear');
+		foo('G','Spellcaster gear');
+		foo('H','Lair treasure');
+		foo('I','Hoard');
+		
+		dd = document.createElement('div');
+		dd.style.margin = ".5em 0 .5em 0";
+		div.appendChild(dd);
+
+		dd.appendChild(document.createTextNode("Max treasure value"));
+		
+		function addMaxTreasureValue(pct) {
+			var radio = document.createElement('input');
+			radio.type = "radio";
+			radio.name = radioButtonSeq + '-radio';
+			radio.value = "value";
+			if(pct==100) radio.checked = true;
+			dd.appendChild(radio);
+			dd.appendChild(document.createTextNode(pct + "%"));
+		}
+		
+		addMaxTreasureValue(100);
+		addMaxTreasureValue(80);
+		addMaxTreasureValue(66);
+		addMaxTreasureValue(50);
+		addMaxTreasureValue(25);
+		addMaxTreasureValue(10);
+		
+		radioButtonSeq++;
 	}
 	
 	TreasureTypeSelector.prototype.toString = function() {
@@ -467,37 +397,72 @@
 	}
 	
 	TreasureTypeSelector.prototype.selectTreasureType = function(types) {
-		try {
-			this.checkboxes["A"].checked = types.indexOf("A") != -1
-			this.checkboxes["B"].checked = types.indexOf("B") != -1
-			this.checkboxes["C"].checked = types.indexOf("C") != -1
-			this.checkboxes["D"].checked = types.indexOf("D") != -1
-			this.checkboxes["E"].checked = types.indexOf("E") != -1
-			this.checkboxes["F"].checked = types.indexOf("F") != -1
-			this.checkboxes["G"].checked = types.indexOf("G") != -1
-			this.checkboxes["H"].checked = types.indexOf("H") != -1
-			this.checkboxes["I"].checked = types.indexOf("I") != -1
-//			this.overallBlock.reroll();
-		} catch (e) {
-			alert("TreasureTypeSelector.prototye.selecttypes: " + e);
-
-		}
-			
+		this.checkboxes["A"].checked = types.indexOf("A") != -1
+		this.checkboxes["B"].checked = types.indexOf("B") != -1
+		this.checkboxes["C"].checked = types.indexOf("C") != -1
+		this.checkboxes["D"].checked = types.indexOf("D") != -1
+		this.checkboxes["E"].checked = types.indexOf("E") != -1
+		this.checkboxes["F"].checked = types.indexOf("F") != -1
+		this.checkboxes["G"].checked = types.indexOf("G") != -1
+		this.checkboxes["H"].checked = types.indexOf("H") != -1
+		this.checkboxes["I"].checked = types.indexOf("I") != -1
 	}
 	
-	function TreasureBlock(div, overallTreasureBlock) {
+	function TreasureBlock(div, overallTreasureBlock, treasureIndex) {
 		this.div = div;
 		this.overallTreasureBlock = overallTreasureBlock;
+		this.treasureIndex = treasureIndex;
 		div.controller = this;
-		div.addChildNode(document.createTextNode('this is a treasure block'));
+		div.appendChild(document.createTextNode('this is a treasure block'));
+
+		var e
+		e = document.createElement("button");
+		e.innerHTML = "clear";
+		e.onclick = function() {
+			controller(this).clear();
+		};
+		div.appendChild(e);
+
+		e = document.createElement("button");
+		e.innerHTML = "reroll";
+		e.onclick = function() {
+			controller(this).reroll();
+		};
+		div.appendChild(e);
+
+		e = document.createElement("button");
+		e.innerHTML = "delete";
+		e.onclick = function() {
+			controller(this).delete();
+		};
+		div.appendChild(e);
 	}
 	
 	TreasureBlock.prototype.clear = function() {
 		this.overallTreasureBlock.calculateBudgetConsumed();	
 	}
 	
+	TreasureBlock.prototype.delete = function() {
+		for(var i = this.treasureIndex; i<this.overallTreasureBlock.treasuresCount-1; i++) {
+			this.overallTreasureBlock.treasures[i] = this.overallTreasureBlock.treasures[i+1];
+			this.overallTreasureBlock.treasures[i].treasureIndex = i;
+		}
+		
+		var tt = this.overallTreasureBlock.treasuresArea;
+		while(tt.childNodes.length != 0) {
+			tt.removeChild(tt.firstChild);
+		}
+		this.overallTreasureBlock.treasuresCount --;
+		
+		for(var i = 0; i<this.overallTreasureBlock.treasuresCount; i++) {
+			tt.appendChild(this.overallTreasureBlock.treasures[i].div);
+		}
+		
+		this.overallTreasureBlock.calculateBudgetConsumed();	
+	}
+	
 	TreasureBlock.prototype.getValue = function() {
-		return 0;
+		return 1000;
 	}
 	
 	TreasureBlock.prototype.reroll = function() {
