@@ -48,9 +48,11 @@
 <script type="text/javascript">
 	function initAll() {
 		try {
+			mainTreasureBlock = new OverallTreasureBlock(document
+					.getElementById("MAIN-TREASURE"), 0);
 			recalcTotalTreasureBudget();
 		} catch (e) {
-			alert(e);
+			alert("initAll " + e);
 		}
 	}
 
@@ -67,6 +69,11 @@
 	var t7_1_fast = [ 0, 4000, 8000, 1200, 1700, 2300, 3000, 3900, 5000, 6400,
 			8200, 10500, 13500, 17500, 22000, 29000, 38000, 48000, 62000,
 			79000, 100000 ];
+
+	var mainTreasureBlock;
+	
+	var npcCount = 0;
+	var npcList = new Array();
 
 	function recalcTotalTreasureBudget() {
 		try {
@@ -91,37 +98,134 @@
 			}
 
 			document.getElementById("totaltreasurebudget").innerHTML = totalTreasureBudget;
+			
+			var mainBudget = totalTreasureBudget;
+			
+			for(var i = 0; i<npcCount; i++) {
+				mainBudget -= npcList[i].budget;
+			}
+
+			mainTreasureBlock.setBudget(mainBudget);
 
 		} catch (e) {
-			alert(e);
+			alert("recalcTotalTreasureBudget: " + e);
+		}
+	}
+	
+	function repopulateSummary() {
+		
+	}
+	
+	function addNPCBlock() {
+		try {
+			var div = document.createElement('div');
+			document.getElementById('NPC-TREASURES').appendChild(div);
+			npcList[npcCount] = new OverallTreasureBlock(div, 100, true, npcCount);
+			npcCount ++;
+			recalcTotalTreasureBudget();
+		} catch (e) {
+			alert("addNPCBlock: " + e);
+		}
+	}
+	
+	function OverallTreasureBlock(div, budget, isNPCBlock, npcIndex) {
+		try {
+			this.div = div;
+			this.isNPCBlock = isNPCBlock;
+			this.npcIndex = npcIndex;
+			div.controller = this;
+
+			var e;
+			var ee;
+
+			div.appendChild(document.createElement("hr"));
+
+			e = document.createElement("span")
+			e.appendChild(document.createTextNode("Budget: "))
+			this.budgetSpan = document.createElement("span");
+			e.appendChild(this.budgetSpan);
+
+			div.appendChild(e);
+
+			e = document.createElement("button");
+			e.innerHTML = "reroll";
+			e.onclick = function() {
+				try {
+					controller(this).reroll();
+				}
+				catch(e) {
+					alert("reroll onclick: " + e);
+				}
+			};
+
+			div.appendChild(e);
+
+			if(isNPCBlock) {
+				e = document.createElement("button");
+				e.innerHTML = "delete";
+				e.onclick = function() {
+					try {
+						controller(this).delete();
+					}
+					catch(e) {
+						alert("reroll delete: " + e);
+					}
+				};
+
+				div.appendChild(e);
+				
+				// TODO: add NPC chooser
+			}
+			
+			this.chooseTypeArea = document.createElement("div");
+			div.appendChild(this.chooseTypeArea);
+			this.genArea = document.createElement("div");
+			div.appendChild(this.genArea);
+
+			this.setBudget(budget);
+		} catch (e) {
+			alert("OverallTreasureBlock(div, budget): " + e);
+
 		}
 	}
 
-	function OverallTreasureBlock() {
-		this.budget = 0;
-	}
-
-	OverallTreasureBlock.prototype.clear = function() {
-
-	}
-
 	OverallTreasureBlock.prototype.reroll = function() {
-		div.innerHTML = 'Overall treasure block, budget ' + this.budget;
+		try {
+			this.genArea.innerHTML = new Date();
+		} catch (e) {
+			alert("OverallTreasureBlock.prototype.reroll: " + e);
+
+		}
 	}
 
+	OverallTreasureBlock.prototype.delete = function() {
+		try {
+			this.genArea.innerHTML = new Date() + " TODO: delete NPC block " + this.npcIndex;
+		} catch (e) {
+			alert("OverallTreasureBlock.prototype.delete: " + e);
+
+		}
+	}
+	
 	OverallTreasureBlock.prototype.setBudget = function(budget) {
-		this.budget = budget;
-		this.reroll();
+		try {
+			this.budget = budget;
+			this.budgetSpan.innerHTML = budget;
+			this.reroll();
+		} catch (e) {
+			alert("OverallTreasureBlock.prototype.setBudge: " + e);
+
+		}
 	}
 
-	OverallTreasureBlock.prototype.populateSummary()
-	{
-		this.reroll();
-	}
+	// find the innermost enclosing node that has a "controller" object
 
-	OverallTreasureBlock.prototype.populateDivBlock(div)
-	{
-		div.innerHTML = 'Overall treasure block';
+	function controller(c) {
+		while (c) {
+			if (c.controller)
+				return c.controller;
+			c = c.parentNode;
+		}
 	}
 </script>
 <body onload="initAll()">
@@ -163,6 +267,8 @@
 		</select> Total treasure budget: <span class="money" id="totaltreasurebudget">0</span>
 
 		<button onclick="recalcTotalTreasureBudget()">Reroll all</button>
+
+		<button onclick="addNPCBlock()">Add NPC Block</button>
 	</div>
 
 
@@ -257,19 +363,18 @@
 				</div>
 			</div>
 		</div>
+		<div style="clear: both;"></div>
 		<div id="MAIN-TREASURE"></div>
+		<div style="clear: both;"></div>
 		<div id="NPC-TREASURES"></div>
-
 	</div>
 
-	<div style="clear: both;">
-		<hr>
-	</div>
+	<div style="clear: both;"></div>
+	<hr>
 
 	<font size="-1"> Paizo Publishing data used without permission. Using this generator without owning a paid-for copy of Ulimte Equipment is a chaotic act! Also, this generator won't be much use to you without one. <br>
 		Javascript code &copy; <a href="mailto:Paul Murray<pmurray@bigpond.com">Paul Murray</a> 2014. <a href="http://paulmurray.wordpress.com">Wordpress</a>, <a href="https://twitter.com/#!/PaulMurrayCbr">Twitter</a>, <a
 		href="http://www.facebook.com/PaulMurrayCbr">Facebook</a>.
 	</font>
-
 </body>
 </html>
