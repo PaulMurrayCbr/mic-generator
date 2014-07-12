@@ -141,6 +141,9 @@
 			this.npcIndex = npcIndex;
 			div.controller = this;
 
+			this.treasures = new Array();
+			this.treasuresCount = 0;
+			
 			var e;
 			var ee;
 			var eee;
@@ -177,6 +180,9 @@
 			e.appendChild(document.createTextNode("Budget: "))
 			this.budgetSpan = document.createElement("span");
 			e.appendChild(this.budgetSpan);
+			e.appendChild(document.createTextNode(", Consumed: "))
+			this.budgetConsumedSpan = document.createElement("span");
+			e.appendChild(this.budgetConsumedSpan);
 
 			div.appendChild(e);
 
@@ -188,7 +194,19 @@
 			this.treasureTypeSelector = new TreasureTypeSelector(this, this.chooseTypeArea);
 			
 			e = document.createElement("button");
-			e.innerHTML = "reroll";
+			e.innerHTML = "add one treasure";
+			e.onclick = function() {
+				try {
+					controller(this).addOne();
+				}
+				catch(e) {
+					alert("addOne onclick: " + e);
+				}
+			};
+			div.appendChild(e);
+
+			e = document.createElement("button");
+			e.innerHTML = "reroll all";
 			e.onclick = function() {
 				try {
 					controller(this).reroll();
@@ -201,7 +219,7 @@
 
 			if(isNPCBlock) {
 				e = document.createElement("button");
-				e.innerHTML = "delete";
+				e.innerHTML = "delete NPC";
 				e.onclick = function() {
 					try {
 						controller(this).delete();
@@ -223,9 +241,48 @@
 		}
 	}
 
+	OverallTreasureBlock.prototype.toString = function() {
+		return "OverallTreasureBlock " + this.npcIndex;
+	}
+	
 	OverallTreasureBlock.prototype.reroll = function() {
 		try {
 			this.genArea.innerHTML = new Date();
+			this.calculateBudgetConsumed();
+			repopulateSummary();
+		} catch (e) {
+			alert("OverallTreasureBlock.prototype.reroll: " + e);
+
+		}
+	}
+
+	OverallTreasureBlock.prototype.addOne = function() {
+		try {
+			if(this.budgetConsumed >= this.budget) {
+				alert("no budget remaining");
+				return;
+			}
+			
+			this.genArea.innerHTML = new Date();
+			this.calculateBudgetConsumed();
+			repopulateSummary();
+		} catch (e) {
+			alert("OverallTreasureBlock.prototype.addOne: " + e);
+
+		}
+	}
+
+	OverallTreasureBlock.prototype.calculateBudgetConsumed = function() {
+		try {
+			this.budgetConsumed = 0;
+			
+			for(var i =0; i<this.treasuresCount; i++) {
+				this.budgetConsumed += this.treasures.getValue();
+			}
+			
+			this.budgetConsumedSpan.innerHTML = this.budgetConsumed;
+			
+			// if we are recalculating the budget consumed, then something has changed.
 			repopulateSummary();
 		} catch (e) {
 			alert("OverallTreasureBlock.prototype.reroll: " + e);
@@ -269,6 +326,8 @@
 		}
 	}
 	
+	var radioButtonSeq = 0;
+	
 	function TreasureTypeSelector(overallBlock, div) {
 		try {
 			this.overallBlock = overallBlock;
@@ -278,6 +337,7 @@
 			
 			dd = document.createElement('div');
 			div.appendChild(dd);
+			dd.style.margin = ".5em 0 .5em 0";
 			
 			function creaturetype(name, treasure, extra, extratreasure) {
 				var lbl = document.createElement('span');
@@ -297,7 +357,7 @@
 					}
 				}
 				lbl.style.border = 'thin solid darkGray';
-				lbl.style.margin = '2px';
+				lbl.style.margin = '1px';
 				lbl.style.padding = '1px';
 				lbl.style.cursor = 'pointer';
 				lbl.onclick = function(event) { 
@@ -325,6 +385,7 @@
 			creaturetype('Vermin', 'ABD');
 			
 			dd = document.createElement('div');
+			dd.style.margin = ".5em 0 .5em 0";
 			div.appendChild(dd);
 
 			this.checkboxes = new Object();
@@ -334,13 +395,10 @@
 				var lbl = document.createElement('span');
 				var checkbox = document.createElement('input');
 				checkbox.type = "checkbox";
-				checkbox.name = "name";
-				checkbox.value = "value";
-				checkbox.id = "id";
 				lbl.appendChild(checkbox);
 				lbl.appendChild(document.createTextNode(type + " - " + label));
 				lbl.style.border = 'thin solid darkGray';
-				lbl.style.margin = '2px';
+				lbl.style.margin = '1px';
 				lbl.style.padding = '1px';
 				lbl.style.cursor = 'pointer';
 				lbl.mycheckbox = checkbox;
@@ -349,7 +407,7 @@
 				
 				lbl.onclick = function() {
 					this.mycheckbox.checked = !this.mycheckbox.checked;
-					controller(this).reroll();
+//					controller(this).overallBlock.reroll();
 					return true;
 				}
 				
@@ -357,7 +415,7 @@
 				
 				checkbox.onclick = function() {
 					this.checked = !this.checked;
-					controller(this).reroll();
+//					controller(this).overallBlock.reroll();
 					return true;
 				}
 			}
@@ -372,9 +430,40 @@
 			foo('H','Lair treasure');
 			foo('I','Hoard');
 			
+			dd = document.createElement('div');
+			dd.style.margin = ".5em 0 .5em 0";
+			div.appendChild(dd);
+
+			dd.appendChild(document.createTextNode("Max treasure value"));
+			
+			function addMaxTreasureValue(pct) {
+				var radio = document.createElement('input');
+				radio.type = "radio";
+				radio.name = radioButtonSeq + '-radio';
+				radio.value = "value";
+				if(pct==100) radio.checked = true;
+				dd.appendChild(radio);
+				dd.appendChild(document.createTextNode(pct + "%"));
+			}
+			
+			addMaxTreasureValue(100);
+			addMaxTreasureValue(80);
+			addMaxTreasureValue(66);
+			addMaxTreasureValue(50);
+			addMaxTreasureValue(25);
+			addMaxTreasureValue(10);
+			
+			radioButtonSeq++;
+
+			
+			
 		} catch (e) {
 			alert("TreasureTypeSelector(): " + e);
 		}
+	}
+	
+	TreasureTypeSelector.prototype.toString = function() {
+		return "TreasureTypeSelector for " + this.overallBlock;
 	}
 	
 	TreasureTypeSelector.prototype.selectTreasureType = function(types) {
@@ -388,12 +477,40 @@
 			this.checkboxes["G"].checked = types.indexOf("G") != -1
 			this.checkboxes["H"].checked = types.indexOf("H") != -1
 			this.checkboxes["I"].checked = types.indexOf("I") != -1
-			this.overallBlock.reroll();
+//			this.overallBlock.reroll();
 		} catch (e) {
 			alert("TreasureTypeSelector.prototye.selecttypes: " + e);
 
 		}
 			
+	}
+	
+	function TreasureBlock(div, overallTreasureBlock) {
+		this.div = div;
+		this.overallTreasureBlock = overallTreasureBlock;
+		div.controller = this;
+		div.addChildNode(document.createTextNode('this is a treasure block'));
+	}
+	
+	TreasureBlock.prototype.clear = function() {
+		this.overallTreasureBlock.calculateBudgetConsumed();	
+	}
+	
+	TreasureBlock.prototype.getValue = function() {
+		return 0;
+	}
+	
+	TreasureBlock.prototype.reroll = function() {
+		this.clear();
+		
+		if(this.overallTreasureBlock.budgetConsumed >= this.overallTreasureBlock.budget) {
+			return;
+		}
+
+		
+		// reroll based on the TreasureTypeSelector belonging to my overallTreasureBlock
+		// if there is 
+		this.overallTreasureBlock.calculateBudgetConsumed();	
 	}
 	
 	// find the innermost enclosing node that has a "controller" object
