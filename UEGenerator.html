@@ -180,6 +180,13 @@
 
 			div.appendChild(e);
 
+			var treasureType = document.createElement("div");
+			div.appendChild(treasureType);
+			
+			this.chooseTypeArea = document.createElement("div");
+			div.appendChild(this.chooseTypeArea);
+			this.treasureTypeSelector = new TreasureTypeSelector(this, this.chooseTypeArea);
+			
 			e = document.createElement("button");
 			e.innerHTML = "reroll";
 			e.onclick = function() {
@@ -190,7 +197,6 @@
 					alert("reroll onclick: " + e);
 				}
 			};
-
 			div.appendChild(e);
 
 			if(isNPCBlock) {
@@ -205,11 +211,8 @@
 					}
 				};
 				div.appendChild(e);
-				div.appendChild(document.createElement("br"));
 			}
-			
-			this.chooseTypeArea = document.createElement("div");
-			div.appendChild(this.chooseTypeArea);
+
 			this.genArea = document.createElement("div");
 			div.appendChild(this.genArea);
 
@@ -265,7 +268,55 @@
 
 		}
 	}
+	
+	function TreasureTypeSelector(overallBlock, div) {
+		try {
+			this.overallBlock = overallBlock;
+			this.div = div;
+			
+			function foo(type, label) {
+				var lbl = document.createElement('span');
+				var checkbox = document.createElement('input');
+				checkbox.type = "checkbox";
+				checkbox.name = "name";
+				checkbox.value = "value";
+				checkbox.id = "id";
+				lbl.appendChild(checkbox);
+				lbl.appendChild(document.createTextNode(type + " - " + label));
+				lbl.style.border = 'thin solid darkGray';
+				lbl.style.margin = '2px';
+				lbl.style.padding = '1px';
+				lbl.style.cursor = 'pointer';
+				lbl.mycheckbox = checkbox;
+				
+				lbl.onclick = function() {
+					this.mycheckbox.checked = !this.mycheckbox.checked;
+					controller(this).reroll();
+				}
+				
+				div.appendChild(lbl);
+				
+				checkbox.onchange = function() {
+					controller(this).reroll();
+				}
+			}
+			
+			foo('A','Coins');
+			foo('B','Coins/Gems');
+			foo('C','Art');
+			foo('D','Coins/Small objects');
+			foo('E','Armour and weapons');
+			foo('F','Combat gear');
+			foo('G','Spellcaster gear');
+			foo('H','Lair treasure');
+			foo('I','Hoard');
+			
+		} catch (e) {
+			alert("TreasureTypeSelector(): " + e);
 
+		}
+	}
+	
 	// find the innermost enclosing node that has a "controller" object
 
 	function controller(c) {
