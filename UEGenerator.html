@@ -1,0 +1,275 @@
+<html>
+<head>
+<title>Ultimate Equipment treasure generator</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- 
+	This HTML file is an implementation of the treasure generator in the Paizo's Ultimate Equipment, for the 
+	Pathfinder gaming sysytem. UE is copyright Paizo Publishing, and the data therin is used without permission.
+	
+	The code is copyright (c) 2014 Paul Murray, pmurray@bigpond.com, twitter PaulMurrayCbr, paulmurray.wordpress.com.
+	
+	License is Creative Commons "non-commercial with attribution"
+
+	(like, yeah right: I will totally sic my lawyers onto you if you diss my rights)
+	
+ -->
+
+<style type="text/css">
+.money {
+	border: thin solid gray;
+	text-align: right;
+	padding-left: .5em;
+	padding-right: .5em;
+	font-family: monospace;
+}
+
+.centercell {
+	border: thin solid gray;
+	text-align: center;
+	padding-left: .5em;
+	padding-right: .5em;
+}
+
+.cell {
+	border: thin solid gray;
+	text-align: left;
+	padding-left: .5em;
+	padding-right: .5em;
+}
+
+.cellNoB {
+	text-align: left;
+	padding-left: .5em;
+	padding-right: .5em;
+}
+</style>
+
+</head>
+<script type="text/javascript">
+	function initAll() {
+		try {
+			recalcTotalTreasureBudget();
+		} catch (e) {
+			alert(e);
+		}
+	}
+
+	// a global.
+
+	var totalTreasureBudget = 0;
+
+	var t7_1_slow = [ 0, 170, 350, 550, 750, 1000, 1350, 1750, 2200, 2850,
+			3650, 4650, 6000, 7750, 10000, 13000, 16500, 22000, 28000, 35000,
+			44000 ];
+	var t7_1_medium = [ 0, 260, 550, 800, 1150, 1550, 2000, 3600, 3350, 4250,
+			5450, 7000, 9000, 11600, 15000, 19500, 25000, 32000, 41000, 53000,
+			67000 ];
+	var t7_1_fast = [ 0, 4000, 8000, 1200, 1700, 2300, 3000, 3900, 5000, 6400,
+			8200, 10500, 13500, 17500, 22000, 29000, 38000, 48000, 62000,
+			79000, 100000 ];
+
+	function recalcTotalTreasureBudget() {
+		try {
+			var apl = parseInt(document.getElementById("APL").value);
+			var track;
+			if (document.getElementById("AdvancementRate").value == 'slow') {
+				track = t7_1_slow;
+			} else if (document.getElementById("AdvancementRate").value == 'fast') {
+				track = t7_1_fast;
+			} else {
+				track = t7_1_medium;
+			}
+
+			totalTreasureBudget = track[apl];
+
+			if (document.getElementById("APLMultiplier").value == 'incidental') {
+				totalTreasureBudget /= 2;
+			} else if (document.getElementById("APLMultiplier").value == 'double') {
+				totalTreasureBudget *= 2;
+			} else if (document.getElementById("APLMultiplier").value == 'triple') {
+				totalTreasureBudget *= 3;
+			}
+
+			document.getElementById("totaltreasurebudget").innerHTML = totalTreasureBudget;
+
+		} catch (e) {
+			alert(e);
+		}
+	}
+
+	function OverallTreasureBlock() {
+		this.budget = 0;
+	}
+
+	OverallTreasureBlock.prototype.clear = function() {
+
+	}
+
+	OverallTreasureBlock.prototype.reroll = function() {
+		div.innerHTML = 'Overall treasure block, budget ' + this.budget;
+	}
+
+	OverallTreasureBlock.prototype.setBudget = function(budget) {
+		this.budget = budget;
+		this.reroll();
+	}
+
+	OverallTreasureBlock.prototype.populateSummary()
+	{
+		this.reroll();
+	}
+
+	OverallTreasureBlock.prototype.populateDivBlock(div)
+	{
+		div.innerHTML = 'Overall treasure block';
+	}
+</script>
+<body onload="initAll()">
+	<div id="summary"margin:1em; ></div>
+
+	<div style="clear: both;"></div>
+
+	<div id="total treasure value"margin:1em; >
+		APL <select id="APL" onchange="recalcTotalTreasureBudget()">
+			<option value="1" selected="on">1</option>
+			<option value="2">2</option>
+			<option value="3">3</option>
+			<option value="4">4</option>
+			<option value="5">5</option>
+			<option value="6">6</option>
+			<option value="7">7</option>
+			<option value="8">8</option>
+			<option value="9">9</option>
+			<option value="10">10</option>
+			<option value="11">11</option>
+			<option value="12">12</option>
+			<option value="13">13</option>
+			<option value="14">14</option>
+			<option value="15">15</option>
+			<option value="16">16</option>
+			<option value="17">17</option>
+			<option value="18">18</option>
+			<option value="19">19</option>
+			<option value="20">20+</option>
+		</select> Amount: <select id="APLMultiplier" onchange="recalcTotalTreasureBudget()">
+			<option value="incidental">incidental</option>
+			<option value="standard" selected="on">standard</option>
+			<option value="double">double</option>
+			<option value="triple">triple</option>
+		</select> Advancement rate: <select id="AdvancementRate" onchange="recalcTotalTreasureBudget()">
+			<option value="slow">slow</option>
+			<option value="med" selected="on">medium</option>
+			<option value="fast">fast</option>
+		</select> Total treasure budget: <span class="money" id="totaltreasurebudget">0</span>
+
+		<button onclick="recalcTotalTreasureBudget()">Reroll all</button>
+	</div>
+
+
+	<div id="MAIN">
+		<div id="SUMMARY">
+			<div style="float: left; margin: 1em; padding: 1em;  border: thin solid black;">
+				<table border="0" cellspacing="0" cellpadding="0">
+					<tr>
+						<TD></TD>
+						<TH>Amt</TH>
+						<TH>Value</TH>
+					</tr>
+					<tr>
+						<TD>CP</TD>
+						<TD id="cp_amt" class="money">0</TD>
+						<TD id="cp_value" class="money">0.00</TD>
+					</tr>
+					<tr>
+						<TD>SP</TD>
+						<TD id="sp_amt" class="money">0</TD>
+						<TD id="sp_value" class="money">0.00</TD>
+					</tr>
+					<tr>
+						<TD>GP</TD>
+						<TD id="gp_amt" class="money">0</TD>
+						<TD id="gp_value" class="money">0.00</TD>
+					</tr>
+					<tr>
+						<TD>PP</TD>
+						<TD id="pp_amt" class="money">0</TD>
+						<TD id="pp_value" class="money">0.00</TD>
+					</tr>
+					<tr>
+						<TD>Subtotal</TD>
+						<TD colspan="2" id="currency_value" class="money">0.00</TD>
+					</tr>
+					<tr>
+						<TD>Gems</TD>
+						<TD colspan="2" id="gem_value" class="money">0.00</TD>
+					</tr>
+					<tr>
+						<TD>Art Objects</TD>
+						<TD colspan="2" id="art_value" class="money">0.00</TD>
+					</tr>
+					<tr>
+						<TD>Total</TD>
+						<TD colspan="2" id="total_value" class="money" style="font-weight: bold;">0.00</TD>
+					</tr>
+				</table>
+			</div>
+
+			<div style="float: left;"">
+				<div style="margin: 1em; padding: 1em; border: thin solid black;">
+					<table border="0" cellspacing="0" cellpadding="0">
+						<caption>Gems</caption>
+						<tbody id="gem_table">
+						</tbody>
+					</table>
+				</div>
+				<div style="margin: 1em; padding: 1em; border: thin solid black;">
+					<table border="0" cellspacing="0" cellpadding="0">
+						<caption>Art Objects</caption>
+						<tbody id="gem_table">
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<div style="float: left; margin: 1em; padding: 1em; border: thin solid black;">
+				<table border="0" cellspacing="0" cellpadding="0">
+					<caption>Items</caption>
+					<tbody id="item_table">
+					</tbody>
+				</table>
+			</div>
+
+			<div style="float: left;">
+				<div style="margin: 1em; padding: 1em; border: thin solid black;">
+					<table border="0" cellspacing="0" cellpadding="0">
+						<caption>Weapons</caption>
+						<tbody id="weapon_table">
+						</tbody>
+					</table>
+				</div>
+
+				<div style="margin: 1em; padding: 1em; border: thin solid black;">
+					<table border="0" cellspacing="0" cellpadding="0">
+						<caption>Armour</caption>
+						<tbody id="armour_table">
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div id="MAIN-TREASURE"></div>
+		<div id="NPC-TREASURES"></div>
+
+	</div>
+
+	<div style="clear: both;">
+		<hr>
+	</div>
+
+	<font size="-1"> Paizo Publishing data used without permission. Using this generator without owning a paid-for copy of Ulimte Equipment is a chaotic act! Also, this generator won't be much use to you without one. <br>
+		Javascript code &copy; <a href="mailto:Paul Murray<pmurray@bigpond.com">Paul Murray</a> 2014. <a href="http://paulmurray.wordpress.com">Wordpress</a>, <a href="https://twitter.com/#!/PaulMurrayCbr">Twitter</a>, <a
+		href="http://www.facebook.com/PaulMurrayCbr">Facebook</a>.
+	</font>
+
+</body>
+</html>
