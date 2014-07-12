@@ -113,20 +113,26 @@
 	}
 	
 	function repopulateSummary() {
+		try {
+		} catch (e) {
+			alert("repopulateSummary: " + e);
+		}
 		
 	}
 	
 	function addNPCBlock() {
 		try {
 			var div = document.createElement('div');
-			document.getElementById('NPC-TREASURES').appendChild(div);
 			npcList[npcCount] = new OverallTreasureBlock(div, 100, true, npcCount);
 			npcCount ++;
+			document.getElementById('NPC-TREASURES').appendChild(div);
 			recalcTotalTreasureBudget();
 		} catch (e) {
 			alert("addNPCBlock: " + e);
 		}
 	}
+	
+	var T7_2 = [0,260,390,780,1650,2400,3450,4650,6000,7800,10050,12750,16350,21000,27000,34800,45000,58500,75000,96000,123000,159000];
 	
 	function OverallTreasureBlock(div, budget, isNPCBlock, npcIndex) {
 		try {
@@ -137,9 +143,36 @@
 
 			var e;
 			var ee;
+			var eee;
 
 			div.appendChild(document.createElement("hr"));
 
+			if(isNPCBlock) {
+				e = document.createElement("span")
+				e.appendChild(document.createTextNode("NPC Level: "));
+				ee = document.createElement("select");
+				for(var i = 1; i<=21;i++) {
+					eee = document.createElement("option");
+					eee.text = i;
+					eee.value = i;
+					ee.appendChild(eee);
+				}
+				e.appendChild(ee);
+				ee.onchange = function() {
+					try {
+						controller(this).setBudget(T7_2[parseInt(ee.value)]);
+						recalcTotalTreasureBudget();
+					}
+					catch(ex)  {
+						alert("npc level onchange: " + ex);	
+					}
+				};
+				
+				div.appendChild(e);
+				budget = T7_2[1];
+			}
+			
+			
 			e = document.createElement("span")
 			e.appendChild(document.createTextNode("Budget: "))
 			this.budgetSpan = document.createElement("span");
@@ -171,10 +204,8 @@
 						alert("reroll delete: " + e);
 					}
 				};
-
 				div.appendChild(e);
-				
-				// TODO: add NPC chooser
+				div.appendChild(document.createElement("br"));
 			}
 			
 			this.chooseTypeArea = document.createElement("div");
@@ -192,6 +223,7 @@
 	OverallTreasureBlock.prototype.reroll = function() {
 		try {
 			this.genArea.innerHTML = new Date();
+			repopulateSummary();
 		} catch (e) {
 			alert("OverallTreasureBlock.prototype.reroll: " + e);
 
@@ -200,10 +232,26 @@
 
 	OverallTreasureBlock.prototype.delete = function() {
 		try {
-			this.genArea.innerHTML = new Date() + " TODO: delete NPC block " + this.npcIndex;
+			for(var i = this.npcIndex; i<npcCount-1; i++) {
+				npcList[i] = npcList[i+1];
+				npcList[i].npcIndex = i;
+			}
+			
+			var tt = document.getElementById('NPC-TREASURES');
+			while(tt.childNodes.length != 0) {
+				tt.removeChild(tt.firstChild);
+			}
+			npcCount --;
+			
+			for(var i = 0; i<npcCount; i++) {
+				tt.appendChild(npcList[i].div);
+			}
+			
+			repopulateSummary(); // redundant, because recalc does this anyway.
+			
+			recalcTotalTreasureBudget();
 		} catch (e) {
 			alert("OverallTreasureBlock.prototype.delete: " + e);
-
 		}
 	}
 	
