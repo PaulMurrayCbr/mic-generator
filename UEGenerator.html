@@ -219,17 +219,11 @@
 	}
 
 	OverallTreasureBlock.prototype.addOne = function() {
-		if(this.budgetConsumed >= this.budget) {
-			alert("no budget remaining");
-			return false;
-		}
-
 		var d = document.createElement('div');
 		this.treasuresArea.appendChild(d);
 		this.treasures[this.treasuresCount] = new TreasureBlock(d, this, this.treasuresCount);
 		this.treasuresCount++;
 		this.treasures[this.treasuresCount-1].reroll();
-		
 		return true;
 	}
 
