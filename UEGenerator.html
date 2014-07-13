@@ -932,233 +932,253 @@
 	var gp = new CoinDenomination('gp', 100);
 	var pp = new CoinDenomination('pp', 1000);
 	
+
 	treasureTypeAllocations.A = [
-	                         	new TreasureTypeAllocation('A',     1, [makeCoinPicker(5, 10, 1, cp), makeCoinPicker(3, 4, 1, sp)]),
-	                         	new TreasureTypeAllocation('A',     5, [makeCoinPicker(2, 6, 10, cp), makeCoinPicker(4, 8, 1, sp), makeCoinPicker(1, 4, 1, gp)]),
-	                         	new TreasureTypeAllocation('A',    10, [makeCoinPicker(5, 10, 10, cp), makeCoinPicker(5, 10, 1, sp), makeCoinPicker(1, 8, 1, gp)]),
-	                         	new TreasureTypeAllocation('A',    25, [makeCoinPicker(2, 4, 100, cp), makeCoinPicker(3, 6, 10, sp), makeCoinPicker(4, 4, 1, gp)]),
-	                         	new TreasureTypeAllocation('A',    50, [makeCoinPicker(4, 4, 100, cp), makeCoinPicker(4, 6, 10, sp), makeCoinPicker(8, 6, 1, gp)]),
-	                         	new TreasureTypeAllocation('A',   100, [makeCoinPicker(6, 8, 10, sp), makeCoinPicker(3, 4, 10, gp)]),
-	                         	new TreasureTypeAllocation('A',   200, [makeCoinPicker(2, 4, 100, sp), makeCoinPicker(4, 4, 10, gp), makeCoinPicker(2, 4, 1, pp)]),
-	                         	new TreasureTypeAllocation('A',   500, [makeCoinPicker(6, 6, 10, gp), makeCoinPicker(8, 6, 1, pp)]),
-	                         	new TreasureTypeAllocation('A',  1000, [makeCoinPicker(2, 4, 100, gp), makeCoinPicker(10, 10, 1, pp)]),
-	                         	new TreasureTypeAllocation('A',  5000, [makeCoinPicker(4, 8, 100, gp), makeCoinPicker(6, 10, 10, pp)]),
-	                         	new TreasureTypeAllocation('A', 10000, [makeCoinPicker(2, 4, 1000, gp), makeCoinPicker(12, 8, 10, pp)]),
-	                         	new TreasureTypeAllocation('A', 50000, [makeCoinPicker(2, 6, 1000, gp), makeCoinPicker(8, 10, 100, pp)])
-	                         	];
-	                         	
-	                         	treasureTypeAllocations.B = [
-	                         	new TreasureTypeAllocation('B',   10, ['Grade 1 gemstone']),
-	                         	new TreasureTypeAllocation('B',   15, [makeCoinPicker(2, 6, 10, cp), makeCoinPicker(4, 8, 1, sp), makeCoinPicker(1, 4, 1, gp), 'grade 1 gemstone']),
-	                         	new TreasureTypeAllocation('B',   25, [makeCoinPicker(5, 10, 1, sp), makeCoinPicker(1, 4, 1, gp), 'two grade 1 gemstones']),
-	                         	new TreasureTypeAllocation('B',   50, ['Grade 2 gemstone']),
-	                         	new TreasureTypeAllocation('B',   50, [makeCoinPicker(3, 6, 10, sp), makeCoinPicker(3, 6, 1, gp), 'three grade 1 gemstones']),
-	                         	new TreasureTypeAllocation('B',   75, [makeCoinPicker(1, 4, 10, sp), makeCoinPicker(1, 4, 1, gp), 'two grade 1 gemstones', 'grade 2 gemstone']),
-	                         	new TreasureTypeAllocation('B',  100, ['Grade 3 gemstone']),
-	                         	new TreasureTypeAllocation('B',  100, [makeCoinPicker(3, 8, 10, sp), makeCoinPicker(4, 8, 1, gp), 'two grade 1 gemstones', 'grade 2 gemstone']),
-	                         	new TreasureTypeAllocation('B',  150, ['Grade 2 gemstone', 'grade 3 gemstone']),
-	                         	new TreasureTypeAllocation('B',  200, [makeCoinPicker(3, 6, 10, sp), '2d4x10 gp', 'four grade 1 gemstones', 'grade 3 gemstone ']),
-	                         	new TreasureTypeAllocation('B',  250, [makeCoinPicker(2, 4, 10, gp), 'two grade 2 gemstones', 'grade 3 gemstone']),
-	                         	new TreasureTypeAllocation('B',  500, ['Grade 4 gemstone']),
-	                         	new TreasureTypeAllocation('B',  500, [makeCoinPicker(2, 4, 10, gp), makeCoinPicker(2, 4, 1, pp), 'two grade 2 gemstones', 'three grade 3 gemstones']),
-	                         	new TreasureTypeAllocation('B',  750, [makeCoinPicker(2, 4, 10, gp), 'two grade 2 gemstones', 'grade 3 gemstone', 'grade 4 gemstone']),
-	                         	new TreasureTypeAllocation('B', 1000, ['Grade 5 gemstone']),
-	                         	new TreasureTypeAllocation('B', 1000, [makeCoinPicker(3, 6, 10, gp), makeCoinPicker(4, 4, 1, pp), 'three grade 3 gemstones', 'grade 4 gemstone']),
-	                         	new TreasureTypeAllocation('B', 2500, [makeCoinPicker(2, 4, 100, gp), 'two grade 4 gemstones', 'grade 5 gemstone']),
-	                         	new TreasureTypeAllocation('B', 5000, ['Grade 6 gemstone']),
-	                         	new TreasureTypeAllocation('B', 5000, [makeCoinPicker(2, 4, 100, gp), '2d4x10 pp', 'two grade 4 gemstones', 'three grade 5 gemstones']),
-	                         	new TreasureTypeAllocation('B',10000, ['Five grade 5 gemstones', 'grade 6 gemstone']),
-	                         	new TreasureTypeAllocation('B',20000, [makeCoinPicker(4, 8, 100, gp), '6d10x10 pp', 'three grade 6 gemstones']),
-	                         	new TreasureTypeAllocation('B',50000, [makeCoinPicker(4, 4, 10, pp), 'ten grade 3 gemstones', 'four grade 4 gemstones', 'six grade 5 gemstones', 'eight grade 6 gemstones'])
-	                         	];
-	                         	
-
-	                         	treasureTypeAllocations.C = [
-	                         	new TreasureTypeAllocation('C', 50, ['Grade 1 art object']),
-	                         	new TreasureTypeAllocation('C', 100, ['Grade 2 art object']),
-	                         	new TreasureTypeAllocation('C', 100, ['Two grade 1 art objects']),
-	                         	new TreasureTypeAllocation('C', 150, ['Grade 1 art object', 'grade 2 art object']),
-	                         	new TreasureTypeAllocation('C', 200, ['Two grade 2 art objects']),
-	                         	new TreasureTypeAllocation('C', 250, ['Three grade 1 art objects', 'grade 2 art object']),
-	                         	new TreasureTypeAllocation('C', 500, ['Grade 3 art object']),
-	                         	new TreasureTypeAllocation('C', 500, ['Four grade 1 art objects', 'three grade 2 art objects']),
-	                         	new TreasureTypeAllocation('C', 750, ['Three grade 1 art objects', 'two grade 2 art objects', 'grade 3 art object']),
-	                         	new TreasureTypeAllocation('C', 1000, ['Grade 4 art object']),
-	                         	new TreasureTypeAllocation('C', 1000, ['Two grade 3 art objects']),
-	                         	new TreasureTypeAllocation('C', 1500, ['Grade 3 art object', 'grade 4 art object']),
-	                         	new TreasureTypeAllocation('C', 2000, ['Two grade 4 art objects']),
-	                         	new TreasureTypeAllocation('C', 2500, ['Five grade 2 art objects', 'two grade 3 art objects', 'grade 4 art object']),
-	                         	new TreasureTypeAllocation('C', 5000, ['Grade 5 art object']),
-	                         	new TreasureTypeAllocation('C', 5000, ['Four grade 3 art objects', 'three grade 4 art objects']),
-	                         	new TreasureTypeAllocation('C', 7500, ['Grade 3 art object', 'two grade 4 art objects', 'grade 5 art object']),
-	                         	new TreasureTypeAllocation('C', 10000, ['Grade 6 art object']),
-	                         	new TreasureTypeAllocation('C', 10000, ['Five grade 4 art objects', 'grade 5 art object']),
-	                         	new TreasureTypeAllocation('C', 15000, ['Grade 5 art object', 'grade 6 art object']),
-	                         	new TreasureTypeAllocation('C', 20000, ['Two grade 5 art objects', 'grade 6 art object']),
-	                         	new TreasureTypeAllocation('C', 50000, ['Ten grade 3 art objects', 'five grade 4 art objects', 'four grade 5 art objects', 'two grade 6 art objects'])
-	                         	];
-
-	                         	treasureTypeAllocations.D = [
-	                         	new TreasureTypeAllocation('D', 50, [makeCoinPicker(3, 6, 10, sp), makeCoinPicker(4, 4, 1, gp), 'lesser minor scroll']),
-	                         	new TreasureTypeAllocation('D', 50, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), 'lesser minor potion']),
-	                         	new TreasureTypeAllocation('D', 100, [makeCoinPicker(4, 6, 10, sp), makeCoinPicker(3, 10, 1, gp), 'lesser minor potion', 'lesser minor scroll']),
-	                         	new TreasureTypeAllocation('D', 150, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(6, 6, 1, gp), 'greater minor scroll']),
-	                         	new TreasureTypeAllocation('D', 200, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(4, 6, 1, gp), 'greater minor potion', 'lesser minor scroll']),
-	                         	new TreasureTypeAllocation('D', 250, [makeCoinPicker(3, 6, 10, sp), makeCoinPicker(3, 6, 1, gp), makeCoinPicker(1, 4, 1, pp), 'two lesser minor potions', 'greater minor scroll']),
-	                         	new TreasureTypeAllocation('D', 300, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(6, 6, 1, gp), 'greater minor potion', 'greater minor scroll']),
-	                         	new TreasureTypeAllocation('D', 400, ['Greater minor potion', 'two greater minor scrolls']),
-	                         	new TreasureTypeAllocation('D', 500, [makeCoinPicker(2, 4, 10, gp), makeCoinPicker(1, 4, 1, pp), 'lesser medium potion', 'greater minor scroll']),
-	                         	new TreasureTypeAllocation('D', 500, [makeCoinPicker(2, 4, 10, gp), makeCoinPicker(1, 4, 1, pp), 'two greater minor potions', 'greater minor scroll']),
-	                         	new TreasureTypeAllocation('D', 750, [makeCoinPicker(7, 6, 1, gp), 'greater minor scroll', 'lesser minor wand']),
-	                         	new TreasureTypeAllocation('D', 1000, [makeCoinPicker(4, 4, 10, gp), makeCoinPicker(3, 6, 1, pp), 'lesser medium potion', 'lesser medium scroll']),
-	                         	new TreasureTypeAllocation('D', 1000, [makeCoinPicker(2, 4, 10, gp), makeCoinPicker(2, 4, 1, pp), 'lesser medium potion', 'lesser minor wand']),
-	                         	new TreasureTypeAllocation('D', 1500, ['Greater minor wand']),
-	                         	new TreasureTypeAllocation('D', 1500, [makeCoinPicker(4, 4, 10, gp), makeCoinPicker(3, 6, 1, pp), 'greater medium potion', 'greater medium scroll']),
-	                         	new TreasureTypeAllocation('D', 2000, ['Greater medium potion', 'greater minor wand']),
-	                         	new TreasureTypeAllocation('D', 2000, [makeCoinPicker(2, 4, 10, gp), makeCoinPicker(2, 4, 1, pp), 'lesser medium potion', 'two greater medium scrolls']),
-	                         	new TreasureTypeAllocation('D', 3000, [makeCoinPicker(3, 6, 10, gp), makeCoinPicker(4, 4, 1, pp), 'greater medium potion', 'greater medium scroll', 'greater minor wand']),
-	                         	new TreasureTypeAllocation('D', 4000, [makeCoinPicker(3, 6, 10, gp), makeCoinPicker(4, 4, 1, pp), 'greater medium scroll', 'two greater minor wands']),
-	                         	new TreasureTypeAllocation('D', 5000, [makeCoinPicker(2, 4, 10, gp), makeCoinPicker(2, 4, 1, pp), 'three lesser major potions', 'two greater medium scrolls', 'greater minor wand ']),
-	                         	new TreasureTypeAllocation('D', 7500, [makeCoinPicker(2, 6, 1, pp), 'lesser major scroll', 'lesser medium wand']),
-	                         	new TreasureTypeAllocation('D', 7500, [makeCoinPicker(5, 6, 1, pp), 'two greater major potions', 'two greater major scrolls']),
-	                         	new TreasureTypeAllocation('D', 10000, ['Greater medium wand']),
-	                         	new TreasureTypeAllocation('D', 10000, [makeCoinPicker(4, 6, 1, pp), 'greater major potion', 'greater major scroll', 'lesser medium wand']),
-	                         	new TreasureTypeAllocation('D', 15000, ['Lesser major wand']),
-	                         	new TreasureTypeAllocation('D', 15000, [makeCoinPicker(9, 10, 1, pp), 'three greater major potions', 'two lesser major scrolls', 'greater medium wand']),
-	                         	new TreasureTypeAllocation('D', 20000, [makeCoinPicker(4, 4, 10, gp), '2d4x10 pp', 'two greater major potions', 'greater major scroll', 'lesser major wand']),
-	                         	new TreasureTypeAllocation('D', 20000, [makeCoinPicker(6, 6, 10, gp), 'three lesser major potions', 'greater major wand']),
-	                         	new TreasureTypeAllocation('D', 25000, ['Five greater major scrolls', 'greater medium wand']),
-	                         	new TreasureTypeAllocation('D', 30000, [makeCoinPicker(6, 6, 1, pp), 'four greater major potions', 'three greater major scrolls', 'greater major wand']),
-	                         	new TreasureTypeAllocation('D', 50000, [makeCoinPicker(8, 4, 10, pp), 'four greater major scrolls', 'two greater major wands'])
-	                         	];
-
-	                         	treasureTypeAllocations.E = [
-	                         	new TreasureTypeAllocation('E', 200, ['Masterwork light armor or shield']),
-	                         	new TreasureTypeAllocation('E', 300, ['Masterwork medium armor']),
-	                         	new TreasureTypeAllocation('E', 350, ['Masterwork weapon']),
-	                         	new TreasureTypeAllocation('E', 1000, ['Masterwork heavy armor']),
-	                         	new TreasureTypeAllocation('E', 1500, ['Lesser minor armor']),
-	                         	new TreasureTypeAllocation('E', 2500, ['Lesser minor weapon']),
-	                         	new TreasureTypeAllocation('E', 3000, ['Greater minor armor']),
-	                         	new TreasureTypeAllocation('E', 3000, ['Masterwork medium armor', 'masterwork shield', 'lesser minor weapon']),
-	                         	new TreasureTypeAllocation('E', 4000, ['Lesser minor armor', 'lesser minor weapon']),
-	                         	new TreasureTypeAllocation('E', 5500, ['Greater minor armor', 'lesser minor weapon']),
-	                         	new TreasureTypeAllocation('E', 6000, ['Greater minor weapon']),
-	                         	new TreasureTypeAllocation('E', 7500, ['Lesser minor armor', 'greater minor weapon']),
-	                         	new TreasureTypeAllocation('E', 8000, ['Greater minor armor', 'two lesser minor weapons']),
-	                         	new TreasureTypeAllocation('E', 9000, ['Greater minor armor', 'greater minor weapon']),
-	                         	new TreasureTypeAllocation('E', 10000, ['Lesser medium armor', 'lesser minor weapon']),
-	                         	new TreasureTypeAllocation('E', 13000, ['Lesser medium weapon']),
-	                         	new TreasureTypeAllocation('E', 13000, ['Lesser medium armor', 'greater minor weapon']),
-	                         	new TreasureTypeAllocation('E', 15000, ['Greater medium armor', 'lesser minor weapon']),
-	                         	new TreasureTypeAllocation('E', 20000, ['Lesser medium armor', 'lesser medium weapon']),
-	                         	new TreasureTypeAllocation('E', 25000, ['Greater minor armor', 'greater medium weapon']),
-	                         	new TreasureTypeAllocation('E', 30000, ['Lesser major armor', 'lesser minor weapon', 'greater minor weapon']),
-	                         	new TreasureTypeAllocation('E', 30000, ['Lesser medium armor', 'greater medium weapon']),
-	                         	new TreasureTypeAllocation('E', 35000, ['Lesser major armor', 'lesser medium weapon']),
-	                         	new TreasureTypeAllocation('E', 35000, ['Lesser minor armor', 'lesser major weapon']),
-	                         	new TreasureTypeAllocation('E', 40000, ['Greater major armor', 'greater minor weapon']),
-	                         	new TreasureTypeAllocation('E', 50000, ['Greater major armor', 'lesser medium weapon']),
-	                         	new TreasureTypeAllocation('E', 75000, ['Greater minor armor', 'greater major weapon']),
-	                         	new TreasureTypeAllocation('E', 100000, ['Greater major armor', 'greater major weapon'])
-	                         	];
-
-	                         	treasureTypeAllocations.F = [
-	                         	new TreasureTypeAllocation('F', 50, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), 'lesser minor potion']),
-	                         	new TreasureTypeAllocation('F', 250, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), 'masterwork light armor or shield', 'lesser minor potion']),
-	                         	new TreasureTypeAllocation('F', 350, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), 'masterwork medium armor', 'lesser minor potion']),
-	                         	new TreasureTypeAllocation('F', 400, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), 'masterwork weapon', 'lesser minor potion']),
-	                         	new TreasureTypeAllocation('F', 500, ['Masterwork weapon', 'greater minor potion ']),
-	                         	new TreasureTypeAllocation('F', 750, [makeCoinPicker(6, 6, 1, gp), 'masterwork medium armor', 'masterwork weapon', 'two lesser minor potions']),
-	                         	new TreasureTypeAllocation('F', 1000, ['Masterwork heavy armor']),
-	                         	new TreasureTypeAllocation('F', 1500, ['Masterwork heavy armor', 'masterwork weapon', 'greater minor potion']),
-	                         	new TreasureTypeAllocation('F', 2000, ['Lesser minor armor', 'masterwork weapon', 'two greater minor potions']),
-	                         	new TreasureTypeAllocation('F', 3000, ['Masterwork medium armor', 'lesser minor weapon', 'greater minor potion']),
-	                         	new TreasureTypeAllocation('F', 4000, ['Lesser minor armor', 'masterwork weapon', 'lesser minor wondrous item', 'greater minor potion']),
-	                         	new TreasureTypeAllocation('F', 5000, ['Masterwork medium armor', 'lesser minor weapon', 'lesser minor wondrous item', 'greater minor potion']),
-	                         	new TreasureTypeAllocation('F', 6000, ['Lesser minor armor', 'lesser minor weapon', 'lesser minor wondrous item']),
-	                         	new TreasureTypeAllocation('F', 7500, ['Greater minor armor', 'lesser minor weapon', 'lesser minor ring']),
-	                         	new TreasureTypeAllocation('F', 10000, ['Greater minor armor', 'lesser minor weapon', 'lesser minor ring', 'lesser minor wondrous item', 'three greater minor potions']),
-	                         	new TreasureTypeAllocation('F', 10000, ['Greater minor armor', 'greater minor weapon', 'two greater medium potions']),
-	                         	new TreasureTypeAllocation('F', 12500, ['Greater minor armor', 'lesser minor weapon', 'greater minor wondrous item', 'two greater medium potions']),
-	                         	new TreasureTypeAllocation('F', 15000, ['Greater minor armor', 'greater minor weapon', 'greater minor ring']),
-	                         	new TreasureTypeAllocation('F', 20000, ['Lesser medium armor', 'greater minor weapon', 'greater minor wondrous item', 'two greater medium potions']),
-	                         	new TreasureTypeAllocation('F', 25000, ['Lesser medium armor', 'lesser medium weapon', 'lesser minor ring', 'lesser minor wondrous item', 'two greater medium potions']),
-	                         	new TreasureTypeAllocation('F', 30000, ['Lesser medium armor', 'lesser medium weapon', 'two lesser minor rings', 'greater minor wondrous items']),
-	                         	new TreasureTypeAllocation('F', 40000, ['Lesser medium armor', 'lesser medium weapon', 'lesser medium ring', 'greater minor wondrous item', 'two greater medium potions']),
-	                         	new TreasureTypeAllocation('F', 50000, ['Greater medium armor', 'greater medium weapon', 'lesser medium wondrous item', 'two lesser major potions']),
-	                         	new TreasureTypeAllocation('F', 60000, ['Greater medium armor', 'greater medium weapon', 'two greater minor rings', 'two greater minor wondrous items']),
-	                         	new TreasureTypeAllocation('F', 75000, ['Lesser major armor', 'greater medium weapon', 'greater minor ring', 'greater medium wondrous item', 'three greater major potions']),
-	                         	new TreasureTypeAllocation('F', 100000, ['Lesser major armor', 'lesser major weapon', 'lesser medium ring', 'greater minor ring', 'two lesser medium wondrous items'])
-	                         	];
-
-	                         	treasureTypeAllocations.G = [
-	                         	new TreasureTypeAllocation('G', 50, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), 'lesser minor potion']),
-	                         	new TreasureTypeAllocation('G', 75, [makeCoinPicker(2, 4, 1, gp), 'lesser minor potion', 'lesser minor scroll']),
-	                         	new TreasureTypeAllocation('G', 100, ['Lesser minor potion', 'two lesser minor scrolls']),
-	                         	new TreasureTypeAllocation('G', 150, ['Lesser minor scroll', 'greater minor scroll']),
-	                         	new TreasureTypeAllocation('G', 200, ['Two lesser minor potions', 'greater minor scroll']),
-	                         	new TreasureTypeAllocation('G', 250, ['Two greater minor scrolls']),
-	                         	new TreasureTypeAllocation('G', 500, ['Three lesser minor potions', 'three greater minor scrolls']),
-	                         	new TreasureTypeAllocation('G', 750, ['Greater minor potion', 'lesser minor wand']),
-	                         	new TreasureTypeAllocation('G', 1000, [makeCoinPicker(7, 6, 1, gp), 'three greater minor scrolls', 'lesser minor wand']),
-	                         	new TreasureTypeAllocation('G', 1500, [makeCoinPicker(3, 6, 10, gp), 'Lesser medium potion', 'lesser medium scroll', 'lesser minor wand']),
-	                         	new TreasureTypeAllocation('G', 2000, [makeCoinPicker(2, 4, 10, gp), 'masterwork weapon', 'two lesser medium scrolls', 'lesser minor wand']),
-	                         	new TreasureTypeAllocation('G', 2500, ['Two greater medium potions', 'greater minor wand']),
-	                         	new TreasureTypeAllocation('G', 3000, ['Greater medium potion', 'two lesser medium scrolls', 'greater minor wand']),
-	                         	new TreasureTypeAllocation('G', 4000, ['Lesser minor wondrous item', 'greater medium potion', 'greater minor wand']),
-	                         	new TreasureTypeAllocation('G', 5000, ['Lesser minor ring', 'lesser minor wondrous item', 'two lesser medium scrolls']),
-	                         	new TreasureTypeAllocation('G', 6000, ['Lesser minor ring', 'lesser minor wondrous item', 'greater medium potion', 'greater minor wand']),
-	                         	new TreasureTypeAllocation('G', 7500, ['Two greater medium potions', 'lesser minor scroll', 'lesser medium wand ']),
-	                         	new TreasureTypeAllocation('G', 10000, ['Lesser minor ring', 'lesser minor wondrous item', 'lesser medium wand']),
-	                         	new TreasureTypeAllocation('G', 12500, ['Lesser minor ring', 'greater minor wondrous item', 'two greater medium scrolls', 'two greater minor wands']),
-	                         	new TreasureTypeAllocation('G', 15000, ['Lesser minor ring', 'lesser medium rod', 'lesser medium wand']),
-	                         	new TreasureTypeAllocation('G', 20000, ['Greater minor ring', 'greater minor wondrous item', 'greater medium potion', 'two greater medium scrolls', 'lesser medium wand']),
-	                         	new TreasureTypeAllocation('G', 25000, ['Lesser minor ring', 'lesser medium wand', 'greater medium wand', 'greater minor wondrous item']),
-	                         	new TreasureTypeAllocation('G', 30000, ['Greater minor ring', 'lesser medium wondrous item', 'lesser major scroll', 'greater medium wand']),
-	                         	new TreasureTypeAllocation('G', 40000, ['Lesser minor weapon', 'lesser medium staff', 'greater medium rod', 'two lesser minor wondrous items', 'lesser medium wand']),
-	                         	new TreasureTypeAllocation('G', 50000, ['Greater minor ring', 'two lesser medium wondrous items', 'lesser major potion', 'three greater medium scrolls', 'lesser major wand']),
-	                         	new TreasureTypeAllocation('G', 60000, ['Lesser medium staff', 'greater medium rod', 'greater medium wondrous item', 'greater medium potion', 'two lesser major scrolls', 'lesser medium wand']),
-	                         	new TreasureTypeAllocation('G', 75000, ['Lesser minor weapon', 'greater medium staff', 'greater medium wondrous item', 'three greater major scrolls', 'greater major wand']),
-	                         	new TreasureTypeAllocation('G', 100000, ['Lesser major ring', 'greater medium rod', 'lesser major staff', 'lesser major scroll', 'greater medium wand'])
-	                         	];
-
-	                         	treasureTypeAllocations.H = [
-	                         	new TreasureTypeAllocation('H', 500, [makeCoinPicker(4, 4, 100, cp), makeCoinPicker(3, 6, 10, sp), makeCoinPicker(2, 4, 10, gp), 'masterwork weapon', 'lesser minor potion', 'lesser minor scroll', 'grade 2 gemstone']),
-	                         	new TreasureTypeAllocation('H', 1000, [makeCoinPicker(2, 4, 100, cp), makeCoinPicker(2, 6, 100, sp), makeCoinPicker(6, 6, 1, gp), 'greater minor potion', 'greater minor scroll', 'lesser minor wand', 'three grade 1 gemstones']),
-	                         	new TreasureTypeAllocation('H', 2500, [makeCoinPicker(3, 6, 10, sp), makeCoinPicker(2, 4, 1, gp), 'masterwork heavy armor', 'masterwork weapon', 'two lesser medium potions', 'two greater minor scrolls', 'grade 2 gemstone']),
-	                         	new TreasureTypeAllocation('H', 5000, [makeCoinPicker(2, 4, 10, gp), makeCoinPicker(4, 6, 1, pp), 'masterwork weapon', 'lesser minor ring', 'greater medium potion', 'lesser medium scroll', 'greater minor wand']),
-	                         	new TreasureTypeAllocation('H', 7500, [makeCoinPicker(4, 4, 10, gp), makeCoinPicker(6, 6, 1, pp), 'lesser minor weapon', 'lesser minor wondrous item', 'two greater medium potions', 'greater minor wand', 'two grade 3 gemstones']),
-	                         	new TreasureTypeAllocation('H', 10000, [makeCoinPicker(4, 8, 10, gp), makeCoinPicker(6, 10, 1, pp), 'greater minor armor', 'lesser minor ring', 'lesser minor wondrous item', 'lesser medium scroll', 'greater minor wand', 'grade 4 gemstone']),
-	                         	new TreasureTypeAllocation('H', 15000, [makeCoinPicker(4, 4, 10, gp), makeCoinPicker(4, 4, 10, pp), 'greater minor armor', 'lesser minor wondrous item', 'two greater medium potions', 'two greater medium scrolls', 'lesser medium wand', 'one grade 3 gemstone']),
-	                         	new TreasureTypeAllocation('H', 20000, [makeCoinPicker(2, 4, 10, pp), 'greater minor ring', 'two lesser minor wondrous items', 'two greater medium potions', 'two lesser major scrolls', 'lesser medium wand']),
-	                         	new TreasureTypeAllocation('H', 25000, [makeCoinPicker(6, 10, 10, gp), makeCoinPicker(6, 6, 1, pp), 'lesser medium armor', 'lesser minor weapon', 'greater minor wondrous item', 'two lesser major scrolls', 'lesser medium wand', 'grade 4 gemstone']),
-	                         	new TreasureTypeAllocation('H', 30000, [makeCoinPicker(6, 6, 10, gp), makeCoinPicker(2, 4, 10, pp), 'greater minor weapon', 'lesser medium wondrous item', 'greater medium wand', 'three grade 3 gemstones']),
-	                         	new TreasureTypeAllocation('H', 40000, [makeCoinPicker(4, 4, 10, gp), makeCoinPicker(4, 4, 10, pp), 'lesser medium ring', 'lesser medium rod', 'two greater major potions', 'two lesser major scrolls', 'lesser major wand']),
-	                         	new TreasureTypeAllocation('H', 50000, [makeCoinPicker(4, 4, 10, pp), 'greater medium armor', 'lesser medium staff', 'lesser medium wondrous item', 'greater major scroll', 'lesser medium wand', 'grade 5 gemstone']),
-	                         	new TreasureTypeAllocation('H', 75000, [makeCoinPicker(2, 8, 100, gp), makeCoinPicker(4, 4, 10, pp), 'greater minor weapon', 'greater medium ring', 'greater medium staff', 'three greater major potions', 'greater major scroll', 'lesser major wand', 'grade 5 gemstone']),
-	                         	new TreasureTypeAllocation('H', 100000, [makeCoinPicker(8, 6, 100, gp), makeCoinPicker(4, 4, 10, pp), 'lesser major ring', 'lesser major wondrous item', 'three greater major potions', 'greater major scroll', 'lesser medium wand', 'two grade 5 gemstones', 'grade 6 gemstone'])
-	                         	];
-
-	                         	treasureTypeAllocations.I = [
-	                         	new TreasureTypeAllocation('I', 5000, [makeCoinPicker(4, 4, 1000, cp), makeCoinPicker(6, 6, 100, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(6, 6, 1, pp), 'lesser minor armor', 'greater minor wand', 'five grade 3 gemstones', 'grade 3 art object']),
-	                         	new TreasureTypeAllocation('I', 10000, [makeCoinPicker(4, 4, 1000, cp), makeCoinPicker(6, 6, 100, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(6, 6, 1, pp), 'greater minor armor', 'lesser minor weapon', 'lesser minor wondrous item', 'greater medium scroll', 'grade 4 gemstone', 'grade 3 art object']),
-	                         	new TreasureTypeAllocation('I', 15000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), 'greater minor ring', 'two lesser minor wondrous items', 'two greater medium potions', 'greater minor wand', 'grade 4 gemstone', 'grade 3 art object']),
-	                         	new TreasureTypeAllocation('I', 20000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), 'greater minor armor', 'lesser medium rod', 'greater minor wondrous item', 'two lesser major potions', 'greater medium scroll', 'three grade 3 art objects']),
-	                         	new TreasureTypeAllocation('I', 25000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), 'lesser medium staff', 'two lesser minor wondrous items', 'greater medium potion', 'lesser medium wand', 'two grade 2 gemstones', 'two grade 3 gemstones', 'grade 4 gemstone']),
-	                         	new TreasureTypeAllocation('I', 30000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), 'lesser medium armor', 'greater minor weapon', 'lesser medium wondrous item', 'two lesser major scrolls', 'grade 4 art object']),
-	                         	new TreasureTypeAllocation('I', 40000, [makeCoinPicker(4, 4, 1000, cp), makeCoinPicker(6, 6, 100, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(6, 6, 1, pp), 'lesser medium weapon', 'greater medium rod', 'greater major potion', 'greater medium scroll', 'lesser medium wand', 'three grade 3 art objects', 'two grade 4 art objects']),
-	                         	new TreasureTypeAllocation('I', 50000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), 'greater minor armor', 'two greater minor weapons', 'greater medium staff', 'greater minor wondrous item', 'grade 5 gemstone']),
-	                         	new TreasureTypeAllocation('I', 60000, [makeCoinPicker(2, 4, 10000, cp), makeCoinPicker(2, 4, 1000, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), 'greater medium weapon', 'greater medium rod', 'lesser medium wondrous item', 'greater major scroll', 'two greater minor wands', 'grade 4 gemstone', 'five grade 2 art objects']),
-	                         	new TreasureTypeAllocation('I', 75000, [makeCoinPicker(2, 4, 10000, cp), makeCoinPicker(2, 4, 1000, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), 'lesser major armor', 'greater medium ring', 'lesser medium staff', 'greater medium wand', 'grade 6 gemstone', 'grade 4 art object']),
-	                         	new TreasureTypeAllocation('I', 100000, [makeCoinPicker(2, 4, 10000, cp), makeCoinPicker(2, 4, 1000, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), 'lesser medium weapon', 'greater medium ring', 'lesser major rod', 'greater medium wondrous item', 'two greater major potions', 'lesser medium scroll', 'two grade 4 art objects']),
-	                         	new TreasureTypeAllocation('I', 125000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 8, 10, pp), 'greater major armor', 'lesser medium weapon', 'lesser major staff', 'two greater major scrolls', 'greater major wand', 'grade 6 gemstone', 'three grade 4 art objects']),
-	                         	new TreasureTypeAllocation('I', 150000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 8, 10, pp), 'greater medium armor', 'lesser major ring', 'greater major wondrous item', 'greater major wand']),
-	                         	new TreasureTypeAllocation('I', 200000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 8, 10, pp), 'greater major weapon', 'two lesser medium rings', 'lesser major staff', 'lesser major wondrous item', 'lesser major wand', 'three grade 5 gemstones', 'grade 4 gemstone ']),
-	                         	new TreasureTypeAllocation('I', 300000, [makeCoinPicker(8, 4, 10000, cp), makeCoinPicker(12, 6, 1000, sp), makeCoinPicker(8, 4, 100, gp), makeCoinPicker(2, 8, 10, pp), 'greater major weapon', 'lesser major ring', 'greater major staff', 'greater major wondrous item', 'greater medium wand', 'grade 6 gemstone', 'grade 6 art object'])
-	                         	];
-
+	new TreasureTypeAllocation('A',     1, [makeCoinPicker(5, 10, 1, cp), makeCoinPicker(3, 4, 1, sp)]),
+	new TreasureTypeAllocation('A',     5, [makeCoinPicker(2, 6, 10, cp), makeCoinPicker(4, 8, 1, sp), makeCoinPicker(1, 4, 1, gp)]),
+	new TreasureTypeAllocation('A',    10, [makeCoinPicker(5, 10, 10, cp), makeCoinPicker(5, 10, 1, sp), makeCoinPicker(1, 8, 1, gp)]),
+	new TreasureTypeAllocation('A',    25, [makeCoinPicker(2, 4, 100, cp), makeCoinPicker(3, 6, 10, sp), makeCoinPicker(4, 4, 1, gp)]),
+	new TreasureTypeAllocation('A',    50, [makeCoinPicker(4, 4, 100, cp), makeCoinPicker(4, 6, 10, sp), makeCoinPicker(8, 6, 1, gp)]),
+	new TreasureTypeAllocation('A',   100, [makeCoinPicker(6, 8, 10, sp), makeCoinPicker(3, 4, 10, gp)]),
+	new TreasureTypeAllocation('A',   200, [makeCoinPicker(2, 4, 100, sp), makeCoinPicker(4, 4, 10, gp), makeCoinPicker(2, 4, 1, pp)]),
+	new TreasureTypeAllocation('A',   500, [makeCoinPicker(6, 6, 10, gp), makeCoinPicker(8, 6, 1, pp)]),
+	new TreasureTypeAllocation('A',  1000, [makeCoinPicker(2, 4, 100, gp), makeCoinPicker(10, 10, 1, pp)]),
+	new TreasureTypeAllocation('A',  5000, [makeCoinPicker(4, 8, 100, gp), makeCoinPicker(6, 10, 10, pp)]),
+	new TreasureTypeAllocation('A', 10000, [makeCoinPicker(2, 4, 1000, gp), makeCoinPicker(12, 8, 10, pp)]),
+	new TreasureTypeAllocation('A', 50000, [makeCoinPicker(2, 6, 1000, gp), makeCoinPicker(8, 10, 100, pp)])
+	];
 	
+	treasureTypeAllocations.B = [
+	new TreasureTypeAllocation('B',   10, [plainString('Grade 1 gemstone')]),
+	new TreasureTypeAllocation('B',   15, [makeCoinPicker(2, 6, 10, cp), makeCoinPicker(4, 8, 1, sp), makeCoinPicker(1, 4, 1, gp), plainString('grade 1 gemstone')]),
+	new TreasureTypeAllocation('B',   25, [makeCoinPicker(5, 10, 1, sp), makeCoinPicker(1, 4, 1, gp), plainString('two grade 1 gemstones')]),
+	new TreasureTypeAllocation('B',   50, [plainString('Grade 2 gemstone')]),
+	new TreasureTypeAllocation('B',   50, [makeCoinPicker(3, 6, 10, sp), makeCoinPicker(3, 6, 1, gp), plainString('three grade 1 gemstones')]),
+	new TreasureTypeAllocation('B',   75, [makeCoinPicker(1, 4, 10, sp), makeCoinPicker(1, 4, 1, gp), plainString('two grade 1 gemstones'), plainString('grade 2 gemstone')]),
+	new TreasureTypeAllocation('B',  100, [plainString('Grade 3 gemstone')]),
+	new TreasureTypeAllocation('B',  100, [makeCoinPicker(3, 8, 10, sp), makeCoinPicker(4, 8, 1, gp), plainString('two grade 1 gemstones'), plainString('grade 2 gemstone')]),
+	new TreasureTypeAllocation('B',  150, [plainString('Grade 2 gemstone'), plainString('grade 3 gemstone')]),
+	new TreasureTypeAllocation('B',  200, [makeCoinPicker(3, 6, 10, sp), plainString('2d4x10 gp'), plainString('four grade 1 gemstones'), plainString('grade 3 gemstone ')]),
+	new TreasureTypeAllocation('B',  250, [makeCoinPicker(2, 4, 10, gp), plainString('two grade 2 gemstones'), plainString('grade 3 gemstone')]),
+	new TreasureTypeAllocation('B',  500, [plainString('Grade 4 gemstone')]),
+	new TreasureTypeAllocation('B',  500, [makeCoinPicker(2, 4, 10, gp), makeCoinPicker(2, 4, 1, pp), plainString('two grade 2 gemstones'), plainString('three grade 3 gemstones')]),
+	new TreasureTypeAllocation('B',  750, [makeCoinPicker(2, 4, 10, gp), plainString('two grade 2 gemstones'), plainString('grade 3 gemstone'), plainString('grade 4 gemstone')]),
+	new TreasureTypeAllocation('B', 1000, [plainString('Grade 5 gemstone')]),
+	new TreasureTypeAllocation('B', 1000, [makeCoinPicker(3, 6, 10, gp), makeCoinPicker(4, 4, 1, pp), plainString('three grade 3 gemstones'), plainString('grade 4 gemstone')]),
+	new TreasureTypeAllocation('B', 2500, [makeCoinPicker(2, 4, 100, gp), plainString('two grade 4 gemstones'), plainString('grade 5 gemstone')]),
+	new TreasureTypeAllocation('B', 5000, [plainString('Grade 6 gemstone')]),
+	new TreasureTypeAllocation('B', 5000, [makeCoinPicker(2, 4, 100, gp), plainString('2d4x10 pp'), plainString('two grade 4 gemstones'), plainString('three grade 5 gemstones')]),
+	new TreasureTypeAllocation('B',10000, [plainString('Five grade 5 gemstones'), plainString('grade 6 gemstone')]),
+	new TreasureTypeAllocation('B',20000, [makeCoinPicker(4, 8, 100, gp), plainString('6d10x10 pp'), plainString('three grade 6 gemstones')]),
+	new TreasureTypeAllocation('B',50000, [makeCoinPicker(4, 4, 10, pp), plainString('ten grade 3 gemstones'), plainString('four grade 4 gemstones'), plainString('six grade 5 gemstones'), plainString('eight grade 6 gemstones')])
+	];
+	
+
+	treasureTypeAllocations.C = [
+	new TreasureTypeAllocation('C', 50, [plainString('Grade 1 art object')]),
+	new TreasureTypeAllocation('C', 100, [plainString('Grade 2 art object')]),
+	new TreasureTypeAllocation('C', 100, [plainString('Two grade 1 art objects')]),
+	new TreasureTypeAllocation('C', 150, [plainString('Grade 1 art object'), plainString('grade 2 art object')]),
+	new TreasureTypeAllocation('C', 200, [plainString('Two grade 2 art objects')]),
+	new TreasureTypeAllocation('C', 250, [plainString('Three grade 1 art objects'), plainString('grade 2 art object')]),
+	new TreasureTypeAllocation('C', 500, [plainString('Grade 3 art object')]),
+	new TreasureTypeAllocation('C', 500, [plainString('Four grade 1 art objects'), plainString('three grade 2 art objects')]),
+	new TreasureTypeAllocation('C', 750, [plainString('Three grade 1 art objects'), plainString('two grade 2 art objects'), plainString('grade 3 art object')]),
+	new TreasureTypeAllocation('C', 1000, [plainString('Grade 4 art object')]),
+	new TreasureTypeAllocation('C', 1000, [plainString('Two grade 3 art objects')]),
+	new TreasureTypeAllocation('C', 1500, [plainString('Grade 3 art object'), plainString('grade 4 art object')]),
+	new TreasureTypeAllocation('C', 2000, [plainString('Two grade 4 art objects')]),
+	new TreasureTypeAllocation('C', 2500, [plainString('Five grade 2 art objects'), plainString('two grade 3 art objects'), plainString('grade 4 art object')]),
+	new TreasureTypeAllocation('C', 5000, [plainString('Grade 5 art object')]),
+	new TreasureTypeAllocation('C', 5000, [plainString('Four grade 3 art objects'), plainString('three grade 4 art objects')]),
+	new TreasureTypeAllocation('C', 7500, [plainString('Grade 3 art object'), plainString('two grade 4 art objects'), plainString('grade 5 art object')]),
+	new TreasureTypeAllocation('C', 10000, [plainString('Grade 6 art object')]),
+	new TreasureTypeAllocation('C', 10000, [plainString('Five grade 4 art objects'), plainString('grade 5 art object')]),
+	new TreasureTypeAllocation('C', 15000, [plainString('Grade 5 art object'), plainString('grade 6 art object')]),
+	new TreasureTypeAllocation('C', 20000, [plainString('Two grade 5 art objects'), plainString('grade 6 art object')]),
+	new TreasureTypeAllocation('C', 50000, [plainString('Ten grade 3 art objects'), plainString('five grade 4 art objects'), plainString('four grade 5 art objects'), plainString('two grade 6 art objects')])
+	];
+
+	treasureTypeAllocations.D = [
+	new TreasureTypeAllocation('D', 50, [makeCoinPicker(3, 6, 10, sp), makeCoinPicker(4, 4, 1, gp), plainString('lesser minor scroll')]),
+	new TreasureTypeAllocation('D', 50, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), plainString('lesser minor potion')]),
+	new TreasureTypeAllocation('D', 100, [makeCoinPicker(4, 6, 10, sp), makeCoinPicker(3, 10, 1, gp), plainString('lesser minor potion'), plainString('lesser minor scroll')]),
+	new TreasureTypeAllocation('D', 150, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(6, 6, 1, gp), plainString('greater minor scroll')]),
+	new TreasureTypeAllocation('D', 200, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(4, 6, 1, gp), plainString('greater minor potion'), plainString('lesser minor scroll')]),
+	new TreasureTypeAllocation('D', 250, [makeCoinPicker(3, 6, 10, sp), makeCoinPicker(3, 6, 1, gp), makeCoinPicker(1, 4, 1, pp), plainString('two lesser minor potions'), plainString('greater minor scroll')]),
+	new TreasureTypeAllocation('D', 300, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(6, 6, 1, gp), plainString('greater minor potion'), plainString('greater minor scroll')]),
+	new TreasureTypeAllocation('D', 400, [plainString('Greater minor potion'), plainString('two greater minor scrolls')]),
+	new TreasureTypeAllocation('D', 500, [makeCoinPicker(2, 4, 10, gp), makeCoinPicker(1, 4, 1, pp), plainString('lesser medium potion'), plainString('greater minor scroll')]),
+	new TreasureTypeAllocation('D', 500, [makeCoinPicker(2, 4, 10, gp), makeCoinPicker(1, 4, 1, pp), plainString('two greater minor potions'), plainString('greater minor scroll')]),
+	new TreasureTypeAllocation('D', 750, [makeCoinPicker(7, 6, 1, gp), plainString('greater minor scroll'), plainString('lesser minor wand')]),
+	new TreasureTypeAllocation('D', 1000, [makeCoinPicker(4, 4, 10, gp), makeCoinPicker(3, 6, 1, pp), plainString('lesser medium potion'), plainString('lesser medium scroll')]),
+	new TreasureTypeAllocation('D', 1000, [makeCoinPicker(2, 4, 10, gp), makeCoinPicker(2, 4, 1, pp), plainString('lesser medium potion'), plainString('lesser minor wand')]),
+	new TreasureTypeAllocation('D', 1500, [plainString('Greater minor wand')]),
+	new TreasureTypeAllocation('D', 1500, [makeCoinPicker(4, 4, 10, gp), makeCoinPicker(3, 6, 1, pp), plainString('greater medium potion'), plainString('greater medium scroll')]),
+	new TreasureTypeAllocation('D', 2000, [plainString('Greater medium potion'), plainString('greater minor wand')]),
+	new TreasureTypeAllocation('D', 2000, [makeCoinPicker(2, 4, 10, gp), makeCoinPicker(2, 4, 1, pp), plainString('lesser medium potion'), plainString('two greater medium scrolls')]),
+	new TreasureTypeAllocation('D', 3000, [makeCoinPicker(3, 6, 10, gp), makeCoinPicker(4, 4, 1, pp), plainString('greater medium potion'), plainString('greater medium scroll'), plainString('greater minor wand')]),
+	new TreasureTypeAllocation('D', 4000, [makeCoinPicker(3, 6, 10, gp), makeCoinPicker(4, 4, 1, pp), plainString('greater medium scroll'), plainString('two greater minor wands')]),
+	new TreasureTypeAllocation('D', 5000, [makeCoinPicker(2, 4, 10, gp), makeCoinPicker(2, 4, 1, pp), plainString('three lesser major potions'), plainString('two greater medium scrolls'), plainString('greater minor wand ')]),
+	new TreasureTypeAllocation('D', 7500, [makeCoinPicker(2, 6, 1, pp), plainString('lesser major scroll'), plainString('lesser medium wand')]),
+	new TreasureTypeAllocation('D', 7500, [makeCoinPicker(5, 6, 1, pp), plainString('two greater major potions'), plainString('two greater major scrolls')]),
+	new TreasureTypeAllocation('D', 10000, [plainString('Greater medium wand')]),
+	new TreasureTypeAllocation('D', 10000, [makeCoinPicker(4, 6, 1, pp), plainString('greater major potion'), plainString('greater major scroll'), plainString('lesser medium wand')]),
+	new TreasureTypeAllocation('D', 15000, [plainString('Lesser major wand')]),
+	new TreasureTypeAllocation('D', 15000, [makeCoinPicker(9, 10, 1, pp), plainString('three greater major potions'), plainString('two lesser major scrolls'), plainString('greater medium wand')]),
+	new TreasureTypeAllocation('D', 20000, [makeCoinPicker(4, 4, 10, gp), plainString('2d4x10 pp'), plainString('two greater major potions'), plainString('greater major scroll'), plainString('lesser major wand')]),
+	new TreasureTypeAllocation('D', 20000, [makeCoinPicker(6, 6, 10, gp), plainString('three lesser major potions'), plainString('greater major wand')]),
+	new TreasureTypeAllocation('D', 25000, [plainString('Five greater major scrolls'), plainString('greater medium wand')]),
+	new TreasureTypeAllocation('D', 30000, [makeCoinPicker(6, 6, 1, pp), plainString('four greater major potions'), plainString('three greater major scrolls'), plainString('greater major wand')]),
+	new TreasureTypeAllocation('D', 50000, [makeCoinPicker(8, 4, 10, pp), plainString('four greater major scrolls'), plainString('two greater major wands')])
+	];
+
+	treasureTypeAllocations.E = [
+	new TreasureTypeAllocation('E', 200, [plainString('Masterwork light armor or shield')]),
+	new TreasureTypeAllocation('E', 300, [plainString('Masterwork medium armor')]),
+	new TreasureTypeAllocation('E', 350, [plainString('Masterwork weapon')]),
+	new TreasureTypeAllocation('E', 1000, [plainString('Masterwork heavy armor')]),
+	new TreasureTypeAllocation('E', 1500, [plainString('Lesser minor armor')]),
+	new TreasureTypeAllocation('E', 2500, [plainString('Lesser minor weapon')]),
+	new TreasureTypeAllocation('E', 3000, [plainString('Greater minor armor')]),
+	new TreasureTypeAllocation('E', 3000, [plainString('Masterwork medium armor'), plainString('masterwork shield'), plainString('lesser minor weapon')]),
+	new TreasureTypeAllocation('E', 4000, [plainString('Lesser minor armor'), plainString('lesser minor weapon')]),
+	new TreasureTypeAllocation('E', 5500, [plainString('Greater minor armor'), plainString('lesser minor weapon')]),
+	new TreasureTypeAllocation('E', 6000, [plainString('Greater minor weapon')]),
+	new TreasureTypeAllocation('E', 7500, [plainString('Lesser minor armor'), plainString('greater minor weapon')]),
+	new TreasureTypeAllocation('E', 8000, [plainString('Greater minor armor'), plainString('two lesser minor weapons')]),
+	new TreasureTypeAllocation('E', 9000, [plainString('Greater minor armor'), plainString('greater minor weapon')]),
+	new TreasureTypeAllocation('E', 10000, [plainString('Lesser medium armor'), plainString('lesser minor weapon')]),
+	new TreasureTypeAllocation('E', 13000, [plainString('Lesser medium weapon')]),
+	new TreasureTypeAllocation('E', 13000, [plainString('Lesser medium armor'), plainString('greater minor weapon')]),
+	new TreasureTypeAllocation('E', 15000, [plainString('Greater medium armor'), plainString('lesser minor weapon')]),
+	new TreasureTypeAllocation('E', 20000, [plainString('Lesser medium armor'), plainString('lesser medium weapon')]),
+	new TreasureTypeAllocation('E', 25000, [plainString('Greater minor armor'), plainString('greater medium weapon')]),
+	new TreasureTypeAllocation('E', 30000, [plainString('Lesser major armor'), plainString('lesser minor weapon'), plainString('greater minor weapon')]),
+	new TreasureTypeAllocation('E', 30000, [plainString('Lesser medium armor'), plainString('greater medium weapon')]),
+	new TreasureTypeAllocation('E', 35000, [plainString('Lesser major armor'), plainString('lesser medium weapon')]),
+	new TreasureTypeAllocation('E', 35000, [plainString('Lesser minor armor'), plainString('lesser major weapon')]),
+	new TreasureTypeAllocation('E', 40000, [plainString('Greater major armor'), plainString('greater minor weapon')]),
+	new TreasureTypeAllocation('E', 50000, [plainString('Greater major armor'), plainString('lesser medium weapon')]),
+	new TreasureTypeAllocation('E', 75000, [plainString('Greater minor armor'), plainString('greater major weapon')]),
+	new TreasureTypeAllocation('E', 100000, [plainString('Greater major armor'), plainString('greater major weapon')])
+	];
+
+	treasureTypeAllocations.F = [
+	new TreasureTypeAllocation('F', 50, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), plainString('lesser minor potion')]),
+	new TreasureTypeAllocation('F', 250, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), plainString('masterwork light armor or shield'), plainString('lesser minor potion')]),
+	new TreasureTypeAllocation('F', 350, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), plainString('masterwork medium armor'), plainString('lesser minor potion')]),
+	new TreasureTypeAllocation('F', 400, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), plainString('masterwork weapon'), plainString('lesser minor potion')]),
+	new TreasureTypeAllocation('F', 500, [plainString('Masterwork weapon'), plainString('greater minor potion ')]),
+	new TreasureTypeAllocation('F', 750, [makeCoinPicker(6, 6, 1, gp), plainString('masterwork medium armor'), plainString('masterwork weapon'), plainString('two lesser minor potions')]),
+	new TreasureTypeAllocation('F', 1000, [plainString('Masterwork heavy armor')]),
+	new TreasureTypeAllocation('F', 1500, [plainString('Masterwork heavy armor'), plainString('masterwork weapon'), plainString('greater minor potion')]),
+	new TreasureTypeAllocation('F', 2000, [plainString('Lesser minor armor'), plainString('masterwork weapon'), plainString('two greater minor potions')]),
+	new TreasureTypeAllocation('F', 3000, [plainString('Masterwork medium armor'), plainString('lesser minor weapon'), plainString('greater minor potion')]),
+	new TreasureTypeAllocation('F', 4000, [plainString('Lesser minor armor'), plainString('masterwork weapon'), plainString('lesser minor wondrous item'), plainString('greater minor potion')]),
+	new TreasureTypeAllocation('F', 5000, [plainString('Masterwork medium armor'), plainString('lesser minor weapon'), plainString('lesser minor wondrous item'), plainString('greater minor potion')]),
+	new TreasureTypeAllocation('F', 6000, [plainString('Lesser minor armor'), plainString('lesser minor weapon'), plainString('lesser minor wondrous item')]),
+	new TreasureTypeAllocation('F', 7500, [plainString('Greater minor armor'), plainString('lesser minor weapon'), plainString('lesser minor ring')]),
+	new TreasureTypeAllocation('F', 10000, [plainString('Greater minor armor'), plainString('lesser minor weapon'), plainString('lesser minor ring'), plainString('lesser minor wondrous item'), plainString('three greater minor potions')]),
+	new TreasureTypeAllocation('F', 10000, [plainString('Greater minor armor'), plainString('greater minor weapon'), plainString('two greater medium potions')]),
+	new TreasureTypeAllocation('F', 12500, [plainString('Greater minor armor'), plainString('lesser minor weapon'), plainString('greater minor wondrous item'), plainString('two greater medium potions')]),
+	new TreasureTypeAllocation('F', 15000, [plainString('Greater minor armor'), plainString('greater minor weapon'), plainString('greater minor ring')]),
+	new TreasureTypeAllocation('F', 20000, [plainString('Lesser medium armor'), plainString('greater minor weapon'), plainString('greater minor wondrous item'), plainString('two greater medium potions')]),
+	new TreasureTypeAllocation('F', 25000, [plainString('Lesser medium armor'), plainString('lesser medium weapon'), plainString('lesser minor ring'), plainString('lesser minor wondrous item'), plainString('two greater medium potions')]),
+	new TreasureTypeAllocation('F', 30000, [plainString('Lesser medium armor'), plainString('lesser medium weapon'), plainString('two lesser minor rings'), plainString('greater minor wondrous items')]),
+	new TreasureTypeAllocation('F', 40000, [plainString('Lesser medium armor'), plainString('lesser medium weapon'), plainString('lesser medium ring'), plainString('greater minor wondrous item'), plainString('two greater medium potions')]),
+	new TreasureTypeAllocation('F', 50000, [plainString('Greater medium armor'), plainString('greater medium weapon'), plainString('lesser medium wondrous item'), plainString('two lesser major potions')]),
+	new TreasureTypeAllocation('F', 60000, [plainString('Greater medium armor'), plainString('greater medium weapon'), plainString('two greater minor rings'), plainString('two greater minor wondrous items')]),
+	new TreasureTypeAllocation('F', 75000, [plainString('Lesser major armor'), plainString('greater medium weapon'), plainString('greater minor ring'), plainString('greater medium wondrous item'), plainString('three greater major potions')]),
+	new TreasureTypeAllocation('F', 100000, [plainString('Lesser major armor'), plainString('lesser major weapon'), plainString('lesser medium ring'), plainString('greater minor ring'), plainString('two lesser medium wondrous items')])
+	];
+
+	treasureTypeAllocations.G = [
+	new TreasureTypeAllocation('G', 50, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), plainString('lesser minor potion')]),
+	new TreasureTypeAllocation('G', 75, [makeCoinPicker(2, 4, 1, gp), plainString('lesser minor potion'), plainString('lesser minor scroll')]),
+	new TreasureTypeAllocation('G', 100, [plainString('Lesser minor potion'), plainString('two lesser minor scrolls')]),
+	new TreasureTypeAllocation('G', 150, [plainString('Lesser minor scroll'), plainString('greater minor scroll')]),
+	new TreasureTypeAllocation('G', 200, [plainString('Two lesser minor potions'), plainString('greater minor scroll')]),
+	new TreasureTypeAllocation('G', 250, [plainString('Two greater minor scrolls')]),
+	new TreasureTypeAllocation('G', 500, [plainString('Three lesser minor potions'), plainString('three greater minor scrolls')]),
+	new TreasureTypeAllocation('G', 750, [plainString('Greater minor potion'), plainString('lesser minor wand')]),
+	new TreasureTypeAllocation('G', 1000, [makeCoinPicker(7, 6, 1, gp), plainString('three greater minor scrolls'), plainString('lesser minor wand')]),
+	new TreasureTypeAllocation('G', 1500, [makeCoinPicker(3, 6, 10, gp), plainString('Lesser medium potion'), plainString('lesser medium scroll'), plainString('lesser minor wand')]),
+	new TreasureTypeAllocation('G', 2000, [makeCoinPicker(2, 4, 10, gp), plainString('masterwork weapon'), plainString('two lesser medium scrolls'), plainString('lesser minor wand')]),
+	new TreasureTypeAllocation('G', 2500, [plainString('Two greater medium potions'), plainString('greater minor wand')]),
+	new TreasureTypeAllocation('G', 3000, [plainString('Greater medium potion'), plainString('two lesser medium scrolls'), plainString('greater minor wand')]),
+	new TreasureTypeAllocation('G', 4000, [plainString('Lesser minor wondrous item'), plainString('greater medium potion'), plainString('greater minor wand')]),
+	new TreasureTypeAllocation('G', 5000, [plainString('Lesser minor ring'), plainString('lesser minor wondrous item'), plainString('two lesser medium scrolls')]),
+	new TreasureTypeAllocation('G', 6000, [plainString('Lesser minor ring'), plainString('lesser minor wondrous item'), plainString('greater medium potion'), plainString('greater minor wand')]),
+	new TreasureTypeAllocation('G', 7500, [plainString('Two greater medium potions'), plainString('lesser minor scroll'), plainString('lesser medium wand ')]),
+	new TreasureTypeAllocation('G', 10000, [plainString('Lesser minor ring'), plainString('lesser minor wondrous item'), plainString('lesser medium wand')]),
+	new TreasureTypeAllocation('G', 12500, [plainString('Lesser minor ring'), plainString('greater minor wondrous item'), plainString('two greater medium scrolls'), plainString('two greater minor wands')]),
+	new TreasureTypeAllocation('G', 15000, [plainString('Lesser minor ring'), plainString('lesser medium rod'), plainString('lesser medium wand')]),
+	new TreasureTypeAllocation('G', 20000, [plainString('Greater minor ring'), plainString('greater minor wondrous item'), plainString('greater medium potion'), plainString('two greater medium scrolls'), plainString('lesser medium wand')]),
+	new TreasureTypeAllocation('G', 25000, [plainString('Lesser minor ring'), plainString('lesser medium wand'), plainString('greater medium wand'), plainString('greater minor wondrous item')]),
+	new TreasureTypeAllocation('G', 30000, [plainString('Greater minor ring'), plainString('lesser medium wondrous item'), plainString('lesser major scroll'), plainString('greater medium wand')]),
+	new TreasureTypeAllocation('G', 40000, [plainString('Lesser minor weapon'), plainString('lesser medium staff'), plainString('greater medium rod'), plainString('two lesser minor wondrous items'), plainString('lesser medium wand')]),
+	new TreasureTypeAllocation('G', 50000, [plainString('Greater minor ring'), plainString('two lesser medium wondrous items'), plainString('lesser major potion'), plainString('three greater medium scrolls'), plainString('lesser major wand')]),
+	new TreasureTypeAllocation('G', 60000, [plainString('Lesser medium staff'), plainString('greater medium rod'), plainString('greater medium wondrous item'), plainString('greater medium potion'), plainString('two lesser major scrolls'), plainString('lesser medium wand')]),
+	new TreasureTypeAllocation('G', 75000, [plainString('Lesser minor weapon'), plainString('greater medium staff'), plainString('greater medium wondrous item'), plainString('three greater major scrolls'), plainString('greater major wand')]),
+	new TreasureTypeAllocation('G', 100000, [plainString('Lesser major ring'), plainString('greater medium rod'), plainString('lesser major staff'), plainString('lesser major scroll'), plainString('greater medium wand')])
+	];
+
+	treasureTypeAllocations.H = [
+	new TreasureTypeAllocation('H', 500, [makeCoinPicker(4, 4, 100, cp), makeCoinPicker(3, 6, 10, sp), makeCoinPicker(2, 4, 10, gp), plainString('masterwork weapon'), plainString('lesser minor potion'), plainString('lesser minor scroll'), plainString('grade 2 gemstone')]),
+	new TreasureTypeAllocation('H', 1000, [makeCoinPicker(2, 4, 100, cp), makeCoinPicker(2, 6, 100, sp), makeCoinPicker(6, 6, 1, gp), plainString('greater minor potion'), plainString('greater minor scroll'), plainString('lesser minor wand'), plainString('three grade 1 gemstones')]),
+	new TreasureTypeAllocation('H', 2500, [makeCoinPicker(3, 6, 10, sp), makeCoinPicker(2, 4, 1, gp), plainString('masterwork heavy armor'), plainString('masterwork weapon'), plainString('two lesser medium potions'), plainString('two greater minor scrolls'), plainString('grade 2 gemstone')]),
+	new TreasureTypeAllocation('H', 5000, [makeCoinPicker(2, 4, 10, gp), makeCoinPicker(4, 6, 1, pp), plainString('masterwork weapon'), plainString('lesser minor ring'), plainString('greater medium potion'), plainString('lesser medium scroll'), plainString('greater minor wand')]),
+	new TreasureTypeAllocation('H', 7500, [makeCoinPicker(4, 4, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser minor weapon'), plainString('lesser minor wondrous item'), plainString('two greater medium potions'), plainString('greater minor wand'), plainString('two grade 3 gemstones')]),
+	new TreasureTypeAllocation('H', 10000, [makeCoinPicker(4, 8, 10, gp), makeCoinPicker(6, 10, 1, pp), plainString('greater minor armor'), plainString('lesser minor ring'), plainString('lesser minor wondrous item'), plainString('lesser medium scroll'), plainString('greater minor wand'), plainString('grade 4 gemstone')]),
+	new TreasureTypeAllocation('H', 15000, [makeCoinPicker(4, 4, 10, gp), makeCoinPicker(4, 4, 10, pp), plainString('greater minor armor'), plainString('lesser minor wondrous item'), plainString('two greater medium potions'), plainString('two greater medium scrolls'), plainString('lesser medium wand'), plainString('one grade 3 gemstone')]),
+	new TreasureTypeAllocation('H', 20000, [makeCoinPicker(2, 4, 10, pp), plainString('greater minor ring'), plainString('two lesser minor wondrous items'), plainString('two greater medium potions'), plainString('two lesser major scrolls'), plainString('lesser medium wand')]),
+	new TreasureTypeAllocation('H', 25000, [makeCoinPicker(6, 10, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser medium armor'), plainString('lesser minor weapon'), plainString('greater minor wondrous item'), plainString('two lesser major scrolls'), plainString('lesser medium wand'), plainString('grade 4 gemstone')]),
+	new TreasureTypeAllocation('H', 30000, [makeCoinPicker(6, 6, 10, gp), makeCoinPicker(2, 4, 10, pp), plainString('greater minor weapon'), plainString('lesser medium wondrous item'), plainString('greater medium wand'), plainString('three grade 3 gemstones')]),
+	new TreasureTypeAllocation('H', 40000, [makeCoinPicker(4, 4, 10, gp), makeCoinPicker(4, 4, 10, pp), plainString('lesser medium ring'), plainString('lesser medium rod'), plainString('two greater major potions'), plainString('two lesser major scrolls'), plainString('lesser major wand')]),
+	new TreasureTypeAllocation('H', 50000, [makeCoinPicker(4, 4, 10, pp), plainString('greater medium armor'), plainString('lesser medium staff'), plainString('lesser medium wondrous item'), plainString('greater major scroll'), plainString('lesser medium wand'), plainString('grade 5 gemstone')]),
+	new TreasureTypeAllocation('H', 75000, [makeCoinPicker(2, 8, 100, gp), makeCoinPicker(4, 4, 10, pp), plainString('greater minor weapon'), plainString('greater medium ring'), plainString('greater medium staff'), plainString('three greater major potions'), plainString('greater major scroll'), plainString('lesser major wand'), plainString('grade 5 gemstone')]),
+	new TreasureTypeAllocation('H', 100000, [makeCoinPicker(8, 6, 100, gp), makeCoinPicker(4, 4, 10, pp), plainString('lesser major ring'), plainString('lesser major wondrous item'), plainString('three greater major potions'), plainString('greater major scroll'), plainString('lesser medium wand'), plainString('two grade 5 gemstones'), plainString('grade 6 gemstone')])
+	];
+
+	treasureTypeAllocations.I = [
+	new TreasureTypeAllocation('I', 5000, [makeCoinPicker(4, 4, 1000, cp), makeCoinPicker(6, 6, 100, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser minor armor'), plainString('greater minor wand'), plainString('five grade 3 gemstones'), plainString('grade 3 art object')]),
+	new TreasureTypeAllocation('I', 10000, [makeCoinPicker(4, 4, 1000, cp), makeCoinPicker(6, 6, 100, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(6, 6, 1, pp), plainString('greater minor armor'), plainString('lesser minor weapon'), plainString('lesser minor wondrous item'), plainString('greater medium scroll'), plainString('grade 4 gemstone'), plainString('grade 3 art object')]),
+	new TreasureTypeAllocation('I', 15000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('greater minor ring'), plainString('two lesser minor wondrous items'), plainString('two greater medium potions'), plainString('greater minor wand'), plainString('grade 4 gemstone'), plainString('grade 3 art object')]),
+	new TreasureTypeAllocation('I', 20000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('greater minor armor'), plainString('lesser medium rod'), plainString('greater minor wondrous item'), plainString('two lesser major potions'), plainString('greater medium scroll'), plainString('three grade 3 art objects')]),
+	new TreasureTypeAllocation('I', 25000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser medium staff'), plainString('two lesser minor wondrous items'), plainString('greater medium potion'), plainString('lesser medium wand'), plainString('two grade 2 gemstones'), plainString('two grade 3 gemstones'), plainString('grade 4 gemstone')]),
+	new TreasureTypeAllocation('I', 30000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser medium armor'), plainString('greater minor weapon'), plainString('lesser medium wondrous item'), plainString('two lesser major scrolls'), plainString('grade 4 art object')]),
+	new TreasureTypeAllocation('I', 40000, [makeCoinPicker(4, 4, 1000, cp), makeCoinPicker(6, 6, 100, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser medium weapon'), plainString('greater medium rod'), plainString('greater major potion'), plainString('greater medium scroll'), plainString('lesser medium wand'), plainString('three grade 3 art objects'), plainString('two grade 4 art objects')]),
+	new TreasureTypeAllocation('I', 50000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('greater minor armor'), plainString('two greater minor weapons'), plainString('greater medium staff'), plainString('greater minor wondrous item'), plainString('grade 5 gemstone')]),
+	new TreasureTypeAllocation('I', 60000, [makeCoinPicker(2, 4, 10000, cp), makeCoinPicker(2, 4, 1000, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('greater medium weapon'), plainString('greater medium rod'), plainString('lesser medium wondrous item'), plainString('greater major scroll'), plainString('two greater minor wands'), plainString('grade 4 gemstone'), plainString('five grade 2 art objects')]),
+	new TreasureTypeAllocation('I', 75000, [makeCoinPicker(2, 4, 10000, cp), makeCoinPicker(2, 4, 1000, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('lesser major armor'), plainString('greater medium ring'), plainString('lesser medium staff'), plainString('greater medium wand'), plainString('grade 6 gemstone'), plainString('grade 4 art object')]),
+	new TreasureTypeAllocation('I', 100000, [makeCoinPicker(2, 4, 10000, cp), makeCoinPicker(2, 4, 1000, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('lesser medium weapon'), plainString('greater medium ring'), plainString('lesser major rod'), plainString('greater medium wondrous item'), plainString('two greater major potions'), plainString('lesser medium scroll'), plainString('two grade 4 art objects')]),
+	new TreasureTypeAllocation('I', 125000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 8, 10, pp), plainString('greater major armor'), plainString('lesser medium weapon'), plainString('lesser major staff'), plainString('two greater major scrolls'), plainString('greater major wand'), plainString('grade 6 gemstone'), plainString('three grade 4 art objects')]),
+	new TreasureTypeAllocation('I', 150000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 8, 10, pp), plainString('greater medium armor'), plainString('lesser major ring'), plainString('greater major wondrous item'), plainString('greater major wand')]),
+	new TreasureTypeAllocation('I', 200000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 8, 10, pp), plainString('greater major weapon'), plainString('two lesser medium rings'), plainString('lesser major staff'), plainString('lesser major wondrous item'), plainString('lesser major wand'), plainString('three grade 5 gemstones'), plainString('grade 4 gemstone ')]),
+	new TreasureTypeAllocation('I', 300000, [makeCoinPicker(8, 4, 10000, cp), makeCoinPicker(12, 6, 1000, sp), makeCoinPicker(8, 4, 100, gp), makeCoinPicker(2, 8, 10, pp), plainString('greater major weapon'), plainString('lesser major ring'), plainString('greater major staff'), plainString('greater major wondrous item'), plainString('greater medium wand'), plainString('grade 6 gemstone'), plainString('grade 6 art object')])
+	];
+
+	// plain string is a placeholder class, allowing us to 	   
+	// build the meta-classes
+
+	function plainString(s) {
+		return new PlainString(s)
+	}
+	
+	function PlainString(s) {
+		this.s = s;
+	}
+	                         	
+	PlainString.prototype.toString = function() {
+		return this.s;
+	}
+
+	PlainString.prototype.reroll = function(treasureBlock) {
+		treasureBlock.generatedItems.push(this.s)
+		treasureBlock.generatedSpan.appendChild(document.createTextNode(this.s));
+	}
+	                         	
 	// this function builds a coin picker based on a parameter string
 	function makeCoinPicker(n, d, mul, denom) {
 		return new CoinPicker(n, d, mul, denom);
