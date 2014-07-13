@@ -59,6 +59,22 @@
 		npcCount = 0;
 		recalcTotalTreasureBudget();
 	}
+	
+	function rnd(dd) {
+		var r = Math.random();
+		r = r * dd
+		r = Math.floor(r)
+		return r;
+	}
+
+	function roll(n, dd) {
+		var t = 0;
+		while (n > 0) {
+			n--;
+			t += rnd(dd) + 1;
+		}
+		return t;
+	}
 
 	// a global.
 
@@ -300,18 +316,100 @@
 			}
 		}
 		
-		this.treasuresArea.appendChild(document.createTextNode(new Date()));
 		this.calculateBudgetConsumed();
 		repopulateSummary();
 	}
 
 	OverallTreasureBlock.prototype.addOne = function() {
+		// ok. How much budge do we have remainning?
+				
 		var d = document.createElement('div');
 		this.treasuresArea.appendChild(d);
-		this.treasures[this.treasuresCount] = new TreasureBlock(d, this, this.treasuresCount);
+		
+		var treasureBlock =  new TreasureBlock(d, this, this.treasuresCount);
+		this.treasures[this.treasuresCount] = treasureBlock;
 		this.treasuresCount++;
-		this.treasures[this.treasuresCount-1].reroll();
-		return true;
+		
+		var budgetRemaining = this.budget - this.budgetConsumed;
+		
+		var chosenType = 'A'
+			var chosenIndex = -1
+
+		chooseComboSettings: {
+			if(budgetRemaining <= 0) break chooseComboSettings;
+			
+			var cheese = 100;
+			for(var i = 0; i<this.treasureTypeSelector.howMuchCheese.length;i++ ) {
+				var cheesyButton = this.treasureTypeSelector.howMuchCheese[i];
+				if(cheesyButton.checked) {
+					cheese = parseInt(cheesyButton.data_ming);
+				}
+			}
+			
+				
+			// do this in two rounds. 
+			// first, use the cheese limit. 
+			// If that fails, use maximmum cheese. 
+			for(var zz=0;chosenIndex == -1 && zz<=1;zz++) {
+				var maximumBudget;
+				if(zz == 0) {
+					maximumBudget = this.budget*cheese/100
+					if(maximumBudget > budgetRemaining) {
+						maximumBudget = budgetRemaining
+					}
+				}
+				else {
+					maximumBudget = budgetRemaining
+				}
+				// ok. What lists does the user want me to pick from?
+				var types = this.treasureTypeSelector.getSelectedTypes();
+				
+				while(types.length > 0 && chosenIndex == -1) {
+					var idx = rnd(types.length);
+					chosenType = types[idx];
+					types.splice(idx, 1);
+					chosenIndex = pickATreasureFromList(chosenType, maximumBudget)
+				}
+				
+			}
+
+			// nothing worked. Meh - add moneys.
+			if(chosenIndex != -1) {
+				treasureBlock.typeSelector.value = chosenType;
+				treasureBlock.setType(chosenType);
+				treasureBlock.budgetSelector.value = chosenIndex;
+				treasureBlock.setAllocationIndex(chosenIndex);
+			}			
+		}
+		
+		treasureBlock.reroll();
+		return chosenIndex != -1;
+	}
+	
+	function pickATreasureFromList(whichList, maximumBudget) {
+		var list = treasureTypeAllocations[whichList]
+		if(list[0].budget > maximumBudget) return -1;
+		
+		var biggestBudget = list[0].budget;
+		var biggestBudgetCount = 1;
+		var biggestBudgetStartPoint = 0;
+		
+		for(var i = 1; i<list.length; i++) {
+			if(list[i].budget > maximumBudget) {
+				break;
+			}
+			else if(list[i].budget == biggestBudget) {
+				biggestBudgetCount ++;
+			}
+			else {
+				biggestBudget = list[i].budget;
+				biggestBudgetCount = 1;
+				biggestBudgetStartPoint = i;
+			}
+		}
+
+		// pick one of the items at that budget point.
+		return biggestBudgetStartPoint + rnd(biggestBudgetCount);
 	}
 
 	OverallTreasureBlock.prototype.calculateBudgetConsumed = function() {
@@ -322,6 +420,16 @@
 		}
 		
 		this.budgetConsumedSpan.innerHTML = this.budgetConsumed;
+		if(this.budgetConsumed > this.budget) {
+			this.budgetConsumedSpan.style.color = 'red'
+		}
+		else
+		if(this.budgetConsumed < this.budget) {
+			this.budgetConsumedSpan.style.color = 'black'
+		}
+		else {
+			this.budgetConsumedSpan.style.color = 'blue'
+		}
 		
 		// if we are recalculating the budget consumed, then something has changed.
 		repopulateSummary();
@@ -453,16 +561,21 @@
 		dd.style.margin = ".5em 0 .5em 0";
 		div.appendChild(dd);
 
-		dd.appendChild(document.createTextNode("Max treasure value"));
+		dd.appendChild(document.createTextNode("Max individual treasure value"));
+		
+		this.howMuchCheese = [];
+		var howMuchCheese = this.howMuchCheese;
 		
 		function addMaxTreasureValue(pct) {
 			var radio = document.createElement('input');
+			radio.data_ming = pct
 			radio.type = "radio";
 			radio.name = radioButtonSeq + '-radio';
 			radio.value = "value";
 			if(pct==100) radio.checked = true;
 			dd.appendChild(radio);
 			dd.appendChild(document.createTextNode(pct + "%"));
+			howMuchCheese.push(radio);
 		}
 		
 		addMaxTreasureValue(100);
@@ -485,6 +598,24 @@
 			this.checkboxes[t].checked = types.indexOf(t) != -1
 		}
 	}
+	
+	TreasureTypeSelector.prototype.getSelectedTypes = function() {
+		var selected = [];
+
+		for(var i = 'A'.charCodeAt(0); i<='I'.charCodeAt(0);i++) {
+			var type = String.fromCharCode(i);
+			if(this.checkboxes[type].checked) {
+				selected.push(type);
+			}
+		}		
+		
+		if(selected.length == 0) {
+			// money is always acceptable
+			selected.push('A');
+		}
+		return selected;
+	}
+	
 	
 	function TreasureBlock(div, overallTreasureBlock, treasureIndex) {
 		this.div = div;
@@ -609,7 +740,7 @@
 		for(var i = 0; i<allocationV.length; i++) {
 			eee = document.createElement("option");
 			eee.value = i;
-			eee.text = allocationV[i].budget + ": " + allocationV[i].describeItems();
+			eee.text = allocationV[i].budget;
 			this.budgetSelector.appendChild(eee);
 		}
 		
@@ -675,7 +806,6 @@
 				sp.style.border = 'thin solid darkgray';
 				sp.appendChild(document.createTextNode(result));
 				sp.appendChild(document.createTextNode(' '));
-				sp.appendChild(document.createTextNode(new Date()));
 				treasureBlock.generatedSpan.appendChild(sp);
 			}
 		}
