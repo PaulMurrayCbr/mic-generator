@@ -242,30 +242,20 @@
 			
 			if(generatedGold.picker.denom == cp) {
 				summaryCP += generatedGold.picker.mul * generatedGold.roll.amt;
-				document.getElementById('cp_amt').innerHTML = summaryCP;
-				document.getElementById('cp_value').innerHTML = cpToString(summaryCP);
 			}
 			else if(generatedGold.picker.denom == sp) {
 				summarySP += generatedGold.picker.mul * generatedGold.roll.amt;
-				document.getElementById('sp_amt').innerHTML = summarySP;
-				document.getElementById('sp_value').innerHTML = cpToString(summarySP*10);
 			}
 			else if(generatedGold.picker.denom == gp) {
 				summaryGP += generatedGold.picker.mul * generatedGold.roll.amt;
-				document.getElementById('gp_amt').innerHTML = summaryGP;
-				document.getElementById('gp_value').innerHTML = cpToString(summaryGP*100);
 			}
 			else if(generatedGold.picker.denom == pp) {
 				summaryPP += generatedGold.picker.mul * generatedGold.roll.amt;
-				document.getElementById('pp_amt').innerHTML = summaryPP;
-				document.getElementById('pp_value').innerHTML = cpToString(summaryPP*1000);
 			}
 			else {
 				document.getElementById('sp_value').innerHTML = new Date() 
 			}
 			
-			document.getElementById('currency_value').innerHTML = cpToString(summaryCP+summarySP*10+summaryGP*100+summaryPP*1000);
-			document.getElementById('total_value').innerHTML = cpToString(summaryCP+summarySP*10+summaryGP*100+summaryPP*1000+summaryGEMS*100+summaryART*100);
 			
 		}
 
@@ -276,6 +266,7 @@
 			span.style.padding = "2px";
 			span.appendChild(document.createTextNode(generatedGems));
 			document.getElementById('gem_table').appendChild(span);
+			summaryGEMS += generatedGems.getValue();
 		}
 		for(var i = 0; i<treasure.generatedArt.length; i++) {
 			var generatedArt = treasure.generatedArt[i]
@@ -309,6 +300,19 @@
 			span.appendChild(document.createTextNode(generatedArmour));
 			document.getElementById('armour_table').appendChild(span);
 		}
+		
+		document.getElementById('cp_amt').innerHTML = summaryCP;
+		document.getElementById('cp_value').innerHTML = cpToString(summaryCP);
+		document.getElementById('sp_amt').innerHTML = summarySP;
+		document.getElementById('sp_value').innerHTML = cpToString(summarySP*10);
+		document.getElementById('gp_amt').innerHTML = summaryGP;
+		document.getElementById('gp_value').innerHTML = cpToString(summaryGP*100);
+		document.getElementById('pp_amt').innerHTML = summaryPP;
+		document.getElementById('pp_value').innerHTML = cpToString(summaryPP*1000);
+		document.getElementById('currency_value').innerHTML = cpToString(summaryCP+summarySP*10+summaryGP*100+summaryPP*1000);
+		document.getElementById('gem_value').innerHTML = cpToString(summaryGEMS*100);
+		document.getElementById('total_value').innerHTML = cpToString(summaryCP+summarySP*10+summaryGP*100+summaryPP*1000+summaryGEMS+summaryART);
+		
 	}
 
 	
@@ -949,7 +953,7 @@
 	];
 	
 	treasureTypeAllocations.B = [
-	new TreasureTypeAllocation('B',   10, [plainString('Grade 1 gemstone')]),
+	new TreasureTypeAllocation('B',   10, [gemPicker(1)]),
 	new TreasureTypeAllocation('B',   15, [makeCoinPicker(2, 6, 10, cp), makeCoinPicker(4, 8, 1, sp), makeCoinPicker(1, 4, 1, gp), plainString('grade 1 gemstone')]),
 	new TreasureTypeAllocation('B',   25, [makeCoinPicker(5, 10, 1, sp), makeCoinPicker(1, 4, 1, gp), mult(2, plainString('grade 1 gemstones'))]),
 	new TreasureTypeAllocation('B',   50, [plainString('Grade 2 gemstone')]),
@@ -1179,6 +1183,59 @@
 		treasureBlock.generatedSpan.appendChild(document.createTextNode(this.s));
 	}
 	                         	
+	function gemPicker(grade) {
+		return new GemPicker(grade)
+	}
+	
+	function GemPicker(grade) {
+		this.grade = grade;
+	}
+	                         	
+	GemPicker.prototype.toString = function() {
+		return 'Grade ' + this.grade + ' gem';
+	}
+
+	GemPicker.prototype.reroll = function(treasureBlock) {
+		var result = new GemResult(this.grade);
+		treasureBlock.generatedGems.push(result)
+		treasureBlock.generatedSpan.appendChild(document.createTextNode(result));
+	}
+
+	function GemValueRoller(base, n,d,mul) {
+		this.base = base;
+		this.n = n;
+		this.d = d;
+		this.mul=mul;
+	}
+	
+	var gemValueRollers = [
+	                       null,
+	                       new GemValueRoller(5,2,4,1),
+	                       new GemValueRoller(25,2,4,5),
+	                       new GemValueRoller(50,2,4,10),
+	                       new GemValueRoller(250,2,4,50),
+	                       new GemValueRoller(500,2,4,100),
+	                       new GemValueRoller(2500,2,4,500)
+	                       ];
+	
+	GemValueRoller.prototype.getRoll = function() {
+		return this.base + roll(this.n, this.d) * this.mul;	 
+	}
+	
+	function GemResult(grade) {
+		this.grade=grade;
+		this.base=gemValueRollers[grade].getRoll();
+		this.worked = (rnd(2) == 1);
+	}
+	
+	GemResult.prototype.getValue = function() {
+		return this.worked ? this.base : this.base/2;
+	}
+
+	GemResult.prototype.toString = function() {
+		return 'Grade ' + this.grade + ' gem ' + (this.worked?'':'(unworked) ') + this.getValue() + "gp";
+	}
+	
 	function mult(howmany, generator) {
 		return new Multiple(howmany, generator);
 	}
