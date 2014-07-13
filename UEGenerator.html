@@ -131,6 +131,94 @@
 		return Math.floor(cp/100) + "." + Math.floor((cp%100)/10) + Math.floor((cp%10))
 	}
 	
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	var d100roller = new DiceRoller(1, 100, 0);
+
+	function D100Picker(v) {
+		this.v = v;
+		if(!v) { throw "D100Picker("+v+")";}
+	}
+
+	D100Picker.prototype.toString = function() {return "D100Picker( " + this.v +")";}
+
+	D100Picker.prototype.add = function(a, b, item) {
+		if(!item) throw "no item for D100.add";
+		var row = new D100Row(this, a, b, item);
+		for(var i = a; i<= b; i++) {
+			this.v[i] = row;
+		}
+	}
+
+	D100Picker.prototype.gen = function() {
+		return new D100Pick(this, d100roller.gen());
+	}
+
+	D100Picker.prototype.validate = function(msg) {
+		for(var i = 1; i < 100; i++) {
+			if(!this.v[i]) {
+				throw "D100 validation fail: no item " + i + " on " + this + ": " + msg;
+			}	
+		}
+	}
+
+	function D100Row(gen, a, b, item) {
+		this.gen = gen;
+		this.a = a;
+		this.b = b;
+		this.item = item;
+		
+		if(!gen) throw "no gen for d100Row";
+		if(!item) throw "no item for d100Row";
+	}
+	
+	D100Row.prototype.toString = function() {try{return "D100Row("+this.a+"-" + this.b + ": " + this.item.toString()+")";}catch(ex){return ex;}}
+
+	function D100Pick(gen, roll) {
+		this.gen = gen;
+		this.roll = roll;
+		this.v = gen.v;
+		
+		this.row = this.v[roll.amt];
+		
+		if(!this.row) throw (this + " failed to have value for " + roll); 
+		
+		this.item = this.row.item;
+		
+		if(this.item.gen) {
+			this.generated = this.item.gen(gen);
+		}
+		else {
+			this.generated = this.item;
+		}
+	}
+
+	D100Pick.prototype.toString = function() {try{
+		
+		var g,r,rr,gg;
+		try {g = this.gen.toString();}catch(e){g=e.toString();}
+		try {r = this.roll.toString();}catch(e){g=e.toString();}
+		try {rr = this.row.toString();}catch(e){g=e.toString();}
+		try {gg = this.generated.toString();}catch(e){gg=e.toString();}
+		
+		return "D100Pick(" + g + "["+r+"]: " + rr + ": " + gg + ")";
+		}catch(ex){return ex;}}
+
+	D100Pick.prototype.reroll = function() {
+		this.roll = d100roller.gen();
+		this.row = this.v[this.roll.amt];
+		this.item = this.row.item;
+		this.generated = this.item.gen();
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	
 	//////////	
 	
 	// a global.
@@ -937,6 +1025,7 @@
 	var pp = new CoinDenomination('pp', 1000);
 	
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// plain string is a placeholder class, allowing us to 	   
 	// build the meta-classes
 
@@ -956,7 +1045,87 @@
 		treasureBlock.generatedItems.push(this.s)
 		treasureBlock.generatedSpan.appendChild(document.createTextNode(this.s));
 	}
-	                         	
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                 	
+    var gemTypeTable = [
+                     null,
+                     new D100Picker([]),
+                     new D100Picker([]),
+                     new D100Picker([]),
+                     new D100Picker([]),
+                     new D100Picker([]),
+                     new D100Picker([])
+    ];
+    
+    //bulletproofing
+    for(var i = 1; i<=6;i++) {
+    	gemTypeTable[i].add(1,100,'grade ' + i + ' gem');
+    }
+  
+    var picker;
+
+    picker = gemTypeTable[1];
+    picker.add(1,8,'Agate');
+    picker.add(9,14,'Alabaster');
+    picker.add(14,20,'Azurite');
+    picker.add(21,26,'Hematite');
+    picker.add(27,34,'Lapis lazuli');
+    picker.add(35,40,'Malachite');
+    picker.add(41,48,'Obsidian');
+    picker.add(49,56,'Pearl, irregular freshwater');
+    picker.add(57,62,'Pyrite');
+    picker.add(63,70,'Rhodochrosite');
+    picker.add(71,78,'Quartz, rock crystal');
+    picker.add(79,84,'Shell');
+    picker.add(85,92,'Tigereye');
+    picker.add(93,100,'Turquoise');
+
+    picker = gemTypeTable[2];
+    picker.add(1,6,'Bloodstone');
+    picker.add(7,12,'Carnelian');
+    picker.add(13,18,'Chrysoprase');
+    picker.add(19,24,'Citrine');
+    picker.add(25,32,'Ivory');
+    picker.add(33,38,'Jasper');
+    picker.add(39,44,'Moonstone');
+    picker.add(45,50,'Onyx');
+    picker.add(51,56,'Peridot');
+    picker.add(57,74,'Quartz, milky, rose, or smoky');
+    picker.add(75,80,'Sard');
+    picker.add(81,86,'Sardonyx');
+    picker.add(87,92,'Spinel, red or green');
+    picker.add(94,100,'Zircon');
+
+    picker = gemTypeTable[3];
+    picker.add(1,10,'Amber');
+    picker.add(11,20,'Amethyst');
+    picker.add(21,30,'Chrysoberyl');
+    picker.add(31,40,'Coral');
+    picker.add(41,50,'Garnet');
+    picker.add(51,60,'Jade');
+    picker.add(61,70,'Jet');
+    picker.add(71,80,'Pearl, saltwater');
+    picker.add(81,90,'Spinel, deep blue');
+    picker.add(91,100,'Tourmaline');
+
+    picker = gemTypeTable[4];
+    picker.add(1,25,'Aquamarine');
+    picker.add(26,50,'Opal');
+    picker.add(51,75,'Pearl, black');
+    picker.add(76,100,'Topaz');
+
+    picker = gemTypeTable[5];
+    picker.add(1,25,'Diamond, small');
+    picker.add(26,50,'Emerald');
+    picker.add(51,75,'Ruby, small');
+    picker.add(76,100,'Sapphire');
+
+    picker = gemTypeTable[6];
+    picker.add(1,25,'Diamond, large');
+    picker.add(26,50,'Emerald, brilliant green');
+    picker.add(51,75,'Ruby, large');
+    picker.add(76,100,'Sapphire, star');
+    
 	function gemPicker(grade) {
 		return new GemPicker(grade)
 	}
@@ -1000,6 +1169,7 @@
 		this.grade=grade;
 		this.base=gemValueRollers[grade].getRoll();
 		this.worked = (rnd(2) == 1);
+		this.gemType = gemTypeTable[grade].gen().generated
 	}
 	
 	GemResult.prototype.getValue = function() {
@@ -1007,8 +1177,11 @@
 	}
 
 	GemResult.prototype.toString = function() {
-		return 'Grade ' + this.grade + ' gem ' + (this.worked?'':'(unworked) ') + this.getValue() + "gp";
+		return this.gemType + " (" + (this.worked?'':'unworked ') + this.getValue() + "gp)";
 	}
+	
+	
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	function mult(howmany, generator) {
 		return new Multiple(howmany, generator);
@@ -1030,7 +1203,9 @@
 		}
 		
 	}
-	
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	// this function builds a coin picker based on a parameter string
 	function makeCoinPicker(n, d, mul, denom) {
 		return new CoinPicker(n, d, mul, denom);
@@ -1061,6 +1236,7 @@
 		return (this.picker.mul*this.roll.amt) + this.picker.denom.lbl;
 	}
 	
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	treasureTypeAllocations.A = [
 	new TreasureTypeAllocation('A',     1, [makeCoinPicker(5, 10, 1, cp), makeCoinPicker(3, 4, 1, sp)]),
