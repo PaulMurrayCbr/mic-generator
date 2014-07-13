@@ -1045,6 +1045,43 @@
 		treasureBlock.generatedItems.push(this.s)
 		treasureBlock.generatedSpan.appendChild(document.createTextNode(this.s));
 	}
+	
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// I may not know much about it, but I know what I like
+
+    var artTypeTable = [
+                     null,
+                     new D100Picker([]),
+                     new D100Picker([]),
+                     new D100Picker([]),
+                     new D100Picker([]),
+                     new D100Picker([]),
+                     new D100Picker([])
+    ];
+
+	function ArtObject(lbl, amt) {
+		this.lbl = lbl;
+		this.amt = amt;
+	}
+	
+	ArtObject.prototype.toString = function() {
+		return this.lbl;
+	}
+
+	ArtObject.prototype.reroll = function(treasureBlock) {
+		treasureBlock.generatedArt.push(this)
+		treasureBlock.generatedSpan.appendChild(document.createTextNode(this.lbl + " ("+this.amt+")"));
+	}
+
+	artTypeTable[1].add(1,100,new ArtObject('grade 1 art object', 50))
+	artTypeTable[2].add(1,100,new ArtObject('grade 2 art object', 100))
+	artTypeTable[3].add(1,100,new ArtObject('grade 3 art object', 500))
+	artTypeTable[4].add(1,100,new ArtObject('grade 4 art object', 1000))
+	artTypeTable[5].add(1,100,new ArtObject('grade 5 art object', 5000))
+	artTypeTable[6].add(1,100,new ArtObject('grade 6 art object', 10000))
+	
+	
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                  	
     var gemTypeTable = [
