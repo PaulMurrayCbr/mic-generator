@@ -1070,7 +1070,7 @@
 	new TreasureTypeAllocation('F', 350, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), plainString('masterwork medium armor'), plainString('lesser minor potion')]),
 	new TreasureTypeAllocation('F', 400, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), plainString('masterwork weapon'), plainString('lesser minor potion')]),
 	new TreasureTypeAllocation('F', 500, [plainString('Masterwork weapon'), plainString('greater minor potion ')]),
-	new TreasureTypeAllocation('F', 750, [makeCoinPicker(6, 6, 1, gp), plainString('masterwork medium armor'), plainString('masterwork weapon'), plainString('two lesser minor potions')]),
+	new TreasureTypeAllocation('F', 750, [makeCoinPicker(6, 6, 1, gp), plainString('masterwork medium armor'), plainString('masterwork weapon'), mult(2, plainString('lesser minor potion'))]),
 	new TreasureTypeAllocation('F', 1000, [plainString('Masterwork heavy armor')]),
 	new TreasureTypeAllocation('F', 1500, [plainString('Masterwork heavy armor'), plainString('masterwork weapon'), plainString('greater minor potion')]),
 	new TreasureTypeAllocation('F', 2000, [plainString('Lesser minor armor'), plainString('masterwork weapon'), plainString('two greater minor potions')]),
@@ -1179,6 +1179,27 @@
 		treasureBlock.generatedSpan.appendChild(document.createTextNode(this.s));
 	}
 	                         	
+	function mult(howmany, generator) {
+		return new Multiple(howmany, generator);
+	}
+	
+	function Multiple(howmany, generator) {
+		this.howmany = howmany;
+		this.generator = generator;
+	}
+	
+	Multiple.prototype.toString = function() {
+		return this.howmany + " * " + generator;
+	}
+
+	Multiple.prototype.reroll = function(treasureBlock) {
+		for(var i = 0; i < this.howmany; i++) {
+			this.generator.reroll(treasureBlock);			
+			if(i+1<this.howmany) treasureBlock.generatedSpan.appendChild(document.createTextNode("; "));
+		}
+		
+	}
+	
 	// this function builds a coin picker based on a parameter string
 	function makeCoinPicker(n, d, mul, denom) {
 		return new CoinPicker(n, d, mul, denom);
