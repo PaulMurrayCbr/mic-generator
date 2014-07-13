@@ -909,9 +909,9 @@
 				sp.style.padding = '1px';
 				sp.style.border = 'thin solid darkgray';
 				sp.appendChild(document.createTextNode(result));
-				sp.appendChild(document.createTextNode(' '));
 				treasureBlock.generatedSpan.appendChild(sp);
 			}
+			if(i+1 < this.items.length) treasureBlock.generatedSpan.appendChild(document.createTextNode('; '));
 		}
 	}
 	
@@ -1186,7 +1186,7 @@
 	}
 
 	CoinPickerResult.prototype.toString = function() {
-		return this.picker + "->" + this.roll;
+		return (this.picker.mul*this.roll.amt) + this.picker.denom.lbl;
 	}
 	
 	// find the innermost enclosing node that has a "controller" object
