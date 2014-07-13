@@ -46,7 +46,10 @@
 
 </head>
 <script type="text/javascript">
-	
+
+	var picker; // I use this as a scrpa variable in a couple of spots
+
+
 	function clearElement(e) {
 		while(e.childNodes.length != 0) {
 			e.removeChild(e.firstChild);
@@ -363,6 +366,7 @@
 			span.style.padding = "2px";
 			span.appendChild(document.createTextNode(generatedArt));
 			document.getElementById('art_table').appendChild(span);
+			summaryART += generatedArt.getValue();
 		}
 		for(var i = 0; i<treasure.generatedItems.length; i++) {
 			var generatedItem = treasure.generatedItems[i]
@@ -399,7 +403,8 @@
 		document.getElementById('pp_value').innerHTML = cpToString(summaryPP*1000);
 		document.getElementById('currency_value').innerHTML = cpToString(summaryCP+summarySP*10+summaryGP*100+summaryPP*1000);
 		document.getElementById('gem_value').innerHTML = cpToString(summaryGEMS*100);
-		document.getElementById('total_value').innerHTML = cpToString(summaryCP+summarySP*10+summaryGP*100+summaryPP*1000+summaryGEMS+summaryART);
+		document.getElementById('art_value').innerHTML = cpToString(summaryART*100);
+		document.getElementById('total_value').innerHTML = cpToString(summaryCP+summarySP*10+summaryGP*100+summaryPP*1000+summaryGEMS*100+summaryART*100);
 		
 	}
 
@@ -1066,12 +1071,35 @@
 	}
 	
 	ArtObject.prototype.toString = function() {
-		return this.lbl;
+		return this.lbl + " ("+this.amt+"gp)";
 	}
 
-	ArtObject.prototype.reroll = function(treasureBlock) {
-		treasureBlock.generatedArt.push(this)
-		treasureBlock.generatedSpan.appendChild(document.createTextNode(this.lbl + " ("+this.amt+")"));
+	function artPicker(grade) {
+		return new ArtPicker(grade);
+	}
+	
+	function ArtPicker(grade) {
+		this.grade = grade;
+	}
+	
+	ArtPicker.prototype.reroll = function(treasureBlock) {
+		var result = new ArtResult(this.grade);
+		treasureBlock.generatedArt.push(result)
+		treasureBlock.generatedSpan.appendChild(document.createTextNode(result));
+	}
+	
+	function ArtResult(grade) {
+		this.grade = grade;
+		// there is space here to add multipliers for 'very good' or 'crappy' art
+		this.artObject = artTypeTable[grade].gen().generated
+	}
+	
+	ArtResult.prototype.toString = function() {
+		return this.artObject.toString();
+	}
+
+	ArtResult.prototype.getValue = function() {
+		return this.artObject.amt;
 	}
 
 	artTypeTable[1].add(1,100,new ArtObject('grade 1 art object', 50))
@@ -1081,6 +1109,149 @@
 	artTypeTable[5].add(1,100,new ArtObject('grade 5 art object', 5000))
 	artTypeTable[6].add(1,100,new ArtObject('grade 6 art object', 10000))
 	
+
+
+picker = artTypeTable[1];
+picker.add(1, 5, new ArtObject('Bronze statuette of a warrior', 15));
+picker.add(6, 6, new ArtObject('Elaborate copper wind chimes', 20));
+picker.add(7, 7, new ArtObject('Painted paper fan with silver slats', 20));
+picker.add(8, 9, new ArtObject('Copper and glass decanter', 25));
+picker.add(10, 17, new ArtObject('Silver holy symbol', 25));
+picker.add(18, 21, new ArtObject('Carved stone idol', 30));
+picker.add(22, 25, new ArtObject('Set of six ivory dice', 30));
+picker.add(26, 29, new ArtObject('Ivory bowl with animal carvings', 40));
+picker.add(30, 30, new ArtObject('Porcelain doll with silk clothing', 40));
+picker.add(31, 32, new ArtObject('Porcelain mask', 40));
+picker.add(33, 36, new ArtObject('Bronze flagon with warrior images', 50));
+picker.add(37, 39, new ArtObject('Copper brazier with religious markings', 50));
+picker.add(40, 42, new ArtObject('Copper scepter with gold inlay', 50));
+picker.add(43, 44, new ArtObject('Crystal egg with silver stand', 50));
+picker.add(45, 46, new ArtObject('Painting of a noblewoman', 50));
+picker.add(47, 51, new ArtObject('Polished darkwood chalice', 50));
+picker.add(52, 52, new ArtObject('Silver baby rattle', 50));
+picker.add(53, 55, new ArtObject('Silver chess set', 50));
+picker.add(56, 60, new ArtObject('Carved ivory scroll case', 60));
+picker.add(61, 66, new ArtObject('Decorated silver plate', 60));
+picker.add(67, 71, new ArtObject('Ivory drinking horn with copper ends', 60));
+picker.add(72, 74, new ArtObject('Silver noble family seal', 60));
+picker.add(75, 80, new ArtObject('Silver statue of a dragon', 65));
+picker.add(81, 83, new ArtObject('Electrum censer with silver filigree', 70));
+picker.add(84, 87, new ArtObject('Silver candelabra with holy symbol', 75));
+picker.add(88, 90, new ArtObject('Silver comb with ornate handle', 75));
+picker.add(91, 93, new ArtObject('Silver hand mirror', 75));
+picker.add(94, 96, new ArtObject('Crystal skull', 80));
+picker.add(97, 97, new ArtObject('Ornate silver flute', 80));
+picker.add(98, 100, new ArtObject('Engraved jade scarab', 85));
+
+picker = artTypeTable[2];
+picker.add(1, 2, new ArtObject('Elaborate silver wind chimes', 60));
+picker.add(3, 8, new ArtObject('Engraved gold scarab', 75));
+picker.add(9, 10, new ArtObject('Painted silk fan with electrum slats', 75));
+picker.add(11, 12, new ArtObject('Preserved beast head on a plaque', 75));
+picker.add(13, 17, new ArtObject('Set of six silver dice', 75));
+picker.add(18, 20, new ArtObject('Silver and glass decanter', 75));
+picker.add(21, 22, new ArtObject('Silver bowl with lion engravings', 75));
+picker.add(23, 26, new ArtObject('Silver mask', 75));
+picker.add(27, 30, new ArtObject('Carved jade idol', 80));
+picker.add(31, 31, new ArtObject('Porcelain doll with furs and jewelry', 80));
+picker.add(32, 35, new ArtObject('Silver brazier with religious markings', 80));
+picker.add(36, 38, new ArtObject('Silver flagon with religious markings', 80));
+picker.add(39, 41, new ArtObject('Gold censer with silver filigree', 90));
+picker.add(42, 44, new ArtObject('Gold and silver chess set', 100));
+picker.add(45, 45, new ArtObject('Gold baby rattle', 100));
+picker.add(46, 53, new ArtObject('Gold holy symbol', 100));
+picker.add(54, 56, new ArtObject('Masterwork lyre', 100));
+picker.add(57, 58, new ArtObject('Painting of a princess', 100));
+picker.add(59, 61, new ArtObject('Silver cup with royal crest', 100));
+picker.add(62, 65, new ArtObject('Decorated electrum plate', 110));
+picker.add(66, 69, new ArtObject('Gold statue of a dragon', 110));
+picker.add(70, 72, new ArtObject('Gold statue of a lion', 110));
+picker.add(73, 77, new ArtObject('Ivory drinking horn with silver ends', 110));
+picker.add(78, 81, new ArtObject('Gold and silver hand mirror', 120));
+picker.add(82, 85, new ArtObject('Silver cauldron with animal symbols', 120));
+picker.add(86, 88, new ArtObject('Silver comb with gold handle', 125));
+picker.add(89, 90, new ArtObject('Silver egg with dragon figurine', 125));
+picker.add(91, 92, new ArtObject('Silver scepter with eagle symbols', 125));
+picker.add(93, 97, new ArtObject('Silver chalice with dragon carvings', 150));
+picker.add(98, 100, new ArtObject('Gold candelabra with holy symbol', 200));
+
+picker = artTypeTable[3];
+picker.add(1, 3, new ArtObject('Gilded demon skull', 300));
+picker.add(4, 13, new ArtObject('Marble idol', 300));
+picker.add(14, 19, new ArtObject('Masterwork darkwood lute', 300));
+picker.add(20, 24, new ArtObject('Engraved mithral scarab', 400));
+picker.add(25, 28, new ArtObject('Gold and ivory decanter', 400));
+picker.add(29, 32, new ArtObject('Gold bowl with dragon engravings', 400));
+picker.add(33, 35, new ArtObject('Gold censer with platinum inlay', 400));
+picker.add(36, 41, new ArtObject('Gold mask', 450));
+picker.add(42, 42, new ArtObject('Gold and mithral baby rattle', 500));
+picker.add(43, 48, new ArtObject('Gold chess set', 500));
+picker.add(49, 51, new ArtObject('Gold flagon with religious markings', 500));
+picker.add(52, 56, new ArtObject('Gold puzzle box', 500));
+picker.add(57, 65, new ArtObject('Platinum holy symbol', 500));
+picker.add(66, 69, new ArtObject('Gold cup with royal crest', 550));
+picker.add(70, 77, new ArtObject('Gold chalice with griffon carvings', 600));
+picker.add(78, 81, new ArtObject('Mithral scepter with gold inlay', 600));
+picker.add(82, 88, new ArtObject('Decorated gold plate', 700));
+picker.add(89, 93, new ArtObject('Gold and platinum statuette of a deity', 750));
+picker.add(94, 96, new ArtObject('Gold cauldron with alchemical symbols', 750));
+picker.add(97, 100, new ArtObject('Painting of a queen', 750));
+
+picker = artTypeTable[4];
+picker.add(1, 5, new ArtObject('Engraved platinum scarab', 700));
+picker.add(6, 11, new ArtObject('Gilded dragon skull', 800));
+picker.add(12, 18, new ArtObject('Platinum bowl with arcane engravings', 800));
+picker.add(19, 22, new ArtObject('Platinum censer with ornate markings', 800));
+picker.add(23, 26, new ArtObject('Gold decanter with grape vine patterns', 850));
+picker.add(27, 31, new ArtObject('Platinum mask', 900));
+picker.add(32, 36, new ArtObject('Gold and mithral chess set', 1000));
+picker.add(37, 41, new ArtObject('Gold and platinum orrery', 1000));
+picker.add(42, 46, new ArtObject('Gold flute', 1000));
+picker.add(47, 51, new ArtObject('Gold idol with strange carvings', 1000));
+picker.add(52, 52, new ArtObject('Platinum baby rattle', 1000));
+picker.add(53, 55, new ArtObject('Platinum holy symbol of a famous priest', 1000));
+picker.add(56, 64, new ArtObject('Decorated platinum plate', 1100));
+picker.add(65, 68, new ArtObject('Platinum cauldron with odd symbols', 1100));
+picker.add(69, 71, new ArtObject('Platinum flagon with religious markings', 1100));
+picker.add(72, 77, new ArtObject('Platinum cup with royal crest', 1200));
+picker.add(78, 81, new ArtObject('Platinum scepter with gold inlay', 1200));
+picker.add(82, 87, new ArtObject('Platinum chalice with angel carvings', 1250));
+picker.add(88, 93, new ArtObject('Platinum statuette of a deity', 1300));
+picker.add(94, 100, new ArtObject('Painting of a queen by a master', 1500));
+
+picker = artTypeTable[5];
+picker.add(1, 8, new ArtObject('Book of lost songs by a famous bard', 3000));
+picker.add(9, 16, new ArtObject('Darkwood and platinum music box', 4000));
+picker.add(17, 26, new ArtObject('Mithral hourglass with diamond dust', 4000));
+picker.add(27, 34, new ArtObject('Jeweled egg with epic sorcerer’s blood', 4500));
+picker.add(35, 37, new ArtObject('Gold urn containing hero’s ashes', 5000));
+picker.add(38, 45, new ArtObject('Helm carved from a pit fiend skull', 5000));
+picker.add(46, 55, new ArtObject('Holy text penned by a saint', 5000));
+picker.add(56, 65, new ArtObject('Painting of a beloved queen by a master', 5000));
+picker.add(66, 74, new ArtObject('Platinum idol with mysterious markings', 5000));
+picker.add(75, 77, new ArtObject('Bejeweled sword of state', 6000));
+picker.add(78, 83, new ArtObject('Carved saint’s femur', 6000));
+picker.add(84, 88, new ArtObject('Platinum chalice blessed by a saint', 6000));
+picker.add(89, 91, new ArtObject('Glowing metallic meteor', 6500));
+picker.add(92, 97, new ArtObject('Gold bejeweled royal orb', 7000));
+picker.add(98, 100, new ArtObject('Crystallized dragon heart', 7500));
+
+picker = artTypeTable[6];
+picker.add(1, 6, new ArtObject('Frozen vampire soul', 7000));
+picker.add(7, 13, new ArtObject('Mithral-inlaid unicorn horn', 7000));
+picker.add(14, 16, new ArtObject('Crystallized god breath', 10000));
+picker.add(17, 22, new ArtObject('Essence of truth', 10000));
+picker.add(23, 31, new ArtObject('Globe of pristine air', 10000));
+picker.add(32, 40, new ArtObject('Heart of the mountain', 10000));
+picker.add(41, 46, new ArtObject('Inverted soul gem', 10000));
+picker.add(47, 55, new ArtObject('Orb of living water', 10000));
+picker.add(56, 64, new ArtObject('Shard of pure fire', 10000));
+picker.add(65, 72, new ArtObject('Unmelting ice', 10000));
+picker.add(73, 79, new ArtObject('Time jewel', 11000));
+picker.add(80, 83, new ArtObject('Adamantine poiuyt', 12000));
+picker.add(84, 89, new ArtObject('Holy text written in saint’s blood', 12000));
+picker.add(90, 93, new ArtObject('Mithral tribar', 12000));
+picker.add(94, 100, new ArtObject('Ethereal tapestry', 13000));
 	
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                  	
@@ -1099,8 +1270,6 @@
     	gemTypeTable[i].add(1,100,'grade ' + i + ' gem');
     }
   
-    var picker;
-
     picker = gemTypeTable[1];
     picker.add(1,8,'Agate');
     picker.add(9,14,'Alabaster');
@@ -1275,6 +1444,7 @@
 	
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
 	treasureTypeAllocations.A = [
 	new TreasureTypeAllocation('A',     1, [makeCoinPicker(5, 10, 1, cp), makeCoinPicker(3, 4, 1, sp)]),
 	new TreasureTypeAllocation('A',     5, [makeCoinPicker(2, 6, 10, cp), makeCoinPicker(4, 8, 1, sp), makeCoinPicker(1, 4, 1, gp)]),
@@ -1317,28 +1487,28 @@
 	
 
 	treasureTypeAllocations.C = [
-	new TreasureTypeAllocation('C', 50, [plainString('Grade 1 art object')]),
-	new TreasureTypeAllocation('C', 100, [plainString('Grade 2 art object')]),
-	new TreasureTypeAllocation('C', 100, [mult(2, plainString('grade 1 art objects'))]),
-	new TreasureTypeAllocation('C', 150, [plainString('Grade 1 art object'), plainString('grade 2 art object')]),
-	new TreasureTypeAllocation('C', 200, [mult(2, plainString('grade 2 art objects'))]),
-	new TreasureTypeAllocation('C', 250, [mult(3, plainString('grade 1 art objects')), plainString('grade 2 art object')]),
-	new TreasureTypeAllocation('C', 500, [plainString('Grade 3 art object')]),
-	new TreasureTypeAllocation('C', 500, [mult(4, plainString('grade 1 art objects')), mult(3, plainString('grade 2 art objects'))]),
-	new TreasureTypeAllocation('C', 750, [mult(3, plainString('grade 1 art objects')), mult(2, plainString('grade 2 art objects')), plainString('grade 3 art object')]),
-	new TreasureTypeAllocation('C', 1000, [plainString('Grade 4 art object')]),
-	new TreasureTypeAllocation('C', 1000, [mult(2, plainString('grade 3 art objects'))]),
-	new TreasureTypeAllocation('C', 1500, [plainString('Grade 3 art object'), plainString('grade 4 art object')]),
-	new TreasureTypeAllocation('C', 2000, [mult(2, plainString('grade 4 art objects'))]),
-	new TreasureTypeAllocation('C', 2500, [mult(5, plainString('grade 2 art objects')), mult(2, plainString('grade 3 art objects')), plainString('grade 4 art object')]),
-	new TreasureTypeAllocation('C', 5000, [plainString('Grade 5 art object')]),
-	new TreasureTypeAllocation('C', 5000, [mult(4, plainString('grade 3 art objects')), mult(3, plainString('grade 4 art objects'))]),
-	new TreasureTypeAllocation('C', 7500, [plainString('Grade 3 art object'), mult(2, plainString('grade 4 art objects')), plainString('grade 5 art object')]),
-	new TreasureTypeAllocation('C', 10000, [plainString('Grade 6 art object')]),
-	new TreasureTypeAllocation('C', 10000, [mult(5, plainString('grade 4 art objects')), plainString('grade 5 art object')]),
-	new TreasureTypeAllocation('C', 15000, [plainString('Grade 5 art object'), plainString('grade 6 art object')]),
-	new TreasureTypeAllocation('C', 20000, [mult(2, plainString('grade 5 art objects')), plainString('grade 6 art object')]),
-	new TreasureTypeAllocation('C', 50000, [mult(10, plainString('grade 3 art objects')), mult(5, plainString('grade 4 art objects')), mult(4, plainString('grade 5 art objects')), mult(2, plainString('grade 6 art objects'))])
+	new TreasureTypeAllocation('C', 50, [artPicker(1)]),
+	new TreasureTypeAllocation('C', 100, [artPicker(2)]),
+	new TreasureTypeAllocation('C', 100, [mult(2, artPicker(1))]),
+	new TreasureTypeAllocation('C', 150, [artPicker(1), artPicker(2)]),
+	new TreasureTypeAllocation('C', 200, [mult(2, artPicker(2))]),
+	new TreasureTypeAllocation('C', 250, [mult(3, artPicker(1)), artPicker(2)]),
+	new TreasureTypeAllocation('C', 500, [artPicker(3)]),
+	new TreasureTypeAllocation('C', 500, [mult(4, artPicker(1)), mult(3, artPicker(2))]),
+	new TreasureTypeAllocation('C', 750, [mult(3, artPicker(1)), mult(2, artPicker(2)), artPicker(3)]),
+	new TreasureTypeAllocation('C', 1000, [artPicker(4)]),
+	new TreasureTypeAllocation('C', 1000, [mult(2, artPicker(3))]),
+	new TreasureTypeAllocation('C', 1500, [artPicker(3), artPicker(4)]),
+	new TreasureTypeAllocation('C', 2000, [mult(2, artPicker(4))]),
+	new TreasureTypeAllocation('C', 2500, [mult(5, artPicker(2)), mult(2, artPicker(3)), artPicker(4)]),
+	new TreasureTypeAllocation('C', 5000, [artPicker(5)]),
+	new TreasureTypeAllocation('C', 5000, [mult(4, artPicker(3)), mult(3, artPicker(4))]),
+	new TreasureTypeAllocation('C', 7500, [artPicker(3), mult(2, artPicker(4)), artPicker(5)]),
+	new TreasureTypeAllocation('C', 10000, [artPicker(6)]),
+	new TreasureTypeAllocation('C', 10000, [mult(5, artPicker(4)), artPicker(5)]),
+	new TreasureTypeAllocation('C', 15000, [artPicker(5), artPicker(6)]),
+	new TreasureTypeAllocation('C', 20000, [mult(2, artPicker(5)), artPicker(6)]),
+	new TreasureTypeAllocation('C', 50000, [mult(10, artPicker(3)), mult(5, artPicker(4)), mult(4, artPicker(5)), mult(2, artPicker(6))])
 	];
 
 	treasureTypeAllocations.D = [
@@ -1484,21 +1654,21 @@
 	];
 
 	treasureTypeAllocations.I = [
-	new TreasureTypeAllocation('I', 5000, [makeCoinPicker(4, 4, 1000, cp), makeCoinPicker(6, 6, 100, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser minor armor'), plainString('greater minor wand'), mult(5, gemPicker(3)), plainString('grade 3 art object')]),
-	new TreasureTypeAllocation('I', 10000, [makeCoinPicker(4, 4, 1000, cp), makeCoinPicker(6, 6, 100, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(6, 6, 1, pp), plainString('greater minor armor'), plainString('lesser minor weapon'), plainString('lesser minor wondrous item'), plainString('greater medium scroll'), gemPicker(4), plainString('grade 3 art object')]),
-	new TreasureTypeAllocation('I', 15000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('greater minor ring'), mult(2, plainString('lesser minor wondrous items')), mult(2, plainString('greater medium potions')), plainString('greater minor wand'), gemPicker(4), plainString('grade 3 art object')]),
-	new TreasureTypeAllocation('I', 20000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('greater minor armor'), plainString('lesser medium rod'), plainString('greater minor wondrous item'), mult(2, plainString('lesser major potions')), plainString('greater medium scroll'), mult(3, plainString('grade 3 art objects'))]),
+	new TreasureTypeAllocation('I', 5000, [makeCoinPicker(4, 4, 1000, cp), makeCoinPicker(6, 6, 100, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser minor armor'), plainString('greater minor wand'), mult(5, gemPicker(3)), artPicker(3)]),
+	new TreasureTypeAllocation('I', 10000, [makeCoinPicker(4, 4, 1000, cp), makeCoinPicker(6, 6, 100, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(6, 6, 1, pp), plainString('greater minor armor'), plainString('lesser minor weapon'), plainString('lesser minor wondrous item'), plainString('greater medium scroll'), gemPicker(4), artPicker(3)]),
+	new TreasureTypeAllocation('I', 15000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('greater minor ring'), mult(2, plainString('lesser minor wondrous items')), mult(2, plainString('greater medium potions')), plainString('greater minor wand'), gemPicker(4), artPicker(3)]),
+	new TreasureTypeAllocation('I', 20000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('greater minor armor'), plainString('lesser medium rod'), plainString('greater minor wondrous item'), mult(2, plainString('lesser major potions')), plainString('greater medium scroll'), mult(3, artPicker(3))]),
 	new TreasureTypeAllocation('I', 25000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser medium staff'), mult(2, plainString('lesser minor wondrous items')), plainString('greater medium potion'), plainString('lesser medium wand'), mult(2, gemPicker(2)), mult(2, gemPicker(3)), gemPicker(4)]),
-	new TreasureTypeAllocation('I', 30000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser medium armor'), plainString('greater minor weapon'), plainString('lesser medium wondrous item'), mult(2, plainString('lesser major scrolls')), plainString('grade 4 art object')]),
-	new TreasureTypeAllocation('I', 40000, [makeCoinPicker(4, 4, 1000, cp), makeCoinPicker(6, 6, 100, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser medium weapon'), plainString('greater medium rod'), plainString('greater major potion'), plainString('greater medium scroll'), plainString('lesser medium wand'), mult(3, plainString('grade 3 art objects')), mult(2, plainString('grade 4 art objects'))]),
+	new TreasureTypeAllocation('I', 30000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser medium armor'), plainString('greater minor weapon'), plainString('lesser medium wondrous item'), mult(2, plainString('lesser major scrolls')), artPicker(4)]),
+	new TreasureTypeAllocation('I', 40000, [makeCoinPicker(4, 4, 1000, cp), makeCoinPicker(6, 6, 100, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser medium weapon'), plainString('greater medium rod'), plainString('greater major potion'), plainString('greater medium scroll'), plainString('lesser medium wand'), mult(3, artPicker(3)), mult(2, artPicker(4))]),
 	new TreasureTypeAllocation('I', 50000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('greater minor armor'), mult(2, plainString('greater minor weapons')), plainString('greater medium staff'), plainString('greater minor wondrous item'), gemPicker(5)]),
-	new TreasureTypeAllocation('I', 60000, [makeCoinPicker(2, 4, 10000, cp), makeCoinPicker(2, 4, 1000, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('greater medium weapon'), plainString('greater medium rod'), plainString('lesser medium wondrous item'), plainString('greater major scroll'), mult(2, plainString('greater minor wands')), gemPicker(4), mult(5, plainString('grade 2 art objects'))]),
-	new TreasureTypeAllocation('I', 75000, [makeCoinPicker(2, 4, 10000, cp), makeCoinPicker(2, 4, 1000, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('lesser major armor'), plainString('greater medium ring'), plainString('lesser medium staff'), plainString('greater medium wand'), gemPicker(6), plainString('grade 4 art object')]),
-	new TreasureTypeAllocation('I', 100000, [makeCoinPicker(2, 4, 10000, cp), makeCoinPicker(2, 4, 1000, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('lesser medium weapon'), plainString('greater medium ring'), plainString('lesser major rod'), plainString('greater medium wondrous item'), mult(2, plainString('greater major potions')), plainString('lesser medium scroll'), mult(2, plainString('grade 4 art objects'))]),
-	new TreasureTypeAllocation('I', 125000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 8, 10, pp), plainString('greater major armor'), plainString('lesser medium weapon'), plainString('lesser major staff'), mult(2, plainString('greater major scrolls')), plainString('greater major wand'), gemPicker(6), mult(3, plainString('grade 4 art objects'))]),
+	new TreasureTypeAllocation('I', 60000, [makeCoinPicker(2, 4, 10000, cp), makeCoinPicker(2, 4, 1000, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('greater medium weapon'), plainString('greater medium rod'), plainString('lesser medium wondrous item'), plainString('greater major scroll'), mult(2, plainString('greater minor wands')), gemPicker(4), mult(5, artPicker(2))]),
+	new TreasureTypeAllocation('I', 75000, [makeCoinPicker(2, 4, 10000, cp), makeCoinPicker(2, 4, 1000, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('lesser major armor'), plainString('greater medium ring'), plainString('lesser medium staff'), plainString('greater medium wand'), gemPicker(6), artPicker(4)]),
+	new TreasureTypeAllocation('I', 100000, [makeCoinPicker(2, 4, 10000, cp), makeCoinPicker(2, 4, 1000, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('lesser medium weapon'), plainString('greater medium ring'), plainString('lesser major rod'), plainString('greater medium wondrous item'), mult(2, plainString('greater major potions')), plainString('lesser medium scroll'), mult(2, artPicker(4))]),
+	new TreasureTypeAllocation('I', 125000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 8, 10, pp), plainString('greater major armor'), plainString('lesser medium weapon'), plainString('lesser major staff'), mult(2, plainString('greater major scrolls')), plainString('greater major wand'), gemPicker(6), mult(3, artPicker(4))]),
 	new TreasureTypeAllocation('I', 150000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 8, 10, pp), plainString('greater medium armor'), plainString('lesser major ring'), plainString('greater major wondrous item'), plainString('greater major wand')]),
 	new TreasureTypeAllocation('I', 200000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 8, 10, pp), plainString('greater major weapon'), mult(2, plainString('lesser medium rings')), plainString('lesser major staff'), plainString('lesser major wondrous item'), plainString('lesser major wand'), mult(3, gemPicker(5)), gemPicker(4)]),
-	new TreasureTypeAllocation('I', 300000, [makeCoinPicker(8, 4, 10000, cp), makeCoinPicker(12, 6, 1000, sp), makeCoinPicker(8, 4, 100, gp), makeCoinPicker(2, 8, 10, pp), plainString('greater major weapon'), plainString('lesser major ring'), plainString('greater major staff'), plainString('greater major wondrous item'), plainString('greater medium wand'), gemPicker(6), plainString('grade 6 art object')])
+	new TreasureTypeAllocation('I', 300000, [makeCoinPicker(8, 4, 10000, cp), makeCoinPicker(12, 6, 1000, sp), makeCoinPicker(8, 4, 100, gp), makeCoinPicker(2, 8, 10, pp), plainString('greater major weapon'), plainString('lesser major ring'), plainString('greater major staff'), plainString('greater major wondrous item'), plainString('greater medium wand'), gemPicker(6), artPicker(6)])
 	];
 	
 	// find the innermost enclosing node that has a "controller" object
