@@ -407,6 +407,13 @@
 		this.overallTreasureBlock = overallTreasureBlock;
 		this.treasureIndex = treasureIndex;
 		
+		this.generatedGold = [];
+		this.generatedGems = [];
+		this.generatedArt = [];
+		this.generatedItems = [];
+		this.generatedWeapons = [];
+		this.generatedArmour = [];
+
 		// the current state
 		this.type = null;
 		this.budget = 1000;
@@ -459,7 +466,11 @@
 		};
 		div.appendChild(e);
 		
+		this.generatedSpan = document.createElement("span");
+		div.appendChild(this.generatedSpan);
+		
 		this.setType('A');
+		
 	}
 	
 	TreasureBlock.prototype.toString = function() {
@@ -468,6 +479,18 @@
 	
 	TreasureBlock.prototype.clear = function() {
 		// clear does not clear the selected combos - it clears the generated treasure.
+		
+		this.generatedGold.length = 0;
+		this.generatedGems.length = 0;
+		this.generatedArt.length = 0;
+		this.generatedItems.length = 0;
+		this.generatedWeapons.length = 0;
+		this.generatedArmour.length = 0;
+		
+		while(this.generatedSpan.childNodes.length != 0) {
+			this.generatedSpan.removeChild(this.generatedSpan.firstChild);
+		}
+
 		this.overallTreasureBlock.calculateBudgetConsumed();	
 	}
 	
@@ -512,7 +535,7 @@
 		for(var i = 0; i<allocationV.length; i++) {
 			eee = document.createElement("option");
 			eee.value = i;
-			eee.text = allocationV[i].budget + ": " + allocationV[i].description;
+			eee.text = allocationV[i].budget + ": " + allocationV[i].describeItems();
 			this.budgetSelector.appendChild(eee);
 		}
 		
@@ -537,10 +560,9 @@
 	TreasureBlock.prototype.reroll = function() {
 		this.clear();
 		
-		if(this.overallTreasureBlock.budgetConsumed >= this.overallTreasureBlock.budget) {
-			return;
+		if(this.allocation) {
+			this.allocation.reroll(this);
 		}
-
 		
 		// reroll based on the TreasureTypeSelector belonging to my overallTreasureBlock
 		// if there is 
@@ -551,14 +573,31 @@
 	// this class holds one cell of table 7-, 7-5 etc. It knows what type it is, how much it is worth, 
 	// and how to generate a lump of loot.
 	
-	function TreasureTypeAllocation(type, budget, description) {
+	function TreasureTypeAllocation(type, budget, items) {
 		this.type = type;
 		this.budget = budget;
-		this.description = description;
+		this.items = items;
 	}
 	
 	TreasureTypeAllocation.prototype.toString = function() {
 		return "Treasure type " + this.type + " worth " + this.budget + "gp";
+	}
+	
+	TreasureTypeAllocation.prototype.describeItems = function() {
+		return this.items.toString();
+	}
+	
+	TreasureTypeAllocation.prototype.reroll = function(treasureBlock) {
+		for(var i = 0; i<this.items.length; i++) {
+			if(this.items[i].reroll) {
+				this.items[i].reroll(treasureBlock)
+			}
+			else {
+				result = this.items[i].toString();
+				treasureBlock.generatedItems.push(result);
+				treasureBlock.generatedSpan.appendChild(document.createTextNode(result));
+			}
+		}
 	}
 	
 	// this global constant holds the known allocations. The arrays are sorted in ascending order of gold, so
@@ -576,19 +615,64 @@
 	treasureTypeAllocations.I = new Array();
 
 	treasureTypeAllocations.A = [
-	new TreasureTypeAllocation('A',     1, '5d10 cp, 3d4 sp'),
-	new TreasureTypeAllocation('A',     5, '2d6 × 10 cp, 4d8 sp, 1d4 gp'),
-	new TreasureTypeAllocation('A',    10, '5d10 × 10 cp, 5d10 sp, 1d8 gp'),
-	new TreasureTypeAllocation('A',    25, '2d4 × 100 cp, 3d6 × 10 sp, 4d4 gp'),
-	new TreasureTypeAllocation('A',    50, '4d4 × 100 cp, 4d6 × 10 sp, 8d6 gp'),
-	new TreasureTypeAllocation('A',   100, '6d8 × 10 sp, 3d4 × 10 gp'),
-	new TreasureTypeAllocation('A',   200, '2d4 × 100 sp, 4d4 × 10 gp, 2d4 pp'),
-	new TreasureTypeAllocation('A',   500, '6d6 × 10 gp, 8d6 pp'),
-	new TreasureTypeAllocation('A',  1000, '2d4 × 100 gp, 10d10 pp'),
-	new TreasureTypeAllocation('A',  5000, '4d8 × 100 gp, 6d10 × 10 pp'),
-	new TreasureTypeAllocation('A', 10000, '2d4 × 1,000 gp, 12d8 × 10 pp'),
-	new TreasureTypeAllocation('A', 50000, '2d6 × 1,000 gp, 8d10 × 100 pp')
+	new TreasureTypeAllocation('A',     1, ['5d10 cp', '3d4 sp']),
+	new TreasureTypeAllocation('A',     5, ['2d6 × 10 cp', '4d8 sp', '1d4 gp']),
+	new TreasureTypeAllocation('A',    10, ['5d10 × 10 cp', '5d10 sp', '1d8 gp']),
+	new TreasureTypeAllocation('A',    25, ['2d4 × 100 cp', '3d6 × 10 sp', '4d4 gp']),
+	new TreasureTypeAllocation('A',    50, ['4d4 × 100 cp', '4d6 × 10 sp', '8d6 gp']),
+	new TreasureTypeAllocation('A',   100, ['6d8 × 10 sp', '3d4 × 10 gp']),
+	new TreasureTypeAllocation('A',   200, ['2d4 × 100 sp', '4d4 × 10 gp', '2d4 pp']),
+	new TreasureTypeAllocation('A',   500, ['6d6 × 10 gp', '8d6 pp']),
+	new TreasureTypeAllocation('A',  1000, ['2d4 × 100 gp', '10d10 pp']),
+	new TreasureTypeAllocation('A',  5000, ['4d8 × 100 gp', '6d10 × 10 pp']),
+	new TreasureTypeAllocation('A', 10000, ['2d4 × 1,000 gp', '12d8 × 10 pp']),
+	new TreasureTypeAllocation('A', 50000, ['2d6 × 1,000 gp', '8d10 × 100 pp'])
 	];
+	
+	treasureTypeAllocations.B = [
+	new TreasureTypeAllocation('B',   10, ['Grade 1 gemstone']),
+	new TreasureTypeAllocation('B',   15, ['2d6 × 10 cp', '4d8 sp', '1d4 gp', 'grade 1 gemstone']),
+	new TreasureTypeAllocation('B',   25, ['5d10 sp', '1d4 gp', 'two grade 1 gemstones']),
+	new TreasureTypeAllocation('B',   50, ['Grade 2 gemstone']),
+	new TreasureTypeAllocation('B',   50, ['3d6 × 10 sp', '3d6 gp', 'three grade 1 gemstones']),
+	new TreasureTypeAllocation('B',   75, ['1d4 × 10 sp', '1d4 gp', 'two grade 1 gemstones', 'grade 2 gemstone']),
+	new TreasureTypeAllocation('B',  100, ['Grade 3 gemstone']),
+	new TreasureTypeAllocation('B',  100, ['3d8 × 10 sp', '4d8 gp', 'two grade 1 gemstones', 'grade 2 gemstone']),
+	new TreasureTypeAllocation('B',  150, ['Grade 2 gemstone', 'grade 3 gemstone']),
+	new TreasureTypeAllocation('B',  200, ['3d6 × 10 sp', '2d4x10 gp', 'four grade 1 gemstones', 'grade 3 gemstone ']),
+	new TreasureTypeAllocation('B',  250, ['2d4 × 10 gp', 'two grade 2 gemstones', 'grade 3 gemstone']),
+	new TreasureTypeAllocation('B',  500, ['Grade 4 gemstone']),
+	new TreasureTypeAllocation('B',  500, ['2d4 × 10 gp', '2d4 pp', 'two grade 2 gemstones', 'three grade 3 gemstones']),
+	new TreasureTypeAllocation('B',  750, ['2d4 × 10 gp', 'two grade 2 gemstones', 'grade 3 gemstone', 'grade 4 gemstone']),
+	new TreasureTypeAllocation('B', 1000, ['Grade 5 gemstone']),
+	new TreasureTypeAllocation('B', 1000, ['3d6 × 10 gp', '4d4 pp', 'three grade 3 gemstones', 'grade 4 gemstone']),
+	new TreasureTypeAllocation('B', 2500, ['2d4 × 100 gp', 'two grade 4 gemstones', 'grade 5 gemstone']),
+	new TreasureTypeAllocation('B', 5000, ['Grade 6 gemstone']),
+	new TreasureTypeAllocation('B', 5000, ['2d4 × 100 gp', '2d4x10 pp', 'two grade 4 gemstones', 'three grade 5 gemstones']),
+	new TreasureTypeAllocation('B',10000, ['Five grade 5 gemstones', 'grade 6 gemstone']),
+	new TreasureTypeAllocation('B',20000, ['4d8 × 100 gp', '6d10x10 pp', 'three grade 6 gemstones']),
+	new TreasureTypeAllocation('B',50000, ['4d4 × 10 pp', 'ten grade 3 gemstones', 'four grade 4 gemstones', 'six grade 5 gemstones', 'eight grade 6 gemstones'])
+	];
+	
+	function CoinPicker(roll, mul, denom) {
+		this.roll = roll;
+		this.mul = mul;
+		this.denom = denom;
+	}
+	
+	CoinPicker.prototype.toString = function() {
+		return (roll=='1'?'':roll + '×') + (mul==1?'':mul) + denom;
+	}
+
+	CoinPicker.prototype.reroll = function(treasureBlock) {
+		treasureBlock.generatedItems.push('generated ' + this.toString())
+		treasureBlock.generatedSpan.appendChild(document.createTextNode('generated ' + this.toString()));
+	}
+	
+	// this function builds a coin picker based on a parameter string
+	function pickCoins(params) {
+		return new CoinPicker('1', '1', 'params');
+	}
 	
 	// find the innermost enclosing node that has a "controller" object
 
