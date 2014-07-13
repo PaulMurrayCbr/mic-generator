@@ -269,6 +269,19 @@
 	
 	var radioButtonSeq = 0;
 	
+	var treasureTypeLabels = {
+			'A':'Coins',
+			'B':'Coins/Gems',
+			'C':'Art',
+			'D':'Coins/Small objects',
+			'E':'Armour and weapons',
+			'F':'Combat gear',
+			'G':'Spellcaster gear',
+			'H':'Lair treasure',
+			'I':'Hoard'
+	};
+	
+	
 	function TreasureTypeSelector(overallBlock, div) {
 		this.overallBlock = overallBlock;
 		this.div = div;
@@ -391,23 +404,39 @@
 	}
 	
 	TreasureTypeSelector.prototype.selectTreasureType = function(types) {
-		this.checkboxes["A"].checked = types.indexOf("A") != -1
-		this.checkboxes["B"].checked = types.indexOf("B") != -1
-		this.checkboxes["C"].checked = types.indexOf("C") != -1
-		this.checkboxes["D"].checked = types.indexOf("D") != -1
-		this.checkboxes["E"].checked = types.indexOf("E") != -1
-		this.checkboxes["F"].checked = types.indexOf("F") != -1
-		this.checkboxes["G"].checked = types.indexOf("G") != -1
-		this.checkboxes["H"].checked = types.indexOf("H") != -1
-		this.checkboxes["I"].checked = types.indexOf("I") != -1
+		for(var i = 'A'.charCodeAt(0); i<='I'.charCodeAt(0);i++) {
+			var t = String.fromCharCode(i);
+			this.checkboxes[t].checked = types.indexOf(t) != -1
+		}
 	}
 	
 	function TreasureBlock(div, overallTreasureBlock, treasureIndex) {
 		this.div = div;
 		this.overallTreasureBlock = overallTreasureBlock;
 		this.treasureIndex = treasureIndex;
+		
+		// the current state
+		this.type = null;
+		this.budget = 1000;
+		this.allocation = null; // the currently selected allocation
+		
 		div.controller = this;
-		div.appendChild(document.createTextNode('this is a treasure block'));
+		div.appendChild(document.createTextNode('Type:'));
+		this.typeSelector = document.createElement('select');
+
+		for(var i = 'A'.charCodeAt(0); i<='I'.charCodeAt(0);i++) {
+			var tt = String.fromCharCode(i);
+			eee = document.createElement("option");
+			eee.text = tt + " - " + treasureTypeLabels[tt];
+			eee.value = tt;
+			this.typeSelector.appendChild(eee);
+		}
+		
+		div.appendChild(this.typeSelector);
+		
+		div.appendChild(document.createTextNode('Budget:'));
+		this.budgetSelector = document.createElement('select');
+		div.appendChild(this.budgetSelector);
 
 		var e
 		e = document.createElement("button");
@@ -430,9 +459,13 @@
 			controller(this).delete();
 		};
 		div.appendChild(e);
+		
+		this.reroll();
 	}
 	
 	TreasureBlock.prototype.clear = function() {
+		this.type = null;
+		this.allocation = null; // the currently selected allocation
 		this.overallTreasureBlock.calculateBudgetConsumed();	
 	}
 	
@@ -456,7 +489,20 @@
 	}
 	
 	TreasureBlock.prototype.getValue = function() {
-		return 1000;
+		// 1000 to stop it blowing up for now
+		return this.allocation == null ? 1000 : this.allocation.budget;
+	}
+	
+	TreasureBlock.prototype.setType = function(type) {
+		this.clear();
+	}
+	
+	TreasureBlock.prototype.setAllocationIndex = function(index) {
+		
+	}
+	
+	TreasureBlock.prototype.setAllocation = function(index) {
+		this.reroll();
 	}
 	
 	TreasureBlock.prototype.reroll = function() {
@@ -471,6 +517,49 @@
 		// if there is 
 		this.overallTreasureBlock.calculateBudgetConsumed();	
 	}
+	
+	
+	// this class holds one cell of table 7-, 7-5 etc. It knows what type it is, how much it is worth, 
+	// and how to generate a lump of loot.
+	
+	function TreasureTypeAllocation(type, budget, description) {
+		this.type = type;
+		this.budget = budget;
+		this.description = description;
+	}
+	
+	TreasureTypeAllocation.prototype.toString = function() {
+		return "Treasure type " + this.type + " worth " + this.budget + "gp";
+	}
+	
+	// this global constant holds the known allocations. The arrays are sorted in ascending order of gold, so
+	// to find a treasure of type X worth not more than Y, go to the appropriate letter and scan backwards
+	
+	var treasureTypeAllocations = new Object();
+	treasureTypeAllocations.A = new Array();
+	treasureTypeAllocations.B = new Array();
+	treasureTypeAllocations.C = new Array();
+	treasureTypeAllocations.D = new Array();
+	treasureTypeAllocations.E = new Array();
+	treasureTypeAllocations.F = new Array();
+	treasureTypeAllocations.G = new Array();
+	treasureTypeAllocations.H = new Array();
+	treasureTypeAllocations.I = new Array();
+
+	treasureTypeAllocations.A = [
+	new TreasureTypeAllocation('A',     1, '5d10 cp, 3d4 sp'),
+	new TreasureTypeAllocation('A',     5, '2d6 × 10 cp, 4d8 sp, 1d4 gp'),
+	new TreasureTypeAllocation('A',    10, '5d10 × 10 cp, 5d10 sp, 1d8 gp'),
+	new TreasureTypeAllocation('A',    25, '2d4 × 100 cp, 3d6 × 10 sp, 4d4 gp'),
+	new TreasureTypeAllocation('A',    50, '4d4 × 100 cp, 4d6 × 10 sp, 8d6 gp'),
+	new TreasureTypeAllocation('A',   100, '6d8 × 10 sp, 3d4 × 10 gp'),
+	new TreasureTypeAllocation('A',   200, '2d4 × 100 sp, 4d4 × 10 gp, 2d4 pp'),
+	new TreasureTypeAllocation('A',   500, '6d6 × 10 gp, 8d6 pp'),
+	new TreasureTypeAllocation('A',  1000, '2d4 × 100 gp, 10d10 pp'),
+	new TreasureTypeAllocation('A',  5000, '4d8 × 100 gp, 6d10 × 10 pp'),
+	new TreasureTypeAllocation('A', 10000, '2d4 × 1,000 gp, 12d8 × 10 pp'),
+	new TreasureTypeAllocation('A', 50000, '2d6 × 1,000 gp, 8d10 × 100 pp')
+	];
 	
 	// find the innermost enclosing node that has a "controller" object
 
