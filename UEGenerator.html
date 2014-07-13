@@ -46,10 +46,18 @@
 
 </head>
 <script type="text/javascript">
+	
+	function clearElement(e) {
+		while(e.childNodes.length != 0) {
+			e.removeChild(e.firstChild);
+		}
+	}
+
 	function initAll() {
-			mainTreasureBlock = new OverallTreasureBlock(document
-					.getElementById("MAIN-TREASURE"), 0);
-			recalcTotalTreasureBudget();
+		mainTreasureBlock = new OverallTreasureBlock(document
+				.getElementById("MAIN-TREASURE"), 0);
+		npcCount = 0;
+		recalcTotalTreasureBudget();
 	}
 
 	// a global.
@@ -104,7 +112,47 @@
 	}
 	
 	function repopulateSummary() {
+		
+		
+		
+		
+		if(!mainTreasureBlock) return; // this only happens during the initial page load
+		addTreasureBlockToSummary(mainTreasureBlock);
+		for(var i = 0; i<npcCount;i++) {
+			addTreasureBlockToSummary(npcList[i]);
+		}
 	}
+	
+	function addTreasureBlockToSummary(treasureBlock) {
+		for(var i = 0; i<treasureBlock.treasuresCount; i++) {
+			addTreasureToSummary(treasureBlock.treasures[i]);
+		}
+	}
+	
+	function addTreasureToSummary(treasure) {
+		for(var i = 0; i<treasure.generatedGold.length; i++) {
+			var generatedGold = treasure.generatedGold[i]
+		}
+		for(var i = 0; i<treasure.generatedGems.length; i++) {
+			var generatedGems = treasure.generatedGems[i]
+		}
+		for(var i = 0; i<treasure.generatedGems.length; i++) {
+			var generatedGems = treasure.generatedGems[i]
+		}
+		for(var i = 0; i<treasure.generatedArt.length; i++) {
+			var generatedArt = treasure.generatedArt[i]
+		}
+		for(var i = 0; i<treasure.generatedItems.length; i++) {
+			var generatedItems = treasure.generatedItems[i]
+		}
+		for(var i = 0; i<treasure.generatedWeapons.length; i++) {
+			var generatedWeapons = treasure.generatedWeapons[i]
+		}
+		for(var i = 0; i<treasure.generatedArmour.length; i++) {
+			var generatedArmour = treasure.generatedArmour[i]
+		}
+	}
+
 	
 	function addNPCBlock() {
 		var div = document.createElement('div');
@@ -247,12 +295,10 @@
 			npcList[i].npcIndex = i;
 		}
 		
-		var tt = document.getElementById('NPC-TREASURES');
-		while(tt.childNodes.length != 0) {
-			tt.removeChild(tt.firstChild);
-		}
 		npcCount --;
-		
+
+		var tt = document.getElementById('NPC-TREASURES');
+		clearElement(tt);
 		for(var i = 0; i<npcCount; i++) {
 			tt.appendChild(npcList[i].div);
 		}
@@ -420,7 +466,6 @@
 		this.allocation = null; // the currently selected allocation
 		
 		div.controller = this;
-		div.appendChild(document.createTextNode('Type:'));
 		this.typeSelector = document.createElement('select');
 
 		for(var i = 'A'.charCodeAt(0); i<='I'.charCodeAt(0);i++) {
@@ -436,7 +481,6 @@
 			controller(this).setType(this.value)
 		};
 		
-		div.appendChild(document.createTextNode('Budget:'));
 		this.budgetSelector = document.createElement('select');
 		div.appendChild(this.budgetSelector);
 		
@@ -487,10 +531,7 @@
 		this.generatedWeapons.length = 0;
 		this.generatedArmour.length = 0;
 		
-		while(this.generatedSpan.childNodes.length != 0) {
-			this.generatedSpan.removeChild(this.generatedSpan.firstChild);
-		}
-
+		clearElement(this.generatedSpan);
 		this.overallTreasureBlock.calculateBudgetConsumed();	
 	}
 	
@@ -499,12 +540,10 @@
 			this.overallTreasureBlock.treasures[i] = this.overallTreasureBlock.treasures[i+1];
 			this.overallTreasureBlock.treasures[i].treasureIndex = i;
 		}
+		this.overallTreasureBlock.treasuresCount --;
 		
 		var tt = this.overallTreasureBlock.treasuresArea;
-		while(tt.childNodes.length != 0) {
-			tt.removeChild(tt.firstChild);
-		}
-		this.overallTreasureBlock.treasuresCount --;
+		clearElement(tt);
 		
 		for(var i = 0; i<this.overallTreasureBlock.treasuresCount; i++) {
 			tt.appendChild(this.overallTreasureBlock.treasures[i].div);
@@ -520,10 +559,7 @@
 	TreasureBlock.prototype.setType = function(type) {
 		this.clear();
 
-		// clear the budget selector combo
-		while(this.budgetSelector.childNodes.length != 0) {
-			this.budgetSelector.removeChild(this.budgetSelector.firstChild);
-		}
+		clearElement(this.budgetSelector);
 		
 		if(type == null) return;
 		
@@ -595,7 +631,14 @@
 			else {
 				result = this.items[i].toString();
 				treasureBlock.generatedItems.push(result);
-				treasureBlock.generatedSpan.appendChild(document.createTextNode(result));
+				var sp = document.createElement('span');
+				sp.style.margin = '1px';
+				sp.style.padding = '1px';
+				sp.style.border = 'thin solid darkgray';
+				sp.appendChild(document.createTextNode(result));
+				sp.appendChild(document.createTextNode(' '));
+				sp.appendChild(document.createTextNode(new Date()));
+				treasureBlock.generatedSpan.appendChild(sp);
 			}
 		}
 	}
@@ -787,7 +830,7 @@
 				<div style="margin: 1em; padding: 1em; border: thin solid black;">
 					<table border="0" cellspacing="0" cellpadding="0">
 						<caption>Art Objects</caption>
-						<tbody id="gem_table">
+						<tbody id="art_table">
 						</tbody>
 					</table>
 				</div>
