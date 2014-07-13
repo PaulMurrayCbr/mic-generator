@@ -199,7 +199,7 @@
 	}
 
 	OverallTreasureBlock.prototype.toString = function() {
-		return "OverallTreasureBlock " + this.npcIndex;
+		return "OverallTreasureBlock" + ((this.npcIndex+1)? " for NPC " + (this.npcIndex+1) : "");
 	}
 	
 	OverallTreasureBlock.prototype.reroll = function() {
@@ -207,7 +207,8 @@
 			this.treasures[0].delete();
 		}
 		
-		while(this.budgetConsumed < this.budget) {
+		var noMoreThan20 = 20;		
+		while(this.budgetConsumed < this.budget && noMoreThan20-- > 0) {
 			if(!this.addOne()) {
 				break;
 			}
@@ -336,12 +337,13 @@
 		this.checkboxes = new Object();
 		var thischeckboxes = this.checkboxes;
 		
-		function foo(type, label) {
+		for(var i = 'A'.charCodeAt(0); i<='I'.charCodeAt(0);i++) {
+			var type = String.fromCharCode(i);
 			var lbl = document.createElement('span');
 			var checkbox = document.createElement('input');
 			checkbox.type = "checkbox";
 			lbl.appendChild(checkbox);
-			lbl.appendChild(document.createTextNode(type + " - " + label));
+			lbl.appendChild(document.createTextNode(type + " - " + treasureTypeLabels[type]));
 			lbl.style.border = 'thin solid darkGray';
 			lbl.style.margin = '1px';
 			lbl.style.padding = '1px';
@@ -362,16 +364,6 @@
 				return true;
 			}
 		}
-		
-		foo('A','Coins');
-		foo('B','Coins/Gems');
-		foo('C','Art');
-		foo('D','Coins/Small objects');
-		foo('E','Armour and weapons');
-		foo('F','Combat gear');
-		foo('G','Spellcaster gear');
-		foo('H','Lair treasure');
-		foo('I','Hoard');
 		
 		dd = document.createElement('div');
 		dd.style.margin = ".5em 0 .5em 0";
@@ -433,10 +425,17 @@
 		}
 		
 		div.appendChild(this.typeSelector);
+		this.typeSelector.onchange = function(ev) {
+			controller(this).setType(this.value)
+		};
 		
 		div.appendChild(document.createTextNode('Budget:'));
 		this.budgetSelector = document.createElement('select');
 		div.appendChild(this.budgetSelector);
+		
+		this.budgetSelector.onchange = function(ev) {
+			controller(this).setAllocationIndex(parseInt(this.value))
+		};
 
 		var e
 		e = document.createElement("button");
@@ -460,12 +459,15 @@
 		};
 		div.appendChild(e);
 		
-		this.reroll();
+		this.setType('A');
+	}
+	
+	TreasureBlock.prototype.toString = function() {
+		return "TreasureBlock belonging to " + this.overallTreasureBlock;
 	}
 	
 	TreasureBlock.prototype.clear = function() {
-		this.type = null;
-		this.allocation = null; // the currently selected allocation
+		// clear does not clear the selected combos - it clears the generated treasure.
 		this.overallTreasureBlock.calculateBudgetConsumed();	
 	}
 	
@@ -489,19 +491,46 @@
 	}
 	
 	TreasureBlock.prototype.getValue = function() {
-		// 1000 to stop it blowing up for now
-		return this.allocation == null ? 1000 : this.allocation.budget;
+		return this.allocation == null ? 0 : this.allocation.budget;
 	}
 	
 	TreasureBlock.prototype.setType = function(type) {
 		this.clear();
+
+		// clear the budget selector combo
+		while(this.budgetSelector.childNodes.length != 0) {
+			this.budgetSelector.removeChild(this.budgetSelector.firstChild);
+		}
+		
+		if(type == null) return;
+		
+		// poplate the budget selector combo
+		
+		var allocationV = treasureTypeAllocations[type];
+		if(!allocationV) return;
+		
+		for(var i = 0; i<allocationV.length; i++) {
+			eee = document.createElement("option");
+			eee.value = i;
+			eee.text = allocationV[i].budget + ": " + allocationV[i].description;
+			this.budgetSelector.appendChild(eee);
+		}
+		
+		this.setAllocationIndex(0);
 	}
 	
 	TreasureBlock.prototype.setAllocationIndex = function(index) {
-		
+		var allocationV = treasureTypeAllocations[this.typeSelector.value];
+		if(!allocationV) {
+			this.setAllocation(null); 
+		}
+		else {
+			this.setAllocation(allocationV[index]);
+		}
 	}
 	
-	TreasureBlock.prototype.setAllocation = function(index) {
+	TreasureBlock.prototype.setAllocation = function(allocation) {
+		this.allocation = allocation;
 		this.reroll();
 	}
 	
