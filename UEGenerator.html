@@ -1988,9 +1988,6 @@ rods.setGradeToLevel(1,100,'lesser medium', 'lesser medium');
 rods.setGradeToLevel(1,100,'greater medium', 'greater medium');
 rods.setGradeToLevel(1,100,'lesser major', 'lesser major');
 rods.setGradeToLevel(1,100,'greater major', 'greater major');
-rods.setGradeToLevel(1,100,'metamagic +1', 'metamagic +1');
-rods.setGradeToLevel(1,100,'metamagic +2', 'metamagic +2');
-rods.setGradeToLevel(1,100,'metamagic +3', 'metamagic +3');
 
 rods.chooseType.add(1,100, 'rod');
 
@@ -2013,10 +2010,6 @@ rings.setGradeToLevel(1,100,'greater major', 'greater major');
 rings.chooseType.add(1,100, 'ring');
 
 rings.setupItemPickerTables();
-
-
-
-
 
 // OK! Now load the data
 picker = potions.typeAndLevelToPicker['common'][0];
@@ -4695,6 +4688,305 @@ picker.add(98, 98, "Iron flask", 170000, 'UE');
 picker.add(99, 99, "Mirror of mental prowess", 175000, 'UE');
 picker.add(100, 100, "Mirror of life trapping", 200000, 'UE');
 
+
+
+picker = staves.typeAndLevelToPicker['staff']['lesser medium'];
+
+picker.add(1, 10, "Staff of blessed relief", 7200, 'UE');
+picker.add(11, 20, "Staff of minor arcana", 8000, 'UE');
+picker.add(21, 30, "Staff of tricks", 8800, 'UE');
+picker.add(31, 44, "Staff of the scout", 9600, 'UE');
+picker.add(45, 54, "Staff of eidolons", 14400, 'UE');
+picker.add(55, 67, "Staff of accompaniment", 14800, 'UE');
+picker.add(68, 84, "Staff of understanding", 16000, 'UE');
+picker.add(85, 100, "Staff of charming", 17600, 'UE');
+
+picker = staves.typeAndLevelToPicker['staff']['greater medium'];
+
+picker.add(1, 11, "Staff of fire", 18950, 'UE');
+picker.add(12, 21, "Staff of courage", 19200, 'UE');
+picker.add(22, 29, "Staff of belittling", 20000, 'UE');
+picker.add(30, 38, "Staff of feast and famine", 20800, 'UE');
+picker.add(39, 49, "Staff of rigor", 20800, 'UE');
+picker.add(50, 60, "Staff of swarming insects", 22800, 'UE');
+picker.add(61, 68, "Staff of authority", 23000, 'UE');
+picker.add(69, 81, "Staff of radiance", 23200, 'UE');
+picker.add(82, 92, "Staff of size alteration", 26150, 'UE');
+picker.add(93, 100, "Staff of Journeys", 27200, 'UE');
+
+picker = staves.typeAndLevelToPicker['staff']['lesser major'];
+
+picker.add(1, 4, "Staff of acid", 28600, 'UE');
+picker.add(5, 8, "Staff of shrieking", 28800, 'UE');
+picker.add(9, 11, "Chaotic staff", 29600, 'UE');
+picker.add(12, 14, "Holy staff", 29600, 'UE');
+picker.add(15, 17, "Lawful staff", 29600, 'UE');
+picker.add(18, 21, "Staff of healing", 29600, 'UE');
+picker.add(22, 24, "Unholy staff", 29600, 'UE');
+picker.add(25, 28, "Staff of the master", 30000, 'UE');
+picker.add(29, 32, "Staff of spiders", 30200, 'UE');
+picker.add(33, 36, "Staff of electricity", 31900, 'UE');
+picker.add(37, 39, "Heretic’s bane", 32000, 'UE');
+picker.add(40, 42, "Musical staff", 32000, 'UE');
+picker.add(43, 46, "Staff of souls", 32800, 'UE');
+picker.add(47, 50, "Staff of toxins", 34200, 'UE');
+picker.add(51, 54, "Staff of stealth", 36800, 'UE');
+picker.add(55, 58, "Staff of the avenger", 37310, 'UE');
+picker.add(59, 62, "Staff of aspects", 37600, 'UE');
+picker.add(63, 66, "Staff of speaking", 39600, 'UE');
+picker.add(67, 70, "Staff of frost", 41400, 'UE');
+picker.add(71, 74, "Staff of bolstering", 41600, 'UE');
+picker.add(75, 78, "Staff of curses", 43500, 'UE');
+picker.add(79, 85, "Staff of dark flame", 47000, 'UE');
+picker.add(86, 89, "Staff of cackling wrath", 47200, 'UE');
+picker.add(90, 93, "Staff of performance", 48800, 'UE');
+picker.add(94, 97, "Animate staff", 49800, 'UE');
+picker.add(98, 100, "Staff of revelations", 51008, 'UE');
+
+picker = staves.typeAndLevelToPicker['staff']['greater major'];
+
+picker.add(1, 4, "Staff of illumination", 51500, 'UE');
+picker.add(5, 7, "Staff of obstacles", 51600, 'UE');
+picker.add(8, 10, "Staff of heaven and earth", 54000, 'UE');
+picker.add(11, 13, "Staff of travel", 54400, 'UE');
+picker.add(14, 16, "Staff of hoarding", 55866, 'UE');
+picker.add(17, 19, "Staff of traps", 56925, 'UE');
+picker.add(20, 22, "Staff of many rays", 57200, 'UE');
+picker.add(23, 25, "Staff of mithral might", 58000, 'UE');
+picker.add(26, 29, "Staff of defense", 62000, 'UE');
+picker.add(30, 32, "Staff of the planes", 63960, 'UE');
+picker.add(33, 35, "Staff of hungry shadows", 69300, 'UE');
+picker.add(36, 38, "Dragon staff", 81000, 'UE');
+picker.add(39, 41, "Staff of slumber", 81766, 'UE');
+picker.add(42, 46, "Staff of abjuration", 82000, 'UE');
+picker.add(47, 51, "Staff of conjuration", 82000, 'UE');
+picker.add(52, 56, "Staff of divination", 82000, 'UE');
+picker.add(57, 61, "Staff of enchantment", 82000, 'UE');
+picker.add(62, 66, "Staff of evocation", 82000, 'UE');
+picker.add(67, 71, "Staff of illusion", 82000, 'UE');
+picker.add(72, 76, "Staff of necromancy", 82000, 'UE');
+picker.add(77, 81, "Staff of transmutation", 82000, 'UE');
+picker.add(82, 83, "Staff of weather", 84066, 'UE');
+picker.add(84, 86, "Staff of earth and stone", 85800, 'UE');
+picker.add(87, 88, "Staff of vision", 86666, 'UE');
+picker.add(89, 91, "Staff of the woodlands", 100400, 'UE');
+picker.add(92, 94, "Staff of life", 109400, 'UE');
+picker.add(95, 95, "Staff of one hundred hands", 180200, 'UE');
+picker.add(96, 98, "Staff of passage", 206900, 'UE');
+picker.add(99, 99, "Staff of the hierophant", 220000, 'UE');
+picker.add(100, 100, "Staff of power", 235000, 'UE');
+
+
+picker = rods.typeAndLevelToPicker['rod']['lesser medium'];
+
+picker.add(1, 1, "Metamagic, merciful, minor", 1500, 'UE');
+picker.add(2, 34, "Metamagic (+1 spell level), minor", 3000, 'UE');
+picker.add(35, 49, "Immovable rod", 5000, 'UE');
+picker.add(50, 59, "Rod of thunderous force", 5400, 'UE');
+picker.add(60, 60, "Metamagic, merciful, normal", 5500, 'UE');
+picker.add(61, 61, "Rod of ice", 8500, 'UE');
+picker.add(62, 71, "Metamagic (+2 spell level), minor", 9000, 'UE');
+picker.add(72, 81, "Rod of metal and mineral detection", 10500, 'UE');
+picker.add(82, 86, "Metamagic (+1 spell level), normal", 11000, 'UE');
+picker.add(87, 100, "Rod of cancellation", 11000, 'UE');
+
+picker = rods.typeAndLevelToPicker['rod']['greater medium'];
+
+picker.add(1, 3, "Conduit rod", 12000, 'UE');
+picker.add(4, 6, "Grounding rod", 12000, 'UE');
+picker.add(7, 10, "Rod of the wayang", 12000, 'UE');
+picker.add(11, 18, "Rod of wonder", 12000, 'UE');
+picker.add(19, 19, "Metamagic, merciful, greater", 12250, 'UE');
+picker.add(20, 29, "Rod of the python", 13000, 'UE');
+picker.add(30, 33, "Trap-stealer’s rod", 13500, 'UE');
+picker.add(34, 55, "Metamagic (+3 spell level), minor", 14000, 'UE');
+picker.add(56, 59, "Rod of balance", 15000, 'UE');
+picker.add(60, 63, "Rod of escape", 15000, 'UE');
+picker.add(64, 72, "Rod of flame extinguishing", 15000, 'UE');
+picker.add(73, 76, "Rod of ruin", 16000, 'UE');
+picker.add(77, 80, "Sapling rod", 16650, 'UE');
+picker.add(81, 86, "Rod of beguiling", 18000, 'UE');
+picker.add(87, 90, "Rod of nettles", 18000, 'UE');
+picker.add(91, 100, "Rod of the viper", 19000, 'UE');
+
+picker = rods.typeAndLevelToPicker['rod']['lesser major'];
+
+picker.add(1, 4, "Suzerain scepter", 20000, 'UE');
+picker.add(5, 6, "Fiery nimbus rod", 22305, 'UE');
+picker.add(7, 13, "Rod of enemy detection", 23500, 'UE');
+picker.add(14, 27, "Metamagic (+1 spell level), greater", 24500, 'UE');
+picker.add(28, 36, "Rod of splendor", 25000, 'UE');
+picker.add(37, 44, "Rod of withering", 25000, 'UE');
+picker.add(45, 50, "Earthbind rod", 26500, 'UE');
+picker.add(51, 56, "Rod of the aboleth", 29000, 'UE');
+picker.add(57, 63, "Liberator’s rod", 30000, 'UE');
+picker.add(64, 70, "Metamagic (+2 spell level), normal", 32500, 'UE');
+picker.add(71, 79, "Rod of thunder and lightning", 33000, 'UE');
+picker.add(80, 83, "Metamagic, quicken, minor", 35000, 'UE');
+picker.add(84, 94, "Rod of negation", 37000, 'UE');
+picker.add(95, 100, "Rod of steadfast resolve", 38305, 'UE');
+
+picker = rods.typeAndLevelToPicker['rod']['greater major'];
+
+picker.add(1, 8, "Rod of absorption", 50000, 'UE');
+picker.add(9, 11, "Rod of flailing", 50000, 'UE');
+picker.add(12, 26, "Metamagic (+3 spell level), normal", 54000, 'UE');
+picker.add(27, 28, "Rod of rulership", 60000, 'UE');
+picker.add(29, 30, "Rod of security", 61000, 'UE');
+picker.add(31, 32, "Rod of shadows", 64305, 'UE');
+picker.add(33, 34, "Rod of mind mastery", 67000, 'UE');
+picker.add(35, 37, "Rod of lordly might", 70000, 'UE');
+picker.add(38, 57, "Metamagic (+2 spell level), greater", 73000, 'UE');
+picker.add(58, 58, "Scepter of heaven", 74000, 'UE');
+picker.add(59, 68, "Metamagic, quicken, normal", 75500, 'UE');
+picker.add(69, 70, "Rod of dwarven might", 80000, 'UE');
+picker.add(71, 75, "Rod of alertness", 85000, 'UE');
+picker.add(76, 95, "Metamagic (+3 spell level), greater", 121500, 'UE');
+picker.add(96, 100, "Metamagic, quicken, greater", 170000, 'UE');
+
+var metamagic_rod_1 = new D100Picker([]);
+picker = metamagic_rod_1;
+
+picker.add(1, 4, "Bouncing Spell");
+picker.add(5, 9, "Disruptive Spell");
+picker.add(10, 14, "Ectoplasmic Spell");
+picker.add(15, 19, "Elemental Spell");
+picker.add(20, 31, "Enlarge Spell");
+picker.add(32, 43, "Extend Spell");
+picker.add(44, 48, "Flaring Spell");
+picker.add(49, 53, "Focused Spell");
+picker.add(54, 58, "Intensified Spell");
+picker.add(59, 63, "Lingering Spell");
+picker.add(64, 68, "Piercing Spell");
+picker.add(69, 73, "Reach Spell");
+picker.add(74, 78, "Rime Spell");
+picker.add(79, 83, "Selective Spell");
+picker.add(84, 95, "Silent Spell");
+picker.add(96, 100, "Toppling Spell");
+
+var metamagic_rod_2 = new D100Picker([]);
+picker = metamagic_rod_2;
+
+picker.add(1, 11, "Burning Spell");
+picker.add(12, 22, "Concussive Spell");
+picker.add(23, 40, "Empower Spell");
+picker.add(41, 51, "Persistent Spell");
+picker.add(52, 62, "Sickening Spell");
+picker.add(63, 75, "Thanatopic Spell");
+picker.add(76, 88, "Threnodic Spell");
+picker.add(89, 100, "Thundering Spell");
+
+var metamagic_rod_3 = new D100Picker([]);
+picker = metamagic_rod_3;
+
+picker.add(1, 20, "Dazing Spell");
+picker.add(21, 40, "Echoing Spell");
+picker.add(41, 70, "Maximize Spell");
+picker.add(71, 100, "Widen Spell");
+
+picker = rings.typeAndLevelToPicker['ring']['lesser minor'];
+
+picker.add(1, 7, "Dungeon ring, prisoner’s", 250, 'UE');
+picker.add(8, 16, "Ring of arcane signets", 1000, 'UE');
+picker.add(17, 25, "Ring of spell knowledge I", 1500, 'UE');
+picker.add(26, 40, "Ring of protection +1", 2000, 'UE');
+picker.add(41, 47, "Ring of the grasping grave", 2000, 'UE');
+picker.add(48, 57, "Ring of feather falling", 2200, 'UE');
+picker.add(58, 66, "Ring of climbing", 2500, 'UE');
+picker.add(67, 75, "Ring of jumping", 2500, 'UE');
+picker.add(76, 84, "Ring of sustenance", 2500, 'UE');
+picker.add(85, 93, "Ring of swimming", 2500, 'UE');
+picker.add(94, 100, "Ring of ferocious action", 3000, 'UE');
+
+picker = rings.typeAndLevelToPicker['ring']['greater minor'];
+
+picker.add(1, 15, "Ring of counterspells", 4000, 'UE');
+picker.add(16, 25, "Ring of maniacal devices", 5000, 'UE');
+picker.add(26, 35, "Ring of rat fangs", 5000, 'UE');
+picker.add(36, 52, "Ring of sacred mistletoe", 6000, 'UE');
+picker.add(53, 69, "Ring of spell knowledge II", 6000, 'UE');
+picker.add(70, 86, "Ring of swarming stabs", 6000, 'UE');
+picker.add(87, 100, "Ring of grit mastery", 6840, 'UE');
+
+picker = rings.typeAndLevelToPicker['ring']['lesser medium'];
+
+picker.add(1, 2, "Ring of forcefangs", 8000, 'UE');
+picker.add(3, 6, "Ring of mind shielding", 8000, 'UE');
+picker.add(7, 11, "Ring of protection +2", 8000, 'UE');
+picker.add(12, 13, "Ring of strength sapping", 8000, 'UE');
+picker.add(14, 17, "Ring of force shield", 8500, 'UE');
+picker.add(18, 22, "Ring of the ram", 8600, 'UE');
+picker.add(23, 24, "Scholar’s ring", 8700, 'UE');
+picker.add(25, 27, "Ring of climbing, improved", 10000, 'UE');
+picker.add(28, 29, "Ring of curing", 10000, 'UE');
+picker.add(30, 31, "Ring of foe focus", 10000, 'UE');
+picker.add(32, 35, "Ring of jumping, improved", 10000, 'UE');
+picker.add(36, 37, "Ring of ki mastery", 10000, 'UE');
+picker.add(38, 40, "Ring of revelation, lesser", 10000, 'UE');
+picker.add(41, 43, "Ring of swimming, improved", 10000, 'UE');
+picker.add(44, 46, "Ring of animal friendship", 10800, 'UE');
+picker.add(47, 48, "Ring of transposition", 10800, 'UE');
+picker.add(49, 50, "Ring of tactical precision", 11000, 'UE');
+picker.add(51, 52, "Ring of the sophisticate", 11000, 'UE');
+picker.add(53, 55, "Decoy ring", 12000, 'UE');
+picker.add(56, 58, "Ring of craft magic", 12000, 'UE');
+picker.add(59, 61, "Ring of ectoplasmic invigoration", 12000, 'UE');
+picker.add(62, 64, "Ring of energy resistance, minor", 12000, 'UE');
+picker.add(65, 67, "Ring of the troglodyte", 12000, 'UE');
+picker.add(68, 70, "Steelhand circle", 12000, 'UE');
+picker.add(71, 76, "Ring of chameleon power", 12700, 'UE');
+picker.add(77, 79, "Ring of spell knowledge III", 13500, 'UE');
+picker.add(80, 82, "Ring of the sea strider", 14000, 'UE');
+picker.add(83, 85, "Ring of retribution", 15000, 'UE');
+picker.add(86, 89, "Ring of water walking", 15000, 'UE');
+picker.add(90, 95, "Dungeon ring, jailer’s", 16000, 'UE');
+picker.add(96, 100, "Ring of revelation, greater", 16000, 'UE');
+
+picker = rings.typeAndLevelToPicker['ring']['greater medium'];
+
+picker.add(1, 4, "Ring of inner fortitude, minor", 18000, 'UE');
+picker.add(5, 16, "Ring of protection +3", 18000, 'UE');
+picker.add(17, 26, "Ring of spell storing, minor", 18000, 'UE');
+picker.add(27, 30, "Ring of energy shroud", 19500, 'UE');
+picker.add(31, 35, "Ring of arcane mastery", 20000, 'UE');
+picker.add(36, 46, "Ring of invisibility", 20000, 'UE');
+picker.add(47, 54, "Ring of wizardry I", 20000, 'UE');
+picker.add(55, 60, "Ring of revelation, superior", 24000, 'UE');
+picker.add(61, 68, "Ring of spell knowledge IV", 24000, 'UE');
+picker.add(69, 80, "Ring of evasion", 25000, 'UE');
+picker.add(81, 88, "Ring of x-ray vision", 25000, 'UE');
+picker.add(89, 100, "Ring of blinking", 27000, 'UE');
+
+picker = rings.typeAndLevelToPicker['ring']['lesser major'];
+
+picker.add(1, 9, "Ring of energy resistance, major", 28000, 'UE');
+picker.add(10, 16, "Ring of the ecclesiarch", 28500, 'UE');
+picker.add(17, 33, "Ring of protection +4", 32000, 'UE');
+picker.add(34, 39, "Ring of return", 33600, 'UE');
+picker.add(40, 55, "Ring of freedom of movement", 40000, 'UE');
+picker.add(56, 70, "Ring of wizardry II", 40000, 'UE');
+picker.add(71, 75, "Ring of inner fortitude, major", 42000, 'UE');
+picker.add(76, 92, "Ring of energy resistance, greater", 44000, 'UE');
+picker.add(93, 100, "Ring of delayed doom", 45000, 'UE');
+
+picker = rings.typeAndLevelToPicker['ring']['greater major'];
+
+picker.add(1, 6, "Ring of friend shield", 50000, 'UE');
+picker.add(7, 18, "Ring of protection +5", 50000, 'UE');
+picker.add(19, 27, "Ring of shooting stars", 50000, 'UE');
+picker.add(28, 37, "Ring of spell storing", 50000, 'UE');
+picker.add(38, 43, "Ring of continuation", 56000, 'UE');
+picker.add(44, 48, "Ring of inner fortitude, greater", 66000, 'UE');
+picker.add(49, 57, "Ring of wizardry III", 70000, 'UE');
+picker.add(58, 63, "Spiritualist Rings", 70000, 'UE');
+picker.add(64, 71, "Ring of telekinesis", 75000, 'UE');
+picker.add(72, 76, "Ring of regeneration", 90000, 'UE');
+picker.add(77, 82, "Ring of spell turning", 100000, 'UE');
+picker.add(83, 86, "Ring of wizardry IV", 100000, 'UE');
+picker.add(87, 90, "Ring of three wishes", 120000, 'UE');
+picker.add(91, 93, "Ring of djinni calling", 125000, 'UE');
+picker.add(94, 97, "Ring of elemental command", 200000, 'UE');
+picker.add(98, 100, "Ring of spell storing, major", 200000, 'UE');
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Treasure Type Allocaiton. TABLE 7-1 to 7-11.
