@@ -251,11 +251,11 @@
 	var summaryGEMS;
 	var summaryART;
 	
-	
 	var summaryPOTIONS;
 	var summarySCROLLS;
 	var summaryWANDS;
 	var summaryWONDROUS;
+	var summaryRSR;
 	var summaryITEMS;
 	var summaryITEMSTOTAL;
 	
@@ -263,6 +263,7 @@
 	var summarySCROLLSCT;
 	var summaryWANDSCT;
 	var summaryWONDROUSCT;
+	var summaryRSRCT;
 	var summaryITEMSCT;
 	
 
@@ -310,6 +311,7 @@
 		summarySCROLLS=0;
 		summaryWANDS=0;
 		summaryWONDROUS=0;
+		summaryRSR=0;
 		summaryITEMS=0;
 		summaryITEMSTOTAL=0;
 		
@@ -317,6 +319,7 @@
 		summarySCROLLSCT = 0;
 		summaryWANDSCT = 0;
 		summaryWONDROUSCT = 0;
+		summaryRSRCT = 0;
 		summaryITEMSCT = 0;
 
 		
@@ -342,6 +345,7 @@
 		clearElement(document.getElementById('scroll_table'));
 		clearElement(document.getElementById('wand_table'));
 		clearElement(document.getElementById('wondrous_table'));
+		clearElement(document.getElementById('rsr_table'));
 		clearElement(document.getElementById('item_table'));
 		clearElement(document.getElementById('itemtotal_table'));
 		clearElement(document.getElementById('weapon_table'));
@@ -427,6 +431,18 @@
 			tr.appendChild(td);
 			document.getElementById('wondrous_table').appendChild(tr);
 		}
+		if(summaryRSRCT > 1) {
+			var tr = document.createElement("tr");
+			var td = document.createElement("td");
+			td.setAttribute("class", "cell");
+			tr.appendChild(td);
+			var td = document.createElement("td");
+			td.setAttribute("class", "money");
+			td.style.fontWeight = 'bold'
+			td.appendChild(document.createTextNode(cpToString(summaryRSR*100)));
+			tr.appendChild(td);
+			document.getElementById('rsr_table').appendChild(tr);
+		}
 		if(summaryITEMSCT > 1) {
 			var tr = document.createElement("tr");
 			var td = document.createElement("td");
@@ -444,6 +460,7 @@
 				(summarySCROLLSCT > 0 ? 1 : 0) +
 				(summaryWANDSCT > 0 ? 1 : 0) +
 				(summaryWONDROUSCT > 0 ? 1 : 0) +
+				(summaryRSRCT > 0 ? 1 : 0) +
 				(summaryITEMSCT > 0 ? 1 : 0) 
 				  > 1
 		) {
@@ -562,6 +579,13 @@
 					tbl = document.getElementById('wondrous_table')
 					summaryWONDROUS += generatedItem.item.val
 					summaryWONDROUSCT++
+				}
+				else if(generatedItem.itemPickerTable.tableset.lbl == 'staff'
+						|| generatedItem.itemPickerTable.tableset.lbl == 'rod'
+						|| generatedItem.itemPickerTable.tableset.lbl == 'ring') {
+					tbl = document.getElementById('rsr_table')
+					summaryRSR += generatedItem.item.val
+					summaryRSRCT++
 				}
 				else {
 					tbl = document.getElementById('item_table')
@@ -1795,9 +1819,9 @@ var potions = new ItemPickerTableset('potion');
 var scrolls = new ItemPickerTableset('scroll');
 var wands = new ItemPickerTableset('wand');
 var wondrous = new ItemPickerTableset('wondrous');
-var staves = new ItemPickerTableset('wondrous');
-var rods = new ItemPickerTableset('wondrous');
-var rings = new ItemPickerTableset('wondrous');
+var staves = new ItemPickerTableset('staff');
+var rods = new ItemPickerTableset('rod');
+var rings = new ItemPickerTableset('ring');
 
 potions.itemPrefix = "Potion of ";
 scrolls.itemPrefix = "Scroll of ";
@@ -5080,6 +5104,8 @@ picker.add(100, 100, "Mirror of life trapping", 200000, 'UE');
 						<tbody id="scroll_table">
 						</tbody>
 						<tbody id="wand_table">
+						</tbody>
+						<tbody id="rsr_table">
 						</tbody>
 						<tbody id="wondrous_table">
 						</tbody>
