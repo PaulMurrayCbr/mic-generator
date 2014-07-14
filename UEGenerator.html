@@ -685,6 +685,21 @@
 			}
 		}
 
+		// if the biggest budget count is less than three, then mix things up a bit
+		// by including in smaller amounts. provided, of course, that we don't wind up including
+		// -1
+		
+		if(biggestBudgetCount < 3) {
+			biggestBudgetStartPoint -= (3-biggestBudgetCount);
+			biggestBudgetCount += (3-biggestBudgetCount); // yeah, it will always be 3. 
+			
+			if(biggestBudgetStartPoint < 0) {
+				biggestBudgetCount += biggestBudgetStartPoint;
+				biggestBudgetStartPoint -= biggestBudgetStartPoint; // again. is will always be zero
+			}
+			
+		}
+		
 		// pick one of the items at that budget point.
 		return biggestBudgetStartPoint + rnd(biggestBudgetCount);
 	}
