@@ -251,6 +251,20 @@
 	var summaryGEMS;
 	var summaryART;
 	
+	
+	var summaryPOTIONS;
+	var summarySCROLLS;
+	var summaryWANDS;
+	var summaryWONDROUS;
+	var summaryITEMS;
+	var summaryITEMSTOTAL;
+	
+	var summaryPOTIONSCT;
+	var summarySCROLLSCT;
+	var summaryWANDSCT;
+	var summaryWONDROUSCT;
+	var summaryITEMSCT;
+	
 
 	function recalcTotalTreasureBudget() {
 		var apl = parseInt(document.getElementById("APL").value);
@@ -292,6 +306,18 @@
 		summaryPP=0;
 		summaryGEMS=0;
 		summaryART=0;
+		summaryPOTIONS=0;
+		summarySCROLLS=0;
+		summaryWANDS=0;
+		summaryWONDROUS=0;
+		summaryITEMS=0;
+		summaryITEMSTOTAL=0;
+		
+		summaryPOTIONSCT = 0;
+		summarySCROLLSCT = 0;
+		summaryWANDSCT = 0;
+		summaryWONDROUSCT = 0;
+		summaryITEMSCT = 0;
 
 		
 		document.getElementById('cp_amt').innerHTML = '0';
@@ -306,11 +332,18 @@
 		document.getElementById('currency_value').innerHTML = '0.00';
 		document.getElementById('gem_value').innerHTML = '0.00';
 		document.getElementById('art_value').innerHTML = '0.00';
+		document.getElementById('total_currency').innerHTML = '0.00';
+		document.getElementById('total_items').innerHTML = '0.00';
 		document.getElementById('total_value').innerHTML = '0.00';
 		
 		clearElement(document.getElementById('gem_table'));
 		clearElement(document.getElementById('art_table'));
+		clearElement(document.getElementById('potion_table'));
+		clearElement(document.getElementById('scroll_table'));
+		clearElement(document.getElementById('wand_table'));
+		clearElement(document.getElementById('wondrous_table'));
 		clearElement(document.getElementById('item_table'));
+		clearElement(document.getElementById('itemtotal_table'));
 		clearElement(document.getElementById('weapon_table'));
 		clearElement(document.getElementById('armour_table'));
 		
@@ -328,6 +361,7 @@
 			var td = document.createElement("td");
 			td.setAttribute("class", "money");
 			td.appendChild(document.createTextNode(cpToString(summaryGEMS*100)));
+			td.style.fontWeight = 'bold'
 			tr.appendChild(td);
 			document.getElementById('gem_table').appendChild(tr);
 		}
@@ -339,9 +373,94 @@
 			tr.appendChild(td);
 			var td = document.createElement("td");
 			td.setAttribute("class", "money");
+			td.style.fontWeight = 'bold'
 			td.appendChild(document.createTextNode(cpToString(summaryART*100)));
 			tr.appendChild(td);
 			document.getElementById('art_table').appendChild(tr);
+		}
+		
+		if(summaryPOTIONSCT > 1) {
+			var tr = document.createElement("tr");
+			var td = document.createElement("td");
+			td.setAttribute("class", "cell");
+			tr.appendChild(td);
+			var td = document.createElement("td");
+			td.setAttribute("class", "money");
+			td.style.fontWeight = 'bold'
+			td.appendChild(document.createTextNode(cpToString(summaryPOTIONS*100)));
+			tr.appendChild(td);
+			document.getElementById('potion_table').appendChild(tr);
+		}
+		if(summarySCROLLSCT > 1) {
+			var tr = document.createElement("tr");
+			var td = document.createElement("td");
+			td.setAttribute("class", "cell");
+			tr.appendChild(td);
+			var td = document.createElement("td");
+			td.setAttribute("class", "money");
+			td.style.fontWeight = 'bold'
+			td.appendChild(document.createTextNode(cpToString(summarySCROLLS*100)));
+			tr.appendChild(td);
+			document.getElementById('scroll_table').appendChild(tr);
+		}
+		if(summaryWANDSCT > 1) {
+			var tr = document.createElement("tr");
+			var td = document.createElement("td");
+			td.setAttribute("class", "cell");
+			tr.appendChild(td);
+			var td = document.createElement("td");
+			td.setAttribute("class", "money");
+			td.style.fontWeight = 'bold'
+			td.appendChild(document.createTextNode(cpToString(summaryWANDS*100)));
+			tr.appendChild(td);
+			document.getElementById('wand_table').appendChild(tr);
+		}
+		if(summaryWONDROUSCT > 1) {
+			var tr = document.createElement("tr");
+			var td = document.createElement("td");
+			td.setAttribute("class", "cell");
+			tr.appendChild(td);
+			var td = document.createElement("td");
+			td.setAttribute("class", "money");
+			td.style.fontWeight = 'bold'
+			td.appendChild(document.createTextNode(cpToString(summaryWONDROUS*100)));
+			tr.appendChild(td);
+			document.getElementById('wondrous_table').appendChild(tr);
+		}
+		if(summaryITEMSCT > 1) {
+			var tr = document.createElement("tr");
+			var td = document.createElement("td");
+			td.setAttribute("class", "cell");
+			tr.appendChild(td);
+			var td = document.createElement("td");
+			td.setAttribute("class", "money");
+			td.style.fontWeight = 'bold'
+			td.appendChild(document.createTextNode(cpToString(summaryITEMS*100)));
+			tr.appendChild(td);
+			document.getElementById('item_table').appendChild(tr);
+		}
+		if(
+				(summaryPOTIONSCT > 0 ? 1 : 0) +
+				(summarySCROLLSCT > 0 ? 1 : 0) +
+				(summaryWANDSCT > 0 ? 1 : 0) +
+				(summaryWONDROUSCT > 0 ? 1 : 0) +
+				(summaryITEMSCT > 0 ? 1 : 0) 
+				  > 1
+		) {
+			var tr = document.createElement("tr");
+			var td = document.createElement("td");
+			td.setAttribute("class", "cell");
+			tr.appendChild(td);
+			var td = document.createElement("td");
+			td.setAttribute("class", "money");
+			td.style.fontWeight = 'bold';
+			td.appendChild(document.createTextNode(cpToString(summaryITEMSTOTAL*100)));
+			tr.appendChild(td);
+			document.getElementById('itemtotal_table').appendChild(tr);
+		}
+		
+		if(summaryITEMS > 0) {
+			
 		}
 	}
 	
@@ -406,11 +525,10 @@
 				var td = document.createElement("td");
 				td.setAttribute("class", "cell");
 				td.appendChild(document.createTextNode(
-						generatedItem.itemPickerTable.tableset.lbl 
-						+ " of "
+						generatedItem.itemPickerTable.tableset.itemPrefix 
 						+ generatedItem.item.lbl 
 				));
-				if(generatedItem.item.src != 'CR') {
+				if(generatedItem.item.src != 'CR' && generatedItem.item.src != 'UE') {
 					var src = document.createElement("span");
 					src.style.fontSize = "50%";
 					src.style.fontWeight = "bold";
@@ -424,6 +542,35 @@
 				td.appendChild(document.createTextNode(cpToString(generatedItem.item.val*100)));
 				tr.appendChild(td);
 				
+				var tbl
+				if(generatedItem.itemPickerTable.tableset.lbl == 'potion') {
+					tbl = document.getElementById('potion_table')
+					summaryPOTIONS += generatedItem.item.val
+					summaryPOTIONSCT++
+				}
+				else if(generatedItem.itemPickerTable.tableset.lbl == 'scroll') {
+					tbl = document.getElementById('scroll_table')
+					summarySCROLLS += generatedItem.item.val
+					summarySCROLLSCT++
+				}
+				else if(generatedItem.itemPickerTable.tableset.lbl == 'wand')  {
+					tbl = document.getElementById('wand_table')
+					summaryWANDS += generatedItem.item.val
+					summaryWANDSCT++
+				}
+				else if(generatedItem.itemPickerTable.tableset.lbl == 'wondrous') {
+					tbl = document.getElementById('wondrous_table')
+					summaryWONDROUS += generatedItem.item.val
+					summaryWONDROUSCT++
+				}
+				else {
+					tbl = document.getElementById('item_table')
+					summaryITEMS += generatedItem.item.val
+					summaryITEMSCT++
+				}
+				summaryITEMSTOTAL += generatedItem.item.val
+				
+				tbl.appendChild(tr);
 				
 			}
 			else {
@@ -431,9 +578,10 @@
 				td.setAttribute("class", "cell");
 				td.appendChild(document.createTextNode(generatedItem));
 				tr.appendChild(td);
-								
+				var tbl = document.getElementById('item_table')
+				tbl.appendChild(tr);
 			}
-			document.getElementById('item_table').appendChild(tr);
+			
 		}
 		for(var i = 0; i<treasure.generatedWeapons.length; i++) {
 			var generatedWeapon = treasure.generatedWeapons[i]
@@ -460,10 +608,29 @@
 		document.getElementById('gp_value').innerHTML = cpToString(summaryGP*100);
 		document.getElementById('pp_amt').innerHTML = summaryPP;
 		document.getElementById('pp_value').innerHTML = cpToString(summaryPP*1000);
-		document.getElementById('currency_value').innerHTML = cpToString(summaryCP+summarySP*10+summaryGP*100+summaryPP*1000);
+		document.getElementById('currency_value').innerHTML = cpToString(
+					summaryCP
+					+summarySP*10
+					+summaryGP*100
+					+summaryPP*1000);
 		document.getElementById('gem_value').innerHTML = cpToString(summaryGEMS*100);
 		document.getElementById('art_value').innerHTML = cpToString(summaryART*100);
-		document.getElementById('total_value').innerHTML = cpToString(summaryCP+summarySP*10+summaryGP*100+summaryPP*1000+summaryGEMS*100+summaryART*100);
+		document.getElementById('total_currency').innerHTML = cpToString(
+				summaryCP
+				+summarySP*10
+				+summaryGP*100
+				+summaryPP*1000
+				+summaryGEMS*100
+				+summaryART*100);
+		document.getElementById('total_items').innerHTML = cpToString(summaryITEMSTOTAL*100);
+		document.getElementById('total_value').innerHTML = cpToString(
+				summaryCP
+				+summarySP*10
+				+summaryGP*100
+				+summaryPP*1000
+				+summaryGEMS*100
+				+summaryART*100
+				+summaryITEMSTOTAL*100);
 		
 	}
 
@@ -1364,8 +1531,6 @@
 	artTypeTable[5].add(1,100,new ArtObject('grade 5 art object', 5000))
 	artTypeTable[6].add(1,100,new ArtObject('grade 6 art object', 10000))
 	
-
-
 picker = artTypeTable[1];
 picker.add(1, 5, new ArtObject('Bronze statuette of a warrior', 15));
 picker.add(6, 6, new ArtObject('Elaborate copper wind chimes', 20));
@@ -1531,6 +1696,7 @@ function ItemPickerTableset(lbl) {
 	this.gradeToLevel = new Object();
 	this.chooseType = new D100Picker([]);
 	this.typeAndLevelToPicker = new Object();
+	this.itemPrefix = ""; // default
 }
 
 ItemPickerTableset.prototype.toString = function() {
@@ -1628,6 +1794,11 @@ function potion(grade) {
 var potions = new ItemPickerTableset('potion');
 var scrolls = new ItemPickerTableset('scroll');
 var wands = new ItemPickerTableset('wand');
+var wondrous = new ItemPickerTableset('wondrous');
+
+potions.itemPrefix = "Potion of ";
+scrolls.itemPrefix = "Scroll of ";
+wands.itemPrefix = "Wand of ";
 
 var lesser_minor_potion = new ItemPicker(potions, 'lesser minor');
 var greater_minor_potion = new ItemPicker(potions, 'greater minor');
@@ -1734,6 +1905,38 @@ wands.chooseType.add(1,75, 'common');
 wands.chooseType.add(76,100, 'uncommon');
 
 wands.setupItemPickerTables();
+
+var lesser_minor_wondrous_item = new ItemPicker(wondrous, 'lesser minor');
+var greater_minor_wondrous_item = new ItemPicker(wondrous, 'greater minor');
+var lesser_medium_wondrous_item = new ItemPicker(wondrous, 'lesser medium');
+var greater_medium_wondrous_item = new ItemPicker(wondrous, 'greater medium');
+var lesser_major_wondrous_item = new ItemPicker(wondrous, 'lesser major');
+var greater_major_wondrous_item = new ItemPicker(wondrous, 'greater major');
+
+// there is no mapping here as with the spell level items
+
+wondrous.setGradeToLevel(1,100,'least minor', 'least minor');
+wondrous.setGradeToLevel(1,100,'lesser minor', 'lesser minor');
+wondrous.setGradeToLevel(1,100,'greater minor', 'greater minor');
+wondrous.setGradeToLevel(1,100,'lesser medium', 'lesser medium');
+wondrous.setGradeToLevel(1,100,'greater medium', 'greater medium');
+wondrous.setGradeToLevel(1,100,'lesser major', 'lesser major');
+wondrous.setGradeToLevel(1,100,'greater major', 'greater major');
+
+wondrous.chooseType.add(1,6, 'Belt');
+wondrous.chooseType.add(7,12, 'Body');
+wondrous.chooseType.add(13,17, 'Chest');
+wondrous.chooseType.add(18,22, 'Eyes');
+wondrous.chooseType.add(23,28, 'Feet');
+wondrous.chooseType.add(27,34, 'Hands');
+wondrous.chooseType.add(35,41, 'Head');
+wondrous.chooseType.add(42,47, 'Headband');
+wondrous.chooseType.add(46,54, 'Neck');
+wondrous.chooseType.add(55,61, 'Shoulders');
+wondrous.chooseType.add(62,67, 'Wrists');
+wondrous.chooseType.add(68,100, 'Slotless');
+
+wondrous.setupItemPickerTables();
 
 // OK! Now load the data
 picker = potions.typeAndLevelToPicker['common'][0];
@@ -3359,6 +3562,1060 @@ picker.add(99, 99, 'Zone of silence', 30000, 'CR');
 picker.add(100, 100, 'Legend lore', 33500, 'CR');
 
 
+
+picker = wondrous.typeAndLevelToPicker['Belt']['lesser minor'];
+
+picker.add(1, 16, "Belt of tumbling", 800, 'UE');
+picker.add(17, 28, "Beneficial bandolier", 1000, 'UE');
+picker.add(29, 40, "Meridian belt", 1000, 'UE');
+picker.add(41, 54, "Bladed belt", 2000, 'UE');
+picker.add(55, 70, "Heavyload belt", 2000, 'UE');
+picker.add(71, 84, "Aquatic cummerbund", 2600, 'UE');
+picker.add(85, 100, "Equestrian belt", 3200, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Belt']['greater minor'];
+
+picker.add(1, 18, "Belt of giant strength +2", 4000, 'UE');
+picker.add(19, 36, "Belt of incredible dexterity +2", 4000, 'UE');
+picker.add(37, 54, "Belt of mighty constitution +2", 4000, 'UE');
+picker.add(55, 62, "Belt of teeth", 4000, 'UE');
+picker.add(63, 74, "Blinkback belt", 5000, 'UE');
+picker.add(75, 84, "Plague rat belt", 5200, 'UE');
+picker.add(85, 100, "Belt of foraging", 6000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Belt']['lesser medium'];
+
+picker.add(1, 4, "Serpent belt", 9000, 'UE');
+picker.add(5, 8, "Monkey belt", 9400, 'UE');
+picker.add(9, 16, "Belt of physical might +2", 10000, 'UE');
+picker.add(17, 22, "Belt of the weasel", 10000, 'UE');
+picker.add(23, 27, "Belt of thunderous charging", 10000, 'UE');
+picker.add(28, 32, "Minotaur belt", 11000, 'UE');
+picker.add(33, 36, "Plague rat belt, greater", 11200, 'UE');
+picker.add(37, 41, "Belt of equilibrium", 12000, 'UE');
+picker.add(42, 46, "Security belt", 12500, 'UE');
+picker.add(47, 51, "Belt of mighty hurling, lesser", 14000, 'UE');
+picker.add(52, 57, "Belt of dwarvenkind", 14900, 'UE');
+picker.add(58, 61, "Cord of stubborn resolve", 15000, 'UE');
+picker.add(62, 71, "Belt of giant strength +4", 16000, 'UE');
+picker.add(72, 80, "Belt of physical perfection +2", 16000, 'UE');
+picker.add(81, 90, "Belt of incredible dexterity +4", 16000, 'UE');
+picker.add(91, 100, "Belt of mighty constitution +4", 16000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Belt']['greater medium'];
+
+picker.add(1, 12, "Monkey belt, greater", 18000, 'UE');
+picker.add(13, 26, "Anaconda’s coils", 18500, 'UE');
+picker.add(27, 38, "Serpent belt, greater", 20000, 'UE');
+picker.add(39, 53, "Belt of fallen heroes", 21000, 'UE');
+picker.add(54, 67, "Gorgon belt", 23000, 'UE');
+picker.add(68, 84, "Elemental earth belt", 24000, 'UE');
+picker.add(85, 100, "Sash of flowing water", 25000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Belt']['lesser major'];
+
+picker.add(1, 12, "Merform belt", 32000, 'UE');
+picker.add(13, 30, "Belt of giant strength +6", 36000, 'UE');
+picker.add(31, 48, "Belt of incredible dexterity +6", 36000, 'UE');
+picker.add(49, 66, "Belt of mighty constitution +6", 36000, 'UE');
+picker.add(67, 88, "Belt of physical might +4", 40000, 'UE');
+picker.add(89, 100, "Belt of mighty hurling, greater", 42000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Belt']['greater major'];
+
+picker.add(1, 25, "Belt of stoneskin", 60000, 'UE');
+picker.add(26, 55, "Belt of physical perfection +4", 64000, 'UE');
+picker.add(56, 75, "Belt of physical might +6", 90000, 'UE');
+picker.add(76, 90, "Shadowform belt", 110000, 'UE');
+picker.add(91, 100, "Belt of physical perfection +6", 144000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Body']['lesser minor'];
+
+picker.add(1, 20, "Robe of infinite twine", 1000, 'UE');
+picker.add(21, 35, "Robe of needles", 1000, 'UE');
+picker.add(36, 60, "Robe of bones", 2400, 'UE');
+picker.add(61, 70, "Bodywrap of mighty strikes +1", 3000, 'UE');
+picker.add(71, 80, "Corset of the vishkanya", 3000, 'UE');
+picker.add(81, 100, "Druid’s vestment", 3750, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Body']['greater minor'];
+
+picker.add(1, 15, "Cassock of the clergy", 4600, 'UE');
+picker.add(16, 30, "Mnemonic vestments", 5000, 'UE');
+picker.add(31, 45, "Robe of components", 5000, 'UE');
+picker.add(46, 60, "Sorcerer’s robe", 5000, 'UE');
+picker.add(61, 75, "Eidolon anchoring harness", 6000, 'UE');
+picker.add(76, 100, "Robe of useful items", 7000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Body']['lesser medium'];
+
+picker.add(1, 15, "Robe of blending", 8400, 'UE');
+picker.add(16, 26, "Blazing robes", 11000, 'UE');
+picker.add(27, 37, "Shocking robe", 11000, 'UE');
+picker.add(38, 48, "Voidfrost robes", 11000, 'UE');
+picker.add(49, 59, "Bodywrap of mighty strikes +2", 12000, 'UE');
+picker.add(60, 75, "Monk’s robe", 13000, 'UE');
+picker.add(76, 100, "Robe of arcane heritage", 16000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Body']['greater medium'];
+
+picker.add(1, 25, "Xorn robe", 20000, 'UE');
+picker.add(26, 52, "Corset of dire witchcraft", 22000, 'UE');
+picker.add(53, 76, "Bodywrap of mighty strikes +3", 27000, 'UE');
+picker.add(77, 100, "Robe of scintillating colors", 27000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Body']['lesser major'];
+
+picker.add(1, 40, "Gunman’s duster", 36000, 'UE');
+picker.add(41, 80, "Bodywrap of mighty strikes +4", 48000, 'UE');
+picker.add(81, 100, "Smuggler’s collapsible robe", 48000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Body']['greater major'];
+
+picker.add(1, 10, "Robe of stars", 58000, 'UE');
+picker.add(11, 15, "Robe of gates", 64000, 'UE');
+picker.add(16, 20, "Otherworldly kimono", 67000, 'UE');
+picker.add(21, 40, "Bodywrap of mighty strikes +5", 75000, 'UE');
+picker.add(41, 51, "Resplendent robe of the thespian", 75000, 'UE');
+picker.add(52, 67, "Robe of the archmagi", 75000, 'UE');
+picker.add(68, 77, "Bodywrap of mighty strikes +6", 108000, 'UE');
+picker.add(78, 97, "Robe of eyes", 120000, 'UE');
+picker.add(98, 100, "Bodywrap of mighty strikes +7", 147000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Chest']['lesser minor'];
+
+picker.add(1, 15, "Bandages of rapid recovery", 200, 'UE');
+picker.add(16, 30, "Quick runner’s shirt", 1000, 'UE');
+picker.add(31, 50, "Endless bandolier", 1500, 'UE');
+picker.add(51, 75, "All tools vest", 1800, 'UE');
+picker.add(76, 100, "Vest of surgery", 3000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Chest']['greater minor'];
+
+picker.add(1, 10, "Sash of the war champion", 4000, 'UE');
+picker.add(11, 20, "Sipping jacket", 5000, 'UE');
+picker.add(21, 31, "Tunic of careful casting", 5000, 'UE');
+picker.add(32, 42, "Vest of escape", 5200, 'UE');
+picker.add(43, 52, "Cackling hag’s blouse", 6000, 'UE');
+picker.add(53, 62, "Deadshot vest", 6000, 'UE');
+picker.add(63, 70, "Prophet’s pectoral", 6000, 'UE');
+picker.add(71, 79, "Tunic of deadly might", 6000, 'UE');
+picker.add(80, 90, "Vest of the vengeful tracker", 6000, 'UE');
+picker.add(91, 100, "Resplendent uniform coat", 7000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Chest']['lesser medium'];
+
+picker.add(1, 13, "Shirt of immolation", 8000, 'UE');
+picker.add(14, 28, "Snakeskin tunic", 8000, 'UE');
+picker.add(29, 40, "Bane baldric", 10000, 'UE');
+picker.add(41, 60, "Unfettered shirt", 10000, 'UE');
+picker.add(61, 80, "Poisoner’s jacket, lesser", 12000, 'UE');
+picker.add(81, 100, "Vest of the cockroach", 16000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Chest']['greater medium'];
+
+picker.add(1, 50, "Vest of stable mutation", 20000, 'UE');
+picker.add(51, 100, "Spectral shroud", 26000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Chest']['lesser major'];
+
+picker.add(1, 60, "Mantle of immortality", 50000, 'UE');
+picker.add(61, 100, "Poisoner’s jacket, greater", 58000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Chest']['greater major'];
+
+picker.add(1, 35, "Merciful baldric", 60000, 'UE');
+picker.add(36, 70, "Mantle of faith", 76000, 'UE');
+picker.add(71, 100, "Mantle of spell resistance", 90000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Eyes']['lesser minor'];
+
+picker.add(1, 18, "Deathwatch eyes", 2000, 'UE');
+picker.add(19, 38, "Eyes of the eagle", 2500, 'UE');
+picker.add(39, 58, "Goggles of minute seeing", 2500, 'UE');
+picker.add(59, 72, "Pirate’s eye patch", 2600, 'UE');
+picker.add(73, 87, "Spectacles of understanding", 3000, 'UE');
+picker.add(88, 100, "Lenses of detection", 3500, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Eyes']['greater minor'];
+
+picker.add(1, 20, "Eyes of the owl", 4000, 'UE');
+picker.add(21, 44, "Eyes of keen sight", 6000, 'UE');
+picker.add(45, 66, "Treasure hunter’s goggles", 6400, 'UE');
+picker.add(67, 84, "Inquisitor’s monocle", 6800, 'UE');
+picker.add(85, 100, "Kinsight goggles", 7500, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Eyes']['lesser medium'];
+
+picker.add(1, 16, "Goggles of elvenkind", 8500, 'UE');
+picker.add(17, 31, "Goggles of brilliant light", 8800, 'UE');
+picker.add(32, 48, "Blind man’s fold", 12000, 'UE');
+picker.add(49, 67, "Goggles of night", 12000, 'UE');
+picker.add(68, 82, "Lenses of figment piercing", 12000, 'UE');
+picker.add(83, 100, "Arachnid goggles", 15000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Eyes']['greater medium'];
+
+picker.add(1, 21, "Darklands goggles", 20000, 'UE');
+picker.add(22, 40, "Sniper goggles", 20000, 'UE');
+picker.add(41, 58, "Rainbow lenses", 21000, 'UE');
+picker.add(59, 77, "Annihilation spectacles", 25000, 'UE');
+picker.add(78, 100, "Eyes of doom", 25000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Eyes']['lesser major'];
+
+picker.add(1, 60, "Eyes of eyebite", 30000, 'UE');
+picker.add(61, 100, "Sniper goggles, greater", 50000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Eyes']['greater major'];
+
+picker.add(1, 18, "Eyes of charming", 56000, 'UE');
+picker.add(19, 34, "Monocle of the investigator", 66000, 'UE');
+picker.add(35, 48, "Sea tyrant’s patch", 70000, 'UE');
+picker.add(49, 63, "Swordmaster’s blindfold", 80000, 'UE');
+picker.add(64, 77, "Mindmaster’s eyes", 95000, 'UE');
+picker.add(78, 90, "Eyes of the dragon", 110000, 'UE');
+picker.add(91, 100, "Truesight goggles", 184800, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Feet']['lesser minor'];
+
+picker.add(1, 11, "Boots of the cat", 1000, 'UE');
+picker.add(12, 22, "Daredevil boots", 1400, 'UE');
+picker.add(23, 31, "Boots of the enduring march", 1500, 'UE');
+picker.add(32, 41, "Feather step slippers", 2000, 'UE');
+picker.add(42, 50, "Boots of friendly terrain", 2400, 'UE');
+picker.add(51, 60, "Boots of the winterlands", 2500, 'UE');
+picker.add(61, 76, "Boots of elvenkind", 2500, 'UE');
+picker.add(77, 85, "Acrobat slippers", 3000, 'UE');
+picker.add(86, 92, "Horseshoes of speed", 3000, 'UE');
+picker.add(93, 100, "Boots of the mire", 3500, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Feet']['greater minor'];
+
+picker.add(1, 7, "Burglar boots, minor", 4000, 'UE');
+picker.add(8, 13, "Horseshoes of crushing blows +1", 4000, 'UE');
+picker.add(14, 19, "Sandals of quick reaction", 4000, 'UE');
+picker.add(20, 26, "Slippers of cloudwalking", 4400, 'UE');
+picker.add(27, 40, "Slippers of spider climbing", 4800, 'UE');
+picker.add(41, 46, "Sandals of the lightest step", 5000, 'UE');
+picker.add(47, 60, "Boots of striding and springing", 5500, 'UE');
+picker.add(61, 68, "Horseshoes of a zephyr", 6000, 'UE');
+picker.add(69, 75, "Haunted shoes", 6480, 'UE');
+picker.add(76, 82, "Jaunt boots", 7200, 'UE');
+picker.add(83, 100, "Boots of levitation", 7500, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Feet']['lesser medium'];
+
+picker.add(1, 8, "Boots of escape", 8000, 'UE');
+picker.add(9, 14, "Earth root boots", 8000, 'UE');
+picker.add(15, 21, "Nightmare boots", 8500, 'UE');
+picker.add(22, 26, "Nightmare horseshoes", 9000, 'UE');
+picker.add(27, 32, "Caltrop boots", 10000, 'UE');
+picker.add(33, 39, "Tremor boots", 10000, 'UE');
+picker.add(40, 47, "Boots of the mastodon", 10500, 'UE');
+picker.add(48, 54, "Shoes of the lightning leaper", 10500, 'UE');
+picker.add(55, 70, "Boots of speed", 12000, 'UE');
+picker.add(71, 77, "Verdant boots", 12000, 'UE');
+picker.add(78, 84, "Horseshoes of crushing blows +2", 16000, 'UE');
+picker.add(85, 100, "Winged boots", 16000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Feet']['greater medium'];
+
+picker.add(1, 38, "Shoes of the firewalker", 21000, 'UE');
+picker.add(39, 72, "Dryad sandals", 24000, 'UE');
+picker.add(73, 100, "Horseshoes of the mist", 27000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Feet']['lesser major'];
+
+picker.add(1, 20, "Getaway boots", 30000, 'UE');
+picker.add(21, 35, "Horseshoes of crushing blows +3", 36000, 'UE');
+picker.add(36, 55, "Horseshoes of glory", 39600, 'UE');
+picker.add(56, 75, "Burglar boots, major", 46000, 'UE');
+picker.add(76, 100, "Boots of teleportation", 49000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Feet']['greater major'];
+
+picker.add(1, 40, "Slippers of the triton", 56000, 'UE');
+picker.add(41, 70, "Horseshoes of crushing blows +4", 64000, 'UE');
+picker.add(71, 100, "Horseshoes of crushing blows +5", 100000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Hands']['lesser minor'];
+
+picker.add(1, 13, "Assisting gloves", 180, 'UE');
+picker.add(14, 22, "Claws of the ice bear", 1300, 'UE');
+picker.add(23, 34, "Gloves of reconnaissance", 2000, 'UE');
+picker.add(35, 46, "Glowing glove", 2000, 'UE');
+picker.add(47, 58, "Apprentice’s cheating gloves", 2200, 'UE');
+picker.add(59, 70, "Challenger’s gloves", 2200, 'UE');
+picker.add(71, 80, "Gloves of larceny", 2500, 'UE');
+picker.add(81, 90, "Healer’s gloves", 2500, 'UE');
+picker.add(91, 100, "Engineer’s workgloves", 3000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Hands']['greater minor'];
+
+picker.add(1, 12, "Gauntlets of the skilled maneuver", 4000, 'UE');
+picker.add(13, 21, "Ghostvision gloves", 4000, 'UE');
+picker.add(22, 33, "Gloves of arrow snaring", 4000, 'UE');
+picker.add(34, 43, "Trapspringer’s gloves", 4000, 'UE');
+picker.add(44, 55, "Gloves of arcane striking", 5000, 'UE');
+picker.add(56, 65, "Poisoner’s gloves", 5000, 'UE');
+picker.add(66, 75, "Magnetist’s gloves", 6000, 'UE');
+picker.add(76, 100, "Gloves of swimming and climbing", 6250, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Hands']['lesser medium'];
+
+picker.add(1, 2, "Deliquescent gloves", 8000, 'UE');
+picker.add(3, 5, "Form-fixing gauntlets", 8000, 'UE');
+picker.add(6, 8, "Iron cobra gauntlet", 8000, 'UE');
+picker.add(9, 16, "Shadow falconer’s glove", 8000, 'UE');
+picker.add(17, 20, "Spellstrike gloves", 8000, 'UE');
+picker.add(21, 28, "Glyphbane gloves", 9000, 'UE');
+picker.add(29, 40, "Glove of storing", 10000, 'UE');
+picker.add(41, 46, "Gloves of shaping", 10000, 'UE');
+picker.add(47, 54, "Pliant gloves", 10000, 'UE');
+picker.add(55, 76, "Gauntlet of rust", 11500, 'UE');
+picker.add(77, 100, "Gloves of dueling", 15000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Hands']['greater medium'];
+
+picker.add(1, 30, "Vampiric gloves", 18000, 'UE');
+picker.add(31, 65, "Giant fist gauntlets", 20000, 'UE');
+picker.add(66, 100, "Gloves of the shortened path", 27000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Hands']['lesser major'];
+
+picker.add(1, 40, "Gloves of the commanding conjurer", 30000, 'UE');
+picker.add(41, 100, "Gauntlet of rust, greater", 34500, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Hands']['greater major'];
+
+picker.add(1, 60, "Talons of Leng", 67000, 'UE');
+picker.add(61, 100, "Gauntlets of the weaponmaster", 110000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Head']['lesser minor'];
+
+picker.add(1, 10, "Mask of stony demeanor", 500, 'UE');
+picker.add(11, 22, "Cap of human guise", 800, 'UE');
+picker.add(23, 36, "Cap of light", 900, 'UE');
+picker.add(37, 56, "Hat of disguise", 1800, 'UE');
+picker.add(57, 71, "Buffering cap", 2000, 'UE');
+picker.add(72, 85, "Miser’s mask", 3000, 'UE');
+picker.add(86, 100, "Stalker’s mask", 3500, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Head']['greater minor'];
+
+picker.add(1, 12, "Circlet of persuasion", 4500, 'UE');
+picker.add(13, 21, "Grappler’s mask", 5000, 'UE');
+picker.add(22, 31, "Helm of fearsome mien", 5000, 'UE');
+picker.add(32, 40, "Jingasa of the fortunate soldier", 5000, 'UE');
+picker.add(41, 54, "Helm of comprehend languages and read magic", 5200, 'UE');
+picker.add(55, 67, "Crown of swords", 6000, 'UE');
+picker.add(68, 87, "Crown of blasting, minor", 6480, 'UE');
+picker.add(88, 100, "Mask of the krenshar", 7200, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Head']['lesser medium'];
+
+picker.add(1, 16, "Helm of the mammoth lord", 8500, 'UE');
+picker.add(17, 30, "Veil of fleeting glances", 9000, 'UE');
+picker.add(31, 46, "Mask of a thousand tomes", 10000, 'UE');
+picker.add(47, 63, "Medusa mask", 10000, 'UE');
+picker.add(64, 80, "Cap of the free thinker", 12000, 'UE');
+picker.add(81, 100, "Halo of inner calm", 16000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Head']['greater medium'];
+
+picker.add(1, 6, "Cat’s eye crown", 18000, 'UE');
+picker.add(7, 12, "Maw of the wyrm", 18000, 'UE');
+picker.add(13, 19, "Mitre of the hierophant", 18000, 'UE');
+picker.add(20, 27, "Magician’s hat", 20000, 'UE');
+picker.add(28, 34, "Circlet of mindsight", 22000, 'UE');
+picker.add(35, 42, "Mask of the skull", 22000, 'UE');
+picker.add(43, 50, "Howling helm", 22600, 'UE');
+picker.add(51, 62, "Crown of blasting, major", 23760, 'UE');
+picker.add(63, 72, "Helm of underwater action", 24000, 'UE');
+picker.add(73, 79, "Crown of conquest", 24600, 'UE');
+picker.add(80, 85, "Batrachian helm", 26000, 'UE');
+picker.add(86, 94, "Helm of telepathy", 27000, 'UE');
+picker.add(95, 100, "Plague mask", 27000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Head']['lesser major'];
+
+picker.add(1, 14, "Iron circlet of guarded souls", 30000, 'UE');
+picker.add(15, 29, "Laurel of command", 30000, 'UE');
+picker.add(30, 45, "Mask of giants, lesser", 30000, 'UE');
+picker.add(46, 61, "Steel-mind cap", 33600, 'UE');
+picker.add(62, 78, "Stormlord’s helm", 35000, 'UE');
+picker.add(79, 100, "Helm of brilliance, lesser", 36000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Head']['greater major'];
+
+picker.add(1, 14, "Judge’s wig", 59200, 'UE');
+picker.add(15, 39, "Helm of teleportation", 73500, 'UE');
+picker.add(40, 55, "Halo of menace", 84000, 'UE');
+picker.add(56, 68, "Mask of giants, greater", 90000, 'UE');
+picker.add(69, 83, "Helm of brilliance", 125000, 'UE');
+picker.add(84, 92, "Helm of electric radiance", 125000, 'UE');
+picker.add(93, 100, "Crown of heaven", 150000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Headband']['lesser minor'];
+
+picker.add(1, 60, "Phylactery of faithfulness", 1000, 'UE');
+picker.add(61, 100, "Dead man’s headband", 3600, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Headband']['greater minor'];
+
+picker.add(1, 9, "Headband of alluring charisma +2", 4000, 'UE');
+picker.add(10, 18, "Headband of inspired wisdom +2", 4000, 'UE');
+picker.add(19, 27, "Headband of vast intelligence +2", 4000, 'UE');
+picker.add(28, 33, "Headband of aerial agility +2", 4500, 'UE');
+picker.add(34, 39, "Shifter’s headband +2", 4500, 'UE');
+picker.add(40, 45, "Headband of ponderous recollection", 5100, 'UE');
+picker.add(46, 51, "Headband of ki focus", 5400, 'UE');
+picker.add(52, 58, "Headband of unshakeable resolve", 5600, 'UE');
+picker.add(59, 66, "Hollywreath band", 5700, 'UE');
+picker.add(67, 74, "Headband of deathless devotion", 6400, 'UE');
+picker.add(75, 82, "Phylactery of the shepherd", 7000, 'UE');
+picker.add(83, 91, "Headband of intuition", 7000, 'UE');
+picker.add(92, 100, "Headband of fortune’s favor", 7700, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Headband']['lesser medium'];
+
+picker.add(1, 6, "Headband of havoc", 8000, 'UE');
+picker.add(7, 12, "Serpent’s band", 9000, 'UE');
+picker.add(13, 20, "Headband of mental prowess +2", 10000, 'UE');
+picker.add(21, 26, "Hunter’s band", 11000, 'UE');
+picker.add(27, 34, "Phylactery of negative channeling", 11000, 'UE');
+picker.add(35, 42, "Phylactery of positive channeling", 11000, 'UE');
+picker.add(43, 48, "Veiled eye", 12000, 'UE');
+picker.add(49, 54, "Band of the stalwart warrior", 14000, 'UE');
+picker.add(55, 60, "Headband of ninjitsu", 15000, 'UE');
+picker.add(61, 68, "Headband of alluring charisma +4", 16000, 'UE');
+picker.add(69, 76, "Headband of inspired wisdom +4", 16000, 'UE');
+picker.add(77, 85, "Headband of mental superiority +2", 16000, 'UE');
+picker.add(86, 93, "Headband of vast intelligence +4", 16000, 'UE');
+picker.add(94, 100, "Shifter’s headband +4", 17500, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Headband']['greater medium'];
+
+picker.add(1, 30, "Headband of arcane energy", 20000, 'UE');
+picker.add(31, 70, "Headband of counterspelling", 20000, 'UE');
+picker.add(71, 100, "Headband of knucklebones", 27500, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Headband']['lesser major'];
+
+picker.add(1, 9, "Soulbound eye", 30000, 'UE');
+picker.add(10, 19, "Winter wolf headband", 32000, 'UE');
+picker.add(20, 32, "Headband of alluring charisma +6", 36000, 'UE');
+picker.add(33, 45, "Headband of inspired wisdom +6", 36000, 'UE');
+picker.add(46, 58, "Headband of vast intelligence +6", 36000, 'UE');
+picker.add(59, 66, "Shifter’s headband +6", 39000, 'UE');
+picker.add(67, 81, "Headband of mental prowess +4", 40000, 'UE');
+picker.add(82, 90, "Headband of seduction", 40000, 'UE');
+picker.add(91, 100, "Headband of aerial agility +4", 42000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Headband']['greater major'];
+
+picker.add(1, 20, "Headband of mental resilience", 64000, 'UE');
+picker.add(21, 50, "Headband of mental superiority +4", 64000, 'UE');
+picker.add(51, 65, "Headband of aerial agility +6", 81000, 'UE');
+picker.add(66, 85, "Headband of metal prowess +6", 90000, 'UE');
+picker.add(86, 100, "Headband of mental superiority +6", 144000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Neck']['lesser minor'];
+
+picker.add(1, 10, "Hand of the mage", 900, 'UE');
+picker.add(11, 18, "Aegis of recovery", 1500, 'UE');
+picker.add(19, 25, "Amulet of bullet protection +1", 1500, 'UE');
+picker.add(26, 37, "Brooch of shielding", 1500, 'UE');
+picker.add(38, 49, "Necklace of fireballs (type I)", 1650, 'UE');
+picker.add(50, 63, "Amulet of natural armor +1", 2000, 'UE');
+picker.add(64, 72, "Golembane scarab", 2500, 'UE');
+picker.add(73, 82, "Necklace of fireballs (type II)", 2700, 'UE');
+picker.add(83, 89, "Swarmbane clasp", 3000, 'UE');
+picker.add(90, 95, "Mind sentinel medallion", 3500, 'UE');
+picker.add(96, 100, "Mummer’s ruff", 3500, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Neck']['greater minor'];
+
+picker.add(1, 8, "Amulet of elemental strife", 4000, 'UE');
+picker.add(9, 15, "Righteous fist amulet", 4000, 'UE');
+picker.add(16, 26, "Necklace of fireballs (type III)", 4350, 'UE');
+picker.add(27, 36, "Amulet of mighty fists +1", 5000, 'UE');
+picker.add(37, 47, "Necklace of fireballs (type IV)", 5400, 'UE');
+picker.add(48, 55, "Stormlure", 5400, 'UE');
+picker.add(56, 66, "Necklace of fireballs (type V)", 5850, 'UE');
+picker.add(67, 73, "Amulet of bullet protection +2", 6000, 'UE');
+picker.add(74, 81, "Feychild necklace", 6000, 'UE');
+picker.add(82, 89, "Carcanet of detention", 7200, 'UE');
+picker.add(90, 100, "Periapt of health", 7500, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Neck']['lesser medium'];
+
+picker.add(1, 8, "Amulet of natural armor +2", 8000, 'UE');
+picker.add(9, 12, "Amulet of proof against petrification", 8000, 'UE');
+picker.add(13, 15, "Everwake amulet", 8000, 'UE');
+picker.add(16, 18, "Gravewatch pendant", 8000, 'UE');
+picker.add(19, 23, "Hand of Glory", 8000, 'UE');
+picker.add(24, 26, "Torc of lionheart fury", 8000, 'UE');
+picker.add(27, 33, "Necklace of fireballs (type VI)", 8100, 'UE');
+picker.add(34, 40, "Necklace of fireballs (type VII)", 8700, 'UE');
+picker.add(41, 43, "Amulet of hidden strength", 9000, 'UE');
+picker.add(44, 47, "Necklace of adaptation", 9000, 'UE');
+picker.add(48, 51, "Amulet of spell cunning", 10000, 'UE');
+picker.add(52, 54, "Collar of the true companion", 10000, 'UE');
+picker.add(55, 58, "Frost fist amulet", 10000, 'UE');
+picker.add(59, 63, "Crystal of healing hands", 12000, 'UE');
+picker.add(64, 66, "Guardian gorget", 12000, 'UE');
+picker.add(67, 73, "Medallion of thoughts", 12000, 'UE');
+picker.add(74, 77, "Periapt of protection from curses", 12000, 'UE');
+picker.add(78, 81, "Forge fist amulet", 13000, 'UE');
+picker.add(82, 85, "Amulet of bullet protection +3", 13500, 'UE');
+picker.add(86, 92, "Periapt of wound closure", 15000, 'UE');
+picker.add(93, 95, "Necklace of ki serenity", 16000, 'UE');
+picker.add(96, 98, "Brooch of amber sparks", 16800, 'UE');
+picker.add(99, 100, "Symbol of sanguine protection", 17500, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Neck']['greater medium'];
+
+picker.add(1, 15, "Amulet of natural armor +3", 18000, 'UE');
+picker.add(16, 24, "Ampoule of false blood", 20000, 'UE');
+picker.add(25, 35, "Amulet of magecraft", 20000, 'UE');
+picker.add(36, 50, "Amulet of mighty fists +2", 20000, 'UE');
+picker.add(51, 62, "Dragonfoe amulet", 20000, 'UE');
+picker.add(63, 67, "Amulet of spell mastery", 22000, 'UE');
+picker.add(68, 72, "Amulet of bullet protection +4", 24000, 'UE');
+picker.add(73, 85, "Hand of Stone", 27000, 'UE');
+picker.add(86, 100, "Periapt of proof against poison", 27000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Neck']['lesser major'];
+
+picker.add(1, 18, "Amulet of natural armor +4", 32000, 'UE');
+picker.add(19, 35, "Amulet of proof against detection and location", 35000, 'UE');
+picker.add(36, 49, "Amulet of bullet protection +5", 37500, 'UE');
+picker.add(50, 67, "Scarab of protection", 38000, 'UE');
+picker.add(68, 82, "Necklace of netted stars", 42000, 'UE');
+picker.add(83, 100, "Amulet of mighty fists +3", 45000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Neck']['greater major'];
+
+picker.add(1, 35, "Amulet of natural armor +5", 50000, 'UE');
+picker.add(36, 60, "Amulet of mighty fists +4", 80000, 'UE');
+picker.add(61, 85, "Amulet of the planes", 120000, 'UE');
+picker.add(86, 100, "Amulet of mighty fists +5", 125000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Shoulders']['lesser minor'];
+
+picker.add(1, 6, "Catching cape", 200, 'UE');
+picker.add(7, 10, "Cloak of human guise", 900, 'UE');
+picker.add(11, 30, "Cloak of resistance +1", 1000, 'UE');
+picker.add(31, 36, "Muleback cords", 1000, 'UE');
+picker.add(37, 38, "Shawl of life-keeping", 1000, 'UE');
+picker.add(39, 44, "Shield cloak", 1000, 'UE');
+picker.add(45, 50, "Quickchange cloak", 1500, 'UE');
+picker.add(51, 56, "Cowardly crouching cloak", 1800, 'UE');
+picker.add(57, 74, "Cloak of elvenkind", 2500, 'UE');
+picker.add(75, 80, "Cloak of the hedge wizard", 2500, 'UE');
+picker.add(81, 85, "Cloak of fiery vanishing", 2600, 'UE');
+picker.add(86, 94, "Cloak of fangs", 2800, 'UE');
+picker.add(95, 97, "Pauldrons of the serpent", 3000, 'UE');
+picker.add(98, 100, "Stonemist cloak", 3500, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Shoulders']['greater minor'];
+
+picker.add(1, 26, "Cloak of resistance +2", 4000, 'UE');
+picker.add(27, 38, "Cloak of the scuttling rat", 6000, 'UE');
+picker.add(39, 39, "Seafoam shawl", 6000, 'UE');
+picker.add(40, 52, "Treeform cloak", 6000, 'UE');
+picker.add(53, 74, "Eagle cape", 7000, 'UE');
+picker.add(75, 94, "Cloak of the manta ray", 7200, 'UE');
+picker.add(95, 100, "Hunter’s cloak", 7500, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Shoulders']['lesser medium'];
+
+picker.add(1, 20, "Cloak of resistance +3", 9000, 'UE');
+picker.add(21, 22, "Cloak of the duskwalker", 10000, 'UE');
+picker.add(23, 25, "Cocoon cloak", 10000, 'UE');
+picker.add(26, 27, "Pauldrons of the bull", 10000, 'UE');
+picker.add(28, 32, "Stone cloak, minor", 10000, 'UE');
+picker.add(33, 40, "Cape of the mountebank", 10800, 'UE');
+picker.add(41, 45, "Pauldrons of the watchful lion", 10800, 'UE');
+picker.add(46, 52, "Lion cloak", 12000, 'UE');
+picker.add(53, 54, "Mantle of spores", 13400, 'UE');
+picker.add(55, 59, "Cape of effulgent escape", 14000, 'UE');
+picker.add(60, 69, "Cloak of arachnida", 14000, 'UE');
+picker.add(70, 72, "Gunfighter’s poncho", 14000, 'UE');
+picker.add(73, 74, "Tentacle cloak", 14000, 'UE');
+picker.add(75, 76, "Demonspike pauldrons", 14350, 'UE');
+picker.add(77, 78, "Comfort’s cloak", 15600, 'UE');
+picker.add(79, 88, "Cloak of resistance +4", 16000, 'UE');
+picker.add(89, 91, "Shawl of the crone", 16000, 'UE');
+picker.add(92, 100, "Prestidigitator’s cloak", 17200, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Shoulders']['greater medium'];
+
+picker.add(1, 12, "Stole of justice", 18000, 'UE');
+picker.add(13, 24, "Jellyfish cape", 19200, 'UE');
+picker.add(25, 32, "Cloak of the diplomat", 20000, 'UE');
+picker.add(33, 44, "Slashing cloak", 20000, 'UE');
+picker.add(45, 56, "Stone cloak, major", 20000, 'UE');
+picker.add(57, 68, "Cloak of displacement, minor", 24000, 'UE');
+picker.add(69, 88, "Cloak of resistance +5", 25000, 'UE');
+picker.add(89, 100, "Cloak of the bat", 26000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Shoulders']['lesser major'];
+
+picker.add(1, 40, "Highwayman’s cape", 32500, 'UE');
+picker.add(41, 60, "Juggernaut’s pauldrons", 40000, 'UE');
+picker.add(61, 100, "Charlatan’s cape", 45000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Shoulders']['greater major'];
+
+picker.add(1, 15, "Cloak of displacement, major", 50000, 'UE');
+picker.add(16, 35, "Wings of flying", 54000, 'UE');
+picker.add(36, 55, "Cloak of etherealness", 55000, 'UE');
+picker.add(56, 80, "Wings of the gargoyle", 72000, 'UE');
+picker.add(81, 100, "Wyvern cloak", 78600, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Wrists']['lesser minor'];
+
+picker.add(1, 10, "Sleeves of many garments", 200, 'UE');
+picker.add(11, 20, "Armbands of the brawler", 500, 'UE');
+picker.add(21, 48, "Bracers of armor +1", 1000, 'UE');
+picker.add(49, 63, "Burglar’s bracers", 1000, 'UE');
+picker.add(64, 91, "Bracers of steadiness", 2000, 'UE');
+picker.add(92, 96, "Manacles of cooperation", 2000, 'UE');
+picker.add(97, 100, "Shackles of compliance", 3280, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Wrists']['greater minor'];
+
+picker.add(1, 27, "Bracers of armor +2", 4000, 'UE');
+picker.add(28, 28, "Bracers of falcon’s aim", 4000, 'UE');
+picker.add(29, 38, "Inquisitor’s bastion vambraces", 4000, 'UE');
+picker.add(39, 65, "Bracers of archery, lesser", 5000, 'UE');
+picker.add(66, 68, "Spellguard bracers", 5000, 'UE');
+picker.add(69, 71, "Bonebreaker gauntlets", 6000, 'UE');
+picker.add(72, 81, "Vambraces of defense", 6000, 'UE');
+picker.add(82, 98, "Verdant vine", 6000, 'UE');
+picker.add(99, 99, "Longarm bracers", 7200, 'UE');
+picker.add(100, 100, "Bracers of the glib entertainer", 7900, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Wrists']['lesser medium'];
+
+picker.add(1, 4, "Charm bracelet", 8000, 'UE');
+picker.add(5, 8, "Duelist’s vambraces", 8000, 'UE');
+picker.add(9, 13, "Merciful vambraces", 8000, 'UE');
+picker.add(14, 18, "Vambraces of the tactician", 8000, 'UE');
+picker.add(19, 43, "Bracers of armor +3", 9000, 'UE');
+picker.add(44, 53, "Seducer’s bane", 9900, 'UE');
+picker.add(54, 58, "Bracers of the avenging knight", 11500, 'UE');
+picker.add(59, 63, "Arrowmaster’s bracers", 13900, 'UE');
+picker.add(64, 73, "Vambraces of the genie (efreeti)", 14400, 'UE');
+picker.add(74, 78, "Bracelet of bargaining", 14500, 'UE');
+picker.add(79, 82, "Bracelet of mercy", 15000, 'UE');
+picker.add(83, 86, "Bracers of the merciful knight", 15600, 'UE');
+picker.add(87, 90, "Bracelet of second chances", 15750, 'UE');
+picker.add(91, 99, "Bracers of armor +4", 16000, 'UE');
+picker.add(100, 100, "Shackles of durance vile", 16200, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Wrists']['greater medium'];
+
+picker.add(1, 10, "Vambraces of the genie (djinni)", 18900, 'UE');
+picker.add(11, 20, "Vambraces of the genie (marid)", 18900, 'UE');
+picker.add(21, 30, "Vambraces of the genie (shaitan)", 18900, 'UE');
+picker.add(31, 50, "Bracelet of friends", 19000, 'UE');
+picker.add(51, 70, "Bracers of archery, greater", 25000, 'UE');
+picker.add(71, 90, "Bracers of armor +5", 25000, 'UE');
+picker.add(91, 100, "Bracers of sworn vengeance", 25000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Wrists']['lesser major'];
+
+picker.add(1, 30, "Dimensional shackles", 28000, 'UE');
+picker.add(31, 45, "Gauntlets of skill at arms", 30000, 'UE');
+picker.add(46, 100, "Bracers of armor +6", 36000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Wrists']['greater major'];
+
+picker.add(1, 60, "Bracers of armor +7", 49000, 'UE');
+picker.add(61, 100, "Bracers of armor +8", 64000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Slotless']['least minor'];
+
+picker.add(1, 1, "Feather token (anchor)", 50, 'UE');
+picker.add(2, 2, "Universal solvent", 50, 'UE');
+picker.add(3, 4, "Ioun torch", 75, 'UE');
+picker.add(5, 5, "Stubborn nail", 100, 'UE');
+picker.add(6, 6, "War paint of the terrible visage", 100, 'UE');
+picker.add(7, 7, "Elixir of love", 150, 'UE');
+picker.add(8, 8, "Unguent of timelessness", 150, 'UE');
+picker.add(9, 9, "Feather token (fan)", 200, 'UE');
+picker.add(10, 10, "Formula alembic", 200, 'UE');
+picker.add(11, 11, "Hybridization funnel", 200, 'UE');
+picker.add(12, 12, "Soul soap", 200, 'UE');
+picker.add(13, 13, "Dust of tracelessness", 250, 'UE');
+picker.add(14, 16, "Elixir of hiding", 250, 'UE');
+picker.add(17, 19, "Elixir of swimming", 250, 'UE');
+picker.add(20, 22, "Elixir of tumbling", 250, 'UE');
+picker.add(23, 25, "Elixir of vision", 250, 'UE');
+picker.add(26, 27, "Nightdrops", 250, 'UE');
+picker.add(28, 28, "Oil of silence", 250, 'UE');
+picker.add(29, 31, "Silversheen", 250, 'UE');
+picker.add(32, 32, "Traveler’s any-tool", 250, 'UE');
+picker.add(33, 34, "Bottle of messages", 300, 'UE');
+picker.add(35, 36, "Feather token (bird)", 300, 'UE');
+picker.add(37, 37, "Origami swarm", 300, 'UE');
+picker.add(38, 38, "Alluring golden apple", 400, 'UE');
+picker.add(39, 39, "Feather token (tree)", 400, 'UE');
+picker.add(40, 40, "Key of lock jamming", 400, 'UE');
+picker.add(41, 42, "Feather token (swan boat)", 450, 'UE');
+picker.add(43, 43, "Animated portrait", 500, 'UE');
+picker.add(44, 44, "Bottled misfortune", 500, 'UE');
+picker.add(45, 46, "Elixir of truth", 500, 'UE');
+picker.add(47, 48, "Feather token (whip)", 500, 'UE');
+picker.add(49, 51, "Scabbard of honing", 500, 'UE');
+picker.add(52, 53, "Seer’s tea", 550, 'UE');
+picker.add(54, 57, "Abjurant salt", 600, 'UE');
+picker.add(58, 61, "Arrow magnet", 600, 'UE');
+picker.add(62, 63, "Dust of darkness", 600, 'UE');
+picker.add(64, 69, "Campfire bead", 720, 'UE');
+picker.add(70, 72, "Archon’s torch", 750, 'UE');
+picker.add(73, 75, "Book of extended summoning (lesser)", 750, 'UE');
+picker.add(76, 79, "Iron rope", 750, 'UE');
+picker.add(80, 83, "Snapleaf", 750, 'UE');
+picker.add(84, 86, "Bottled yeti fur", 800, 'UE');
+picker.add(87, 89, "Defoliant polish", 800, 'UE');
+picker.add(90, 92, "Dust of emulation", 800, 'UE');
+picker.add(93, 97, "Steadfast gut-stone", 800, 'UE');
+picker.add(98, 100, "Dust of dryness", 850, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Slotless']['lesser minor'];
+
+picker.add(1, 3, "TODO: Roll on the Least Minor table", 250, 'UE');
+picker.add(4, 4, "Anatomy doll", 1000, 'UE');
+picker.add(5, 5, "Bead of newt prevention", 1000, 'UE');
+picker.add(6, 6, "Beast-bond brand", 1000, 'UE');
+picker.add(7, 7, "Bookplate of recall", 1000, 'UE');
+picker.add(8, 9, "Boro bead (1st)", 1000, 'UE');
+picker.add(10, 10, "Concealing pocket", 1000, 'UE');
+picker.add(11, 11, "Dowsing syrup", 1000, 'UE');
+picker.add(12, 12, "Incense of transcendence", 1000, 'UE');
+picker.add(13, 14, "Page of spell knowledge (1st)", 1000, 'UE');
+picker.add(15, 17, "Pearl of Power (1st)", 1000, 'UE');
+picker.add(18, 18, "Preserving flask (1st)", 1000, 'UE');
+picker.add(19, 20, "Pyxes of redirected focus", 1000, 'UE');
+picker.add(21, 22, "Salve of slipperiness", 1000, 'UE');
+picker.add(23, 23, "Wasp nest of swarming", 1000, 'UE');
+picker.add(24, 26, "Elixir of fire breath", 1100, 'UE');
+picker.add(27, 27, "Grave salt", 1100, 'UE');
+picker.add(28, 29, "Pipes of the sewers", 1150, 'UE');
+picker.add(30, 31, "Dust of illusion", 1200, 'UE');
+picker.add(32, 33, "Goblin skull bomb", 1200, 'UE');
+picker.add(34, 35, "Elixir of dragon breath", 1400, 'UE');
+picker.add(36, 36, "Bookmark of deception", 1500, 'UE');
+picker.add(37, 37, "Word bottle", 1500, 'UE');
+picker.add(38, 38, "Dust of acid consumption", 1600, 'UE');
+picker.add(39, 40, "Dust of appearance", 1800, 'UE');
+picker.add(41, 42, "Efficient quiver", 1800, 'UE');
+picker.add(43, 43, "Pipes of sounding", 1800, 'UE');
+picker.add(44, 44, "Scabbard of vigor", 1800, 'UE');
+picker.add(45, 45, "Agile alpenstock", 2000, 'UE');
+picker.add(46, 46, "Blood reservoir of physical prowess", 2000, 'UE');
+picker.add(47, 47, "Clamor box", 2000, 'UE');
+picker.add(48, 48, "Dry load powder horn", 2000, 'UE');
+picker.add(49, 49, "Goblin fire drum (normal)", 2000, 'UE');
+picker.add(50, 51, "Handy haversack", 2000, 'UE');
+picker.add(52, 53, "Horn of fog", 2000, 'UE');
+picker.add(54, 54, "Iron spike of safe passage", 2000, 'UE');
+picker.add(55, 55, "Knight’s pennon (honor)", 2200, 'UE');
+picker.add(56, 59, "Volatile vaporizer (1st)", 2200, 'UE');
+picker.add(60, 62, "Elemental gem", 2250, 'UE');
+picker.add(63, 64, "Flying ointment", 2250, 'UE');
+picker.add(65, 65, "Sovereign glue", 2400, 'UE');
+picker.add(66, 66, "Apple of eternal sleep", 2500, 'UE');
+picker.add(67, 68, "Bag of holding (type I)", 2500, 'UE');
+picker.add(69, 69, "Candle of truth", 2500, 'UE');
+picker.add(70, 70, "Hexing doll", 2500, 'UE');
+picker.add(71, 72, "Stone of alarm", 2700, 'UE');
+picker.add(73, 73, "Book of extended summoning (standard)", 2750, 'UE');
+picker.add(74, 77, "Bead of force", 3000, 'UE');
+picker.add(78, 78, "Cauldron of brewing", 3000, 'UE');
+picker.add(79, 80, "Chime of opening", 3000, 'UE');
+picker.add(81, 81, "Philter of love", 3000, 'UE');
+picker.add(82, 86, "Rope of climbing", 3000, 'UE');
+picker.add(87, 88, "Volatile vaporizer (2nd)", 3000, 'UE');
+picker.add(89, 89, "Shroud of disintegration", 3300, 'UE');
+picker.add(90, 92, "Bag of tricks (gray)", 3400, 'UE');
+picker.add(93, 95, "Dust of disappearance", 3500, 'UE');
+picker.add(96, 96, "Dust of weighty burdens", 3600, 'UE');
+picker.add(97, 97, "Noble’s vigilant pillbox", 3600, 'UE');
+picker.add(98, 99, "Figurine of wondrous power (silver raven)", 3800, 'UE');
+picker.add(100, 100, "Volatile vaporizer (3rd)", 3800, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Slotless']['greater minor'];
+
+picker.add(1, 1, "Boro bead (2nd)", 4000, 'UE');
+picker.add(2, 2, "Cautionary creance", 4000, 'UE');
+picker.add(3, 3, "Escape ladder", 4000, 'UE');
+picker.add(4, 4, "Far-reaching sight", 4000, 'UE');
+picker.add(5, 6, "Ioun stone (clear spindle)", 4000, 'UE');
+picker.add(7, 7, "Marvelous pigments", 4000, 'UE');
+picker.add(8, 15, "Page of spell knowledge (2nd)", 4000, 'UE');
+picker.add(16, 25, "Pearl of Power (2nd)", 4000, 'UE');
+picker.add(26, 26, "Preserving flask (2nd)", 4000, 'UE');
+picker.add(27, 27, "Restorative ointment", 4000, 'UE');
+picker.add(28, 30, "Stone salve", 4000, 'UE');
+picker.add(31, 31, "Wind-caller compass", 4400, 'UE');
+picker.add(32, 32, "Goblin fire drum (greater)", 4500, 'UE');
+picker.add(33, 33, "Knight’s pennon (battle)", 4500, 'UE');
+picker.add(34, 34, "Knight’s pennon (parley)", 4500, 'UE');
+picker.add(35, 35, "Void dust", 4500, 'UE');
+picker.add(36, 36, "Incense of meditation", 4900, 'UE');
+picker.add(37, 37, "Admixture vial", 5000, 'UE');
+picker.add(38, 51, "Bag of holding (type II)", 5000, 'UE');
+picker.add(52, 52, "Bone razor", 5000, 'UE');
+picker.add(53, 53, "Horn of the huntmaster", 5000, 'UE');
+picker.add(54, 54, "Insistent doorknocker", 5000, 'UE');
+picker.add(55, 56, "Ioun stone(dusty rose prism)", 5000, 'UE');
+picker.add(57, 57, "Mallet of building", 5000, 'UE');
+picker.add(58, 58, "Polymorphic pouch", 5000, 'UE');
+picker.add(59, 59, "Scabbard of stanching", 5000, 'UE');
+picker.add(60, 60, "School of eyes", 5000, 'UE');
+picker.add(61, 61, "Sheath of bladestealth", 5000, 'UE');
+picker.add(62, 62, "Stone of alliance", 5000, 'UE');
+picker.add(63, 63, "Summoning shackle", 5000, 'UE');
+picker.add(64, 64, "Eversmoking bottle", 5400, 'UE');
+picker.add(65, 65, "Sustaining spoon", 5400, 'UE');
+picker.add(66, 66, "Wind fan", 5500, 'UE');
+picker.add(67, 67, "Grim lantern", 5800, 'UE');
+picker.add(68, 68, "Coin of the untrodden road", 6000, 'UE');
+picker.add(69, 69, "Horn of battle clarity", 6000, 'UE');
+picker.add(70, 70, "Life link badge", 6000, 'UE');
+picker.add(71, 71, "Martyr’s tear", 6000, 'UE');
+picker.add(72, 72, "Pipes of haunting", 6000, 'UE');
+picker.add(73, 73, "Rope of knots", 6000, 'UE');
+picker.add(74, 74, "Singing bell of striking", 6000, 'UE');
+picker.add(75, 75, "Stone familiar", 6000, 'UE');
+picker.add(76, 76, "Book of extended summonning (greater)", 6126, 'UE');
+picker.add(77, 77, "Dragonbone divination sticks", 6400, 'UE');
+picker.add(78, 79, "Horn of goodness/evil", 6500, 'UE');
+picker.add(79, 79, "Naga-scale bindi", 6600, 'UE');
+picker.add(80, 80, "Bottle of shadows", 7000, 'UE');
+picker.add(81, 81, "Cape of bravado", 7000, 'UE');
+picker.add(82, 83, "Instant bridge", 7000, 'UE');
+picker.add(84, 84, "Mirror of guarding reflections", 7000, 'UE');
+picker.add(85, 85, "Folding boat", 7200, 'UE');
+picker.add(86, 87, "Bottle of air", 7250, 'UE');
+picker.add(88, 94, "Bag of holding (type III)", 7400, 'UE');
+picker.add(95, 95, "Balm of impish grace", 7500, 'UE');
+picker.add(96, 96, "Candle of clean air", 7500, 'UE');
+picker.add(97, 97, "Harp of charming", 7500, 'UE');
+picker.add(98, 100, "Manual of war", 7500, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Slotless']['lesser medium'];
+
+picker.add(1, 1, "Chalice of poison weeping", 8000, 'UE');
+picker.add(2, 2, "Exorcist’s aspergillum", 8000, 'UE');
+picker.add(3, 3, "Golem manual (flesh)", 8000, 'UE');
+picker.add(4, 4, "Harp of shattering", 8000, 'UE');
+picker.add(5, 5, "Insignia of valor", 8000, 'UE');
+picker.add(6, 6, "Ioun stone (deep red sphere)", 8000, 'UE');
+picker.add(7, 7, "Ioun stone (incandescent blue sphere)", 8000, 'UE');
+picker.add(8, 8, "Ioun stone (pale blue rhomboid)", 8000, 'UE');
+picker.add(9, 9, "Ioun stone (pink and green sphere)", 8000, 'UE');
+picker.add(10, 10, "Ioun stone (pink rhomboid)", 8000, 'UE');
+picker.add(11, 11, "Ioun stone (scarlet and blue sphere)", 8000, 'UE');
+picker.add(12, 12, "Needles of fleshgraving", 8000, 'UE');
+picker.add(13, 13, "Restless lockpicks", 8000, 'UE');
+picker.add(14, 14, "Werewhistle", 8000, 'UE');
+picker.add(15, 16, "Deck of illusions", 8100, 'UE');
+picker.add(17, 17, "Candle of invocation", 8400, 'UE');
+picker.add(18, 19, "Bag of tricks (rust)", 8500, 'UE');
+picker.add(20, 20, "Boro bead (3rd)", 9000, 'UE');
+picker.add(21, 21, "Decanter of endless water", 9000, 'UE');
+picker.add(22, 22, "Loathsome mirror", 9000, 'UE');
+picker.add(23, 25, "Page of spell knowledge (3rd)", 9000, 'UE');
+picker.add(26, 31, "Pearl of Power (3rd)", 9000, 'UE');
+picker.add(32, 32, "Preserving flask (3rd)", 9000, 'UE');
+picker.add(33, 33, "Figurine of wondrous power (serpentine owl)", 9100, 'UE');
+picker.add(34, 34, "Strand of prayer beads (lesser)", 9600, 'UE');
+picker.add(35, 38, "Bag of holding (type IV)", 10000, 'UE');
+picker.add(39, 39, "Boundary chalk", 10000, 'UE');
+picker.add(40, 40, "Chime of resounding silence", 10000, 'UE');
+picker.add(41, 41, "Construct channel brick", 10000, 'UE');
+picker.add(42, 42, "Doomharp", 10000, 'UE');
+picker.add(43, 43, "Drum of advance and retreat", 10000, 'UE');
+picker.add(44, 44, "Embalming thread", 10000, 'UE');
+picker.add(45, 45, "Eye of the void", 10000, 'UE');
+picker.add(46, 46, "Figurine of wondrous power (bronze griffon)", 10000, 'UE');
+picker.add(47, 47, "Figurine of wondrous power (ebony fly)", 10000, 'UE');
+picker.add(48, 48, "Figurine of wondrous power (slate spider)", 10000, 'UE');
+picker.add(49, 49, "Hourglass of last chances", 10000, 'UE');
+picker.add(50, 51, "Ioun stone (dark blue rhomboid)", 10000, 'UE');
+picker.add(52, 52, "Ki mat", 10000, 'UE');
+picker.add(53, 53, "Lord’s banner (swiftness)", 10000, 'UE');
+picker.add(54, 54, "Malleable symbol", 10000, 'UE');
+picker.add(55, 55, "Migrus locker", 10000, 'UE');
+picker.add(56, 56, "Ornament of healing light", 10000, 'UE');
+picker.add(57, 57, "Prayer wheel of ethical strength", 10000, 'UE');
+picker.add(58, 58, "Stone horse (courser)", 10000, 'UE');
+picker.add(59, 59, "Summon-slave crystal", 10000, 'UE');
+picker.add(60, 60, "Treasurer’s seal", 10000, 'UE');
+picker.add(61, 61, "Black soul shard", 12000, 'UE');
+picker.add(62, 62, "Golem manual (clay)", 12000, 'UE');
+picker.add(63, 63, "Horsemaster’s saddle", 12000, 'UE');
+picker.add(64, 64, "Pipes of dissolution", 12000, 'UE');
+picker.add(65, 65, "Pipes of pain", 12000, 'UE');
+picker.add(66, 66, "Seeker’s sight", 12000, 'UE');
+picker.add(67, 67, "Blessed book", 12500, 'UE');
+picker.add(68, 68, "Waters of transfiguration", 12500, 'UE');
+picker.add(69, 69, "Gem of brightness", 13000, 'UE');
+picker.add(70, 70, "Harp of contagion", 13000, 'UE');
+picker.add(71, 71, "Lyre of building", 13000, 'UE');
+picker.add(72, 72, "Void pennant", 14000, 'UE');
+picker.add(73, 73, "Stone horse (destrier)", 14800, 'UE');
+picker.add(74, 74, "Book of the loremaster", 15000, 'UE');
+picker.add(75, 75, "Cauldron of plenty", 15000, 'UE');
+picker.add(76, 76, "Horn of judgment", 15000, 'UE');
+picker.add(77, 77, "Horn of the tritons", 15000, 'UE');
+picker.add(78, 78, "Pearl of the sirines", 15300, 'UE');
+picker.add(79, 79, "Figurine of wondrous power (onyx dog)", 15500, 'UE');
+picker.add(80, 81, "Bag of tricks (tan)", 16000, 'UE');
+picker.add(82, 82, "Boro bead (4th)", 16000, 'UE');
+picker.add(83, 83, "Page of spell knowledge (4th)", 16000, 'UE');
+picker.add(84, 87, "Pearl of Power (4th)", 16000, 'UE');
+picker.add(88, 88, "Preserving flask (4th)", 16000, 'UE');
+picker.add(89, 91, "Scabbard of keen edges", 16000, 'UE');
+picker.add(92, 93, "Figurine of wondrous power (golden lions)", 16500, 'UE');
+picker.add(94, 95, "Chime of interruption", 16800, 'UE');
+picker.add(96, 99, "Broom of flying", 17000, 'UE');
+picker.add(100, 100, "Figurine of wondrous power (marble elephant)", 17000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Slotless']['greater medium'];
+
+picker.add(1, 3, "Ioun stone (iridescent spindle)", 18000, 'UE');
+picker.add(4, 4, "Orb of foul Abaddon", 18000, 'UE');
+picker.add(5, 8, "Carpet of flying (5 ft. by 5 ft.)", 20000, 'UE');
+picker.add(9, 9, "Horn of antagonism", 20000, 'UE');
+picker.add(10, 13, "Horn of blasting", 20000, 'UE');
+picker.add(14, 17, "Ioun stone (pale lavender ellipsoid)", 20000, 'UE');
+picker.add(18, 21, "Ioun stone (pearly white spindle)", 20000, 'UE');
+picker.add(22, 24, "Master’s perfect golden bell", 20000, 'UE');
+picker.add(25, 27, "Necromancer’s athame", 20000, 'UE');
+picker.add(28, 31, "Portable hole", 20000, 'UE');
+picker.add(32, 35, "Stone of good luck", 20000, 'UE');
+picker.add(36, 37, "Figurine of wondrous power (ivory goats)", 21000, 'UE');
+picker.add(38, 40, "Rope of entanglement", 21000, 'UE');
+picker.add(41, 42, "Golem manual (stone)", 22000, 'UE');
+picker.add(43, 43, "Orb of golden heaven", 22000, 'UE');
+picker.add(44, 45, "Mattock of the titans", 23348, 'UE');
+picker.add(46, 48, "Drinking horn of bottomless valor", 24000, 'UE');
+picker.add(49, 51, "Boro bead (5th)", 25000, 'UE');
+picker.add(52, 53, "Chaos emerald", 25000, 'UE');
+picker.add(54, 57, "Page of spell knowledge (5th)", 25000, 'UE');
+picker.add(58, 64, "Pearl of Power (5th)", 25000, 'UE');
+picker.add(65, 67, "Preserving flask (5th)", 25000, 'UE');
+picker.add(68, 69, "Maul of the titans", 25305, 'UE');
+picker.add(70, 73, "Iron bands of binding", 26000, 'UE');
+picker.add(74, 76, "Cube of frost resistance", 27000, 'UE');
+picker.add(77, 80, "Manual of bodily health +1", 27500, 'UE');
+picker.add(81, 84, "Manual of gainful exercise +1", 27500, 'UE');
+picker.add(85, 88, "Manual of quickness of action +1", 27500, 'UE');
+picker.add(89, 92, "Tome of clear thought +1", 27500, 'UE');
+picker.add(93, 96, "Tome of leadership and influence +1", 27500, 'UE');
+picker.add(97, 100, "Tome of understanding +1", 27500, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Slotless']['lesser major'];
+
+picker.add(1, 4, "Figurine of wondrous power (obsidian steed)", 28500, 'UE');
+picker.add(5, 7, "Cauldron of the dead", 30000, 'UE');
+picker.add(8, 11, "Drums of panic", 30000, 'UE');
+picker.add(12, 15, "Ioun stone (orange prism)", 30000, 'UE');
+picker.add(16, 19, "Ioun stone (pale green prism)", 30000, 'UE');
+picker.add(20, 23, "Lantern of revealing", 30000, 'UE');
+picker.add(24, 27, "Racing broom of flying", 30000, 'UE');
+picker.add(28, 31, "Cauldron of resurrection", 33000, 'UE');
+picker.add(32, 36, "Carpet of flying (5 ft. by 10 ft.)", 35000, 'UE');
+picker.add(37, 38, "Golem manual (iron)", 35000, 'UE');
+picker.add(39, 40, "Boro bead (6th)", 36000, 'UE');
+picker.add(41, 44, "Ioun stone (vibrant purple prism)", 36000, 'UE');
+picker.add(45, 48, "Orb of utter chaos", 36000, 'UE');
+picker.add(49, 50, "Page of spell knowledge (6th)", 36000, 'UE');
+picker.add(51, 58, "Pearl of Power (6th)", 36000, 'UE');
+picker.add(59, 60, "Preserving flask (6th)", 36000, 'UE');
+picker.add(61, 64, "Cauldron of flying", 40000, 'UE');
+picker.add(65, 66, "Enmity fetish", 40000, 'UE');
+picker.add(67, 69, "Ioun stone (lavender and green ellipsoid)", 40000, 'UE');
+picker.add(70, 73, "Ring gates", 40000, 'UE');
+picker.add(74, 77, "Cauldron of seeing", 42000, 'UE');
+picker.add(78, 81, "Crystal ball", 42000, 'UE');
+picker.add(82, 83, "Golem manual (stone guardian)", 44000, 'UE');
+picker.add(84, 87, "Drums of haste", 45000, 'UE');
+picker.add(88, 91, "Strand of prayer beads (standard)", 45800, 'UE');
+picker.add(92, 94, "Orb of storms", 48000, 'UE');
+picker.add(95, 96, "Page of spell knowledge (7th)", 49000, 'UE');
+picker.add(97, 100, "Pearl of Power (7th)", 49000, 'UE');
+
+picker = wondrous.typeAndLevelToPicker['Slotless']['greater major'];
+
+picker.add(1, 3, "Crystal ball with see invisibility", 50000, 'UE');
+picker.add(4, 5, "Horn of Valhalla", 50000, 'UE');
+picker.add(6, 8, "Crystal ball with detect thoughts", 51000, 'UE');
+picker.add(9, 9, "Last leaves of the autumn dryad", 52000, 'UE');
+picker.add(10, 11, "Instant fortress", 55000, 'UE');
+picker.add(12, 15, "Manual of bodily health +2", 55000, 'UE');
+picker.add(16, 19, "Manual of gainful exercise +2", 55000, 'UE');
+picker.add(20, 23, "Manual of quickness of action +2", 55000, 'UE');
+picker.add(24, 27, "Tome of clear thought +2", 55000, 'UE');
+picker.add(28, 31, "Tome of leadership and influence +2", 55000, 'UE');
+picker.add(32, 35, "Tome of understanding +2", 55000, 'UE');
+picker.add(36, 36, "Lord’s banner (terror)", 56000, 'UE');
+picker.add(37, 37, "Carpet of flying (10 ft. by 10 ft.)", 60000, 'UE');
+picker.add(38, 39, "Darkskull", 60000, 'UE');
+picker.add(40, 40, "Orb of pure law", 60000, 'UE');
+picker.add(41, 41, "Cube of force", 62000, 'UE');
+picker.add(42, 43, "Page of spell knowledge (8th)", 64000, 'UE');
+picker.add(44, 49, "Pearl of Power (8th)", 64000, 'UE');
+picker.add(50, 50, "Crystal ball with telepathy", 70000, 'UE');
+picker.add(51, 51, "Horn of blasting (greater)", 70000, 'UE');
+picker.add(52, 54, "Pearl of Power (two spells)", 70000, 'UE');
+picker.add(55, 55, "Gem of seeing", 75000, 'UE');
+picker.add(56, 56, "Lord’s banner (victory)", 75000, 'UE');
+picker.add(57, 57, "Crystal ball with true seeing", 80000, 'UE');
+picker.add(58, 59, "Page of spell knowledge (9th)", 81000, 'UE');
+picker.add(60, 62, "Pearl of Power (9th)", 81000, 'UE');
+picker.add(63, 63, "Well of many worlds", 82000, 'UE');
+picker.add(64, 65, "Manual of bodily health +3", 82500, 'UE');
+picker.add(66, 67, "Manual of gainful exercise +3", 82500, 'UE');
+picker.add(68, 69, "Manual of quickness of action +3", 82500, 'UE');
+picker.add(70, 71, "Tome of clear thought +3", 82500, 'UE');
+picker.add(72, 73, "Tome of leadership and influence +3", 82500, 'UE');
+picker.add(74, 75, "Tome of understanding +3", 82500, 'UE');
+picker.add(76, 76, "Apparatus of the crab", 90000, 'UE');
+picker.add(77, 77, "Bowl of conjuring water elementals", 90000, 'UE');
+picker.add(78, 78, "Brazier of conjuring fire elementals", 90000, 'UE');
+picker.add(79, 79, "Censer of conjuring air elementals", 90000, 'UE');
+picker.add(80, 80, "Stone of conjuring earth elementals", 90000, 'UE');
+picker.add(81, 81, "Mirror of opposition", 92000, 'UE');
+picker.add(82, 82, "Strand of prayer beads (greater)", 95800, 'UE');
+picker.add(83, 83, "Lord’s banner (crusades)", 100000, 'UE');
+picker.add(84, 84, "Manual of bodily health +4", 110000, 'UE');
+picker.add(85, 85, "Manual of gainful exercise +4", 110000, 'UE');
+picker.add(86, 86, "Manual of quickness of action +4", 110000, 'UE');
+picker.add(87, 87, "Tome of clear thought +4", 110000, 'UE');
+picker.add(88, 88, "Tome of leadership and influence +4", 110000, 'UE');
+picker.add(89, 89, "Tome of understanding +4", 110000, 'UE');
+picker.add(90, 90, "Manual of bodily health +5", 137500, 'UE');
+picker.add(91, 91, "Manual of gainful exercise +5", 137500, 'UE');
+picker.add(92, 92, "Manual of quickness of action +5", 137500, 'UE');
+picker.add(93, 93, "Tome of clear thought +5", 137500, 'UE');
+picker.add(94, 94, "Tome of leadership and influence +5", 137500, 'UE');
+picker.add(95, 95, "Tome of understanding +5", 137500, 'UE');
+picker.add(96, 96, "Efreeti bottle", 145000, 'UE');
+picker.add(97, 97, "Cubic gate", 164000, 'UE');
+picker.add(98, 98, "Iron flask", 170000, 'UE');
+picker.add(99, 99, "Mirror of mental prowess", 175000, 'UE');
+picker.add(100, 100, "Mirror of life trapping", 200000, 'UE');
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Treasure Type Allocaiton. TABLE 7-1 to 7-11.
 // an allocation row has a declared budget and an array of pickers which, when rerolled should generate
@@ -3407,7 +4664,6 @@ picker.add(100, 100, 'Legend lore', 33500, 'CR');
 
 
 	treasureTypeAllocations.A = [
-	new TreasureTypeAllocation('A',     1, [makeCoinPicker(5, 10, 1, cp), makeCoinPicker(3, 4, 1, sp)]),
 	new TreasureTypeAllocation('A',     5, [makeCoinPicker(2, 6, 10, cp), makeCoinPicker(4, 8, 1, sp), makeCoinPicker(1, 4, 1, gp)]),
 	new TreasureTypeAllocation('A',    10, [makeCoinPicker(5, 10, 10, cp), makeCoinPicker(5, 10, 1, sp), makeCoinPicker(1, 8, 1, gp)]),
 	new TreasureTypeAllocation('A',    25, [makeCoinPicker(2, 4, 100, cp), makeCoinPicker(3, 6, 10, sp), makeCoinPicker(4, 4, 1, gp)]),
@@ -3548,22 +4804,22 @@ picker.add(100, 100, 'Legend lore', 33500, 'CR');
 	new TreasureTypeAllocation('F', 1500, [plainString('Masterwork heavy armor'), plainString('masterwork weapon'), greater_minor_potion]),
 	new TreasureTypeAllocation('F', 2000, [plainString('lesser minor armor'), plainString('masterwork weapon'), mult(2, greater_minor_potion)]),
 	new TreasureTypeAllocation('F', 3000, [plainString('Masterwork medium armor'), plainString('lesser minor weapon'), greater_minor_potion]),
-	new TreasureTypeAllocation('F', 4000, [plainString('lesser minor armor'), plainString('masterwork weapon'), plainString('lesser minor wondrous item'), greater_minor_potion]),
-	new TreasureTypeAllocation('F', 5000, [plainString('Masterwork medium armor'), plainString('lesser minor weapon'), plainString('lesser minor wondrous item'), greater_minor_potion]),
-	new TreasureTypeAllocation('F', 6000, [plainString('lesser minor armor'), plainString('lesser minor weapon'), plainString('lesser minor wondrous item')]),
+	new TreasureTypeAllocation('F', 4000, [plainString('lesser minor armor'), plainString('masterwork weapon'), lesser_minor_wondrous_item, greater_minor_potion]),
+	new TreasureTypeAllocation('F', 5000, [plainString('Masterwork medium armor'), plainString('lesser minor weapon'), lesser_minor_wondrous_item, greater_minor_potion]),
+	new TreasureTypeAllocation('F', 6000, [plainString('lesser minor armor'), plainString('lesser minor weapon'), lesser_minor_wondrous_item]),
 	new TreasureTypeAllocation('F', 7500, [plainString('greater minor armor'), plainString('lesser minor weapon'), plainString('lesser minor ring')]),
-	new TreasureTypeAllocation('F', 10000, [plainString('greater minor armor'), plainString('lesser minor weapon'), plainString('lesser minor ring'), plainString('lesser minor wondrous item'), mult(3, greater_minor_potion)]),
+	new TreasureTypeAllocation('F', 10000, [plainString('greater minor armor'), plainString('lesser minor weapon'), plainString('lesser minor ring'), lesser_minor_wondrous_item, mult(3, greater_minor_potion)]),
 	new TreasureTypeAllocation('F', 10000, [plainString('greater minor armor'), plainString('greater minor weapon'), mult(2, greater_medium_potion)]),
-	new TreasureTypeAllocation('F', 12500, [plainString('greater minor armor'), plainString('lesser minor weapon'), plainString('greater minor wondrous item'), mult(2, greater_medium_potion)]),
+	new TreasureTypeAllocation('F', 12500, [plainString('greater minor armor'), plainString('lesser minor weapon'), greater_minor_wondrous_item, mult(2, greater_medium_potion)]),
 	new TreasureTypeAllocation('F', 15000, [plainString('greater minor armor'), plainString('greater minor weapon'), plainString('greater minor ring')]),
-	new TreasureTypeAllocation('F', 20000, [plainString('lesser medium armor'), plainString('greater minor weapon'), plainString('greater minor wondrous item'), mult(2, greater_medium_potion)]),
-	new TreasureTypeAllocation('F', 25000, [plainString('lesser medium armor'), plainString('lesser medium weapon'), plainString('lesser minor ring'), plainString('lesser minor wondrous item'), mult(2, greater_medium_potion)]),
-	new TreasureTypeAllocation('F', 30000, [plainString('lesser medium armor'), plainString('lesser medium weapon'), mult(2, plainString('lesser minor rings')), plainString('greater minor wondrous items')]),
-	new TreasureTypeAllocation('F', 40000, [plainString('lesser medium armor'), plainString('lesser medium weapon'), plainString('lesser medium ring'), plainString('greater minor wondrous item'), mult(2, greater_medium_potion)]),
-	new TreasureTypeAllocation('F', 50000, [plainString('greater medium armor'), plainString('greater medium weapon'), plainString('lesser medium wondrous item'), mult(2, lesser_major_potion)]),
-	new TreasureTypeAllocation('F', 60000, [plainString('greater medium armor'), plainString('greater medium weapon'), mult(2, plainString('greater minor rings')), mult(2, plainString('greater minor wondrous items'))]),
-	new TreasureTypeAllocation('F', 75000, [plainString('lesser major armor'), plainString('greater medium weapon'), plainString('greater minor ring'), plainString('greater medium wondrous item'), mult(3, greater_major_potion)]),
-	new TreasureTypeAllocation('F', 100000, [plainString('lesser major armor'), plainString('lesser major weapon'), plainString('lesser medium ring'), plainString('greater minor ring'), mult(2, plainString('lesser medium wondrous items'))])
+	new TreasureTypeAllocation('F', 20000, [plainString('lesser medium armor'), plainString('greater minor weapon'), greater_minor_wondrous_item, mult(2, greater_medium_potion)]),
+	new TreasureTypeAllocation('F', 25000, [plainString('lesser medium armor'), plainString('lesser medium weapon'), plainString('lesser minor ring'), lesser_minor_wondrous_item, mult(2, greater_medium_potion)]),
+	new TreasureTypeAllocation('F', 30000, [plainString('lesser medium armor'), plainString('lesser medium weapon'), mult(2, plainString('lesser minor rings')), greater_minor_wondrous_item]),
+	new TreasureTypeAllocation('F', 40000, [plainString('lesser medium armor'), plainString('lesser medium weapon'), plainString('lesser medium ring'), greater_minor_wondrous_item, mult(2, greater_medium_potion)]),
+	new TreasureTypeAllocation('F', 50000, [plainString('greater medium armor'), plainString('greater medium weapon'), lesser_medium_wondrous_item, mult(2, lesser_major_potion)]),
+	new TreasureTypeAllocation('F', 60000, [plainString('greater medium armor'), plainString('greater medium weapon'), mult(2, plainString('greater minor rings')), mult(2, greater_minor_wondrous_item)]),
+	new TreasureTypeAllocation('F', 75000, [plainString('lesser major armor'), plainString('greater medium weapon'), plainString('greater minor ring'), greater_medium_wondrous_item, mult(3, greater_major_potion)]),
+	new TreasureTypeAllocation('F', 100000, [plainString('lesser major armor'), plainString('lesser major weapon'), plainString('lesser medium ring'), plainString('greater minor ring'), mult(2, lesser_medium_wondrous_item)])
 	];
 
 	treasureTypeAllocations.G = [
@@ -3580,20 +4836,20 @@ picker.add(100, 100, 'Legend lore', 33500, 'CR');
 	new TreasureTypeAllocation('G', 2000, [makeCoinPicker(2, 4, 10, gp), plainString('masterwork weapon'), mult(2, lesser_medium_scroll), lesser_minor_wand]),
 	new TreasureTypeAllocation('G', 2500, [mult(2, greater_medium_potion), greater_minor_wand]),
 	new TreasureTypeAllocation('G', 3000, [greater_medium_potion, mult(2, lesser_medium_scroll), greater_minor_wand]),
-	new TreasureTypeAllocation('G', 4000, [plainString('lesser minor wondrous item'), greater_medium_potion, greater_minor_wand]),
-	new TreasureTypeAllocation('G', 5000, [plainString('lesser minor ring'), plainString('lesser minor wondrous item'), mult(2, lesser_medium_scroll)]),
-	new TreasureTypeAllocation('G', 6000, [plainString('lesser minor ring'), plainString('lesser minor wondrous item'), greater_medium_potion, greater_minor_wand]),
+	new TreasureTypeAllocation('G', 4000, [lesser_minor_wondrous_item, greater_medium_potion, greater_minor_wand]),
+	new TreasureTypeAllocation('G', 5000, [plainString('lesser minor ring'), lesser_minor_wondrous_item, mult(2, lesser_medium_scroll)]),
+	new TreasureTypeAllocation('G', 6000, [plainString('lesser minor ring'), lesser_minor_wondrous_item, greater_medium_potion, greater_minor_wand]),
 	new TreasureTypeAllocation('G', 7500, [mult(2, greater_medium_potion), lesser_minor_scroll, lesser_medium_wand]),
-	new TreasureTypeAllocation('G', 10000, [plainString('lesser minor ring'), plainString('lesser minor wondrous item'), lesser_medium_wand]),
-	new TreasureTypeAllocation('G', 12500, [plainString('lesser minor ring'), plainString('greater minor wondrous item'), mult(2, greater_medium_scroll), mult(2, greater_minor_wand)]),
+	new TreasureTypeAllocation('G', 10000, [plainString('lesser minor ring'), lesser_minor_wondrous_item, lesser_medium_wand]),
+	new TreasureTypeAllocation('G', 12500, [plainString('lesser minor ring'), greater_minor_wondrous_item, mult(2, greater_medium_scroll), mult(2, greater_minor_wand)]),
 	new TreasureTypeAllocation('G', 15000, [plainString('lesser minor ring'), plainString('lesser medium rod'), lesser_medium_wand]),
-	new TreasureTypeAllocation('G', 20000, [plainString('greater minor ring'), plainString('greater minor wondrous item'), greater_medium_potion, mult(2, greater_medium_scroll), lesser_medium_wand]),
-	new TreasureTypeAllocation('G', 25000, [plainString('lesser minor ring'), lesser_medium_wand, greater_medium_wand, plainString('greater minor wondrous item')]),
-	new TreasureTypeAllocation('G', 30000, [plainString('greater minor ring'), plainString('lesser medium wondrous item'), lesser_major_scroll, greater_medium_wand]),
-	new TreasureTypeAllocation('G', 40000, [plainString('lesser minor weapon'), plainString('lesser medium staff'), plainString('greater medium rod'), mult(2, plainString('lesser minor wondrous items')), lesser_medium_wand]),
-	new TreasureTypeAllocation('G', 50000, [plainString('greater minor ring'), mult(2, plainString('lesser medium wondrous items')), lesser_major_potion, mult(3, greater_medium_scroll), lesser_major_wand]),
-	new TreasureTypeAllocation('G', 60000, [plainString('lesser medium staff'), plainString('greater medium rod'), plainString('greater medium wondrous item'), greater_medium_potion, mult(2, lesser_major_scroll), lesser_medium_wand]),
-	new TreasureTypeAllocation('G', 75000, [plainString('lesser minor weapon'), plainString('greater medium staff'), plainString('greater medium wondrous item'), mult(3, greater_major_scroll), greater_major_wand]),
+	new TreasureTypeAllocation('G', 20000, [plainString('greater minor ring'), greater_minor_wondrous_item, greater_medium_potion, mult(2, greater_medium_scroll), lesser_medium_wand]),
+	new TreasureTypeAllocation('G', 25000, [plainString('lesser minor ring'), lesser_medium_wand, greater_medium_wand, greater_minor_wondrous_item]),
+	new TreasureTypeAllocation('G', 30000, [plainString('greater minor ring'), lesser_medium_wondrous_item, lesser_major_scroll, greater_medium_wand]),
+	new TreasureTypeAllocation('G', 40000, [plainString('lesser minor weapon'), plainString('lesser medium staff'), plainString('greater medium rod'), mult(2, lesser_minor_wondrous_item), lesser_medium_wand]),
+	new TreasureTypeAllocation('G', 50000, [plainString('greater minor ring'), mult(2, lesser_medium_wondrous_item), lesser_major_potion, mult(3, greater_medium_scroll), lesser_major_wand]),
+	new TreasureTypeAllocation('G', 60000, [plainString('lesser medium staff'), plainString('greater medium rod'), greater_medium_wondrous_item, greater_medium_potion, mult(2, lesser_major_scroll), lesser_medium_wand]),
+	new TreasureTypeAllocation('G', 75000, [plainString('lesser minor weapon'), plainString('greater medium staff'), greater_medium_wondrous_item, mult(3, greater_major_scroll), greater_major_wand]),
 	new TreasureTypeAllocation('G', 100000, [plainString('lesser major ring'), plainString('greater medium rod'), plainString('lesser major staff'), lesser_major_scroll, greater_medium_wand])
 	];
 
@@ -3602,34 +4858,34 @@ picker.add(100, 100, 'Legend lore', 33500, 'CR');
 	new TreasureTypeAllocation('H', 1000, [makeCoinPicker(2, 4, 100, cp), makeCoinPicker(2, 6, 100, sp), makeCoinPicker(6, 6, 1, gp), greater_minor_potion, greater_minor_scroll, lesser_minor_wand, mult(3, gemPicker(1))]),
 	new TreasureTypeAllocation('H', 2500, [makeCoinPicker(3, 6, 10, sp), makeCoinPicker(2, 4, 1, gp), plainString('masterwork heavy armor'), plainString('masterwork weapon'), mult(2, lesser_medium_potion), mult(2, greater_minor_scroll), gemPicker(2)]),
 	new TreasureTypeAllocation('H', 5000, [makeCoinPicker(2, 4, 10, gp), makeCoinPicker(4, 6, 1, pp), plainString('masterwork weapon'), plainString('lesser minor ring'), greater_medium_potion, lesser_medium_scroll, greater_minor_wand]),
-	new TreasureTypeAllocation('H', 7500, [makeCoinPicker(4, 4, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser minor weapon'), plainString('lesser minor wondrous item'), mult(2, greater_medium_potion), greater_minor_wand, mult(2, gemPicker(3))]),
-	new TreasureTypeAllocation('H', 10000, [makeCoinPicker(4, 8, 10, gp), makeCoinPicker(6, 10, 1, pp), plainString('greater minor armor'), plainString('lesser minor ring'), plainString('lesser minor wondrous item'), lesser_medium_scroll, greater_minor_wand, gemPicker(4)]),
-	new TreasureTypeAllocation('H', 15000, [makeCoinPicker(4, 4, 10, gp), makeCoinPicker(4, 4, 10, pp), plainString('greater minor armor'), plainString('lesser minor wondrous item'), mult(2, greater_medium_potion), mult(2, greater_medium_scroll), lesser_medium_wand, gemPicker(3)]),
-	new TreasureTypeAllocation('H', 20000, [makeCoinPicker(2, 4, 10, pp), plainString('greater minor ring'), mult(2, plainString('lesser minor wondrous items')), mult(2, greater_medium_potion), mult(2, lesser_major_scroll), lesser_medium_wand]),
-	new TreasureTypeAllocation('H', 25000, [makeCoinPicker(6, 10, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser medium armor'), plainString('lesser minor weapon'), plainString('greater minor wondrous item'), mult(2, lesser_major_scroll), lesser_medium_wand, gemPicker(4)]),
-	new TreasureTypeAllocation('H', 30000, [makeCoinPicker(6, 6, 10, gp), makeCoinPicker(2, 4, 10, pp), plainString('greater minor weapon'), plainString('lesser medium wondrous item'), greater_medium_wand, mult(3, gemPicker(3))]),
+	new TreasureTypeAllocation('H', 7500, [makeCoinPicker(4, 4, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser minor weapon'), lesser_minor_wondrous_item, mult(2, greater_medium_potion), greater_minor_wand, mult(2, gemPicker(3))]),
+	new TreasureTypeAllocation('H', 10000, [makeCoinPicker(4, 8, 10, gp), makeCoinPicker(6, 10, 1, pp), plainString('greater minor armor'), plainString('lesser minor ring'), lesser_minor_wondrous_item, lesser_medium_scroll, greater_minor_wand, gemPicker(4)]),
+	new TreasureTypeAllocation('H', 15000, [makeCoinPicker(4, 4, 10, gp), makeCoinPicker(4, 4, 10, pp), plainString('greater minor armor'), lesser_minor_wondrous_item, mult(2, greater_medium_potion), mult(2, greater_medium_scroll), lesser_medium_wand, gemPicker(3)]),
+	new TreasureTypeAllocation('H', 20000, [makeCoinPicker(2, 4, 10, pp), plainString('greater minor ring'), mult(2, lesser_minor_wondrous_item), mult(2, greater_medium_potion), mult(2, lesser_major_scroll), lesser_medium_wand]),
+	new TreasureTypeAllocation('H', 25000, [makeCoinPicker(6, 10, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser medium armor'), plainString('lesser minor weapon'), greater_minor_wondrous_item, mult(2, lesser_major_scroll), lesser_medium_wand, gemPicker(4)]),
+	new TreasureTypeAllocation('H', 30000, [makeCoinPicker(6, 6, 10, gp), makeCoinPicker(2, 4, 10, pp), plainString('greater minor weapon'), lesser_medium_wondrous_item, greater_medium_wand, mult(3, gemPicker(3))]),
 	new TreasureTypeAllocation('H', 40000, [makeCoinPicker(4, 4, 10, gp), makeCoinPicker(4, 4, 10, pp), plainString('lesser medium ring'), plainString('lesser medium rod'), mult(2, greater_major_potion), mult(2, lesser_major_scroll), lesser_major_wand]),
-	new TreasureTypeAllocation('H', 50000, [makeCoinPicker(4, 4, 10, pp), plainString('greater medium armor'), plainString('lesser medium staff'), plainString('lesser medium wondrous item'), greater_major_scroll, lesser_medium_wand, gemPicker(5)]),
+	new TreasureTypeAllocation('H', 50000, [makeCoinPicker(4, 4, 10, pp), plainString('greater medium armor'), plainString('lesser medium staff'), lesser_medium_wondrous_item, greater_major_scroll, lesser_medium_wand, gemPicker(5)]),
 	new TreasureTypeAllocation('H', 75000, [makeCoinPicker(2, 8, 100, gp), makeCoinPicker(4, 4, 10, pp), plainString('greater minor weapon'), plainString('greater medium ring'), plainString('greater medium staff'), mult(3, greater_major_potion), greater_major_scroll, lesser_major_wand, gemPicker(5)]),
-	new TreasureTypeAllocation('H', 100000, [makeCoinPicker(8, 6, 100, gp), makeCoinPicker(4, 4, 10, pp), plainString('lesser major ring'), plainString('lesser major wondrous item'), mult(3, greater_major_potion), greater_major_scroll, lesser_medium_wand, mult(2, gemPicker(5)), gemPicker(6)])
+	new TreasureTypeAllocation('H', 100000, [makeCoinPicker(8, 6, 100, gp), makeCoinPicker(4, 4, 10, pp), plainString('lesser major ring'), lesser_major_wondrous_item, mult(3, greater_major_potion), greater_major_scroll, lesser_medium_wand, mult(2, gemPicker(5)), gemPicker(6)])
 	];
 
 	treasureTypeAllocations.I = [
 	new TreasureTypeAllocation('I', 5000, [makeCoinPicker(4, 4, 1000, cp), makeCoinPicker(6, 6, 100, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser minor armor'), greater_minor_wand, mult(5, gemPicker(3)), artPicker(3)]),
-	new TreasureTypeAllocation('I', 10000, [makeCoinPicker(4, 4, 1000, cp), makeCoinPicker(6, 6, 100, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(6, 6, 1, pp), plainString('greater minor armor'), plainString('lesser minor weapon'), plainString('lesser minor wondrous item'), greater_medium_scroll, gemPicker(4), artPicker(3)]),
-	new TreasureTypeAllocation('I', 15000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('greater minor ring'), mult(2, plainString('lesser minor wondrous items')), mult(2, greater_medium_potion), greater_minor_wand, gemPicker(4), artPicker(3)]),
-	new TreasureTypeAllocation('I', 20000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('greater minor armor'), plainString('lesser medium rod'), plainString('greater minor wondrous item'), mult(2, lesser_major_potion), greater_medium_scroll, mult(3, artPicker(3))]),
-	new TreasureTypeAllocation('I', 25000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser medium staff'), mult(2, plainString('lesser minor wondrous items')), greater_medium_potion, lesser_medium_wand, mult(2, gemPicker(2)), mult(2, gemPicker(3)), gemPicker(4)]),
-	new TreasureTypeAllocation('I', 30000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser medium armor'), plainString('greater minor weapon'), plainString('lesser medium wondrous item'), mult(2, lesser_major_scroll), artPicker(4)]),
+	new TreasureTypeAllocation('I', 10000, [makeCoinPicker(4, 4, 1000, cp), makeCoinPicker(6, 6, 100, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(6, 6, 1, pp), plainString('greater minor armor'), plainString('lesser minor weapon'), lesser_minor_wondrous_item, greater_medium_scroll, gemPicker(4), artPicker(3)]),
+	new TreasureTypeAllocation('I', 15000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('greater minor ring'), mult(2, lesser_minor_wondrous_item), mult(2, greater_medium_potion), greater_minor_wand, gemPicker(4), artPicker(3)]),
+	new TreasureTypeAllocation('I', 20000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('greater minor armor'), plainString('lesser medium rod'), greater_minor_wondrous_item, mult(2, lesser_major_potion), greater_medium_scroll, mult(3, artPicker(3))]),
+	new TreasureTypeAllocation('I', 25000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser medium staff'), mult(2, lesser_minor_wondrous_item), greater_medium_potion, lesser_medium_wand, mult(2, gemPicker(2)), mult(2, gemPicker(3)), gemPicker(4)]),
+	new TreasureTypeAllocation('I', 30000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser medium armor'), plainString('greater minor weapon'), lesser_medium_wondrous_item, mult(2, lesser_major_scroll), artPicker(4)]),
 	new TreasureTypeAllocation('I', 40000, [makeCoinPicker(4, 4, 1000, cp), makeCoinPicker(6, 6, 100, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser medium weapon'), plainString('greater medium rod'), greater_major_potion, greater_medium_scroll, lesser_medium_wand, mult(3, artPicker(3)), mult(2, artPicker(4))]),
-	new TreasureTypeAllocation('I', 50000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('greater minor armor'), mult(2, plainString('greater minor weapons')), plainString('greater medium staff'), plainString('greater minor wondrous item'), gemPicker(5)]),
-	new TreasureTypeAllocation('I', 60000, [makeCoinPicker(2, 4, 10000, cp), makeCoinPicker(2, 4, 1000, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('greater medium weapon'), plainString('greater medium rod'), plainString('lesser medium wondrous item'), greater_major_scroll, mult(2, greater_minor_wand), gemPicker(4), mult(5, artPicker(2))]),
+	new TreasureTypeAllocation('I', 50000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('greater minor armor'), mult(2, plainString('greater minor weapons')), plainString('greater medium staff'), greater_minor_wondrous_item, gemPicker(5)]),
+	new TreasureTypeAllocation('I', 60000, [makeCoinPicker(2, 4, 10000, cp), makeCoinPicker(2, 4, 1000, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('greater medium weapon'), plainString('greater medium rod'), lesser_medium_wondrous_item, greater_major_scroll, mult(2, greater_minor_wand), gemPicker(4), mult(5, artPicker(2))]),
 	new TreasureTypeAllocation('I', 75000, [makeCoinPicker(2, 4, 10000, cp), makeCoinPicker(2, 4, 1000, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('lesser major armor'), plainString('greater medium ring'), plainString('lesser medium staff'), greater_medium_wand, gemPicker(6), artPicker(4)]),
-	new TreasureTypeAllocation('I', 100000, [makeCoinPicker(2, 4, 10000, cp), makeCoinPicker(2, 4, 1000, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('lesser medium weapon'), plainString('greater medium ring'), plainString('lesser major rod'), plainString('greater medium wondrous item'), mult(2, greater_major_potion), lesser_medium_scroll, mult(2, artPicker(4))]),
+	new TreasureTypeAllocation('I', 100000, [makeCoinPicker(2, 4, 10000, cp), makeCoinPicker(2, 4, 1000, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('lesser medium weapon'), plainString('greater medium ring'), plainString('lesser major rod'), greater_medium_wondrous_item, mult(2, greater_major_potion), lesser_medium_scroll, mult(2, artPicker(4))]),
 	new TreasureTypeAllocation('I', 125000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 8, 10, pp), plainString('greater major armor'), plainString('lesser medium weapon'), plainString('lesser major staff'), mult(2, greater_major_scroll), greater_major_wand, gemPicker(6), mult(3, artPicker(4))]),
-	new TreasureTypeAllocation('I', 150000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 8, 10, pp), plainString('greater medium armor'), plainString('lesser major ring'), plainString('greater major wondrous item'), greater_major_wand]),
-	new TreasureTypeAllocation('I', 200000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 8, 10, pp), plainString('greater major weapon'), mult(2, plainString('lesser medium rings')), plainString('lesser major staff'), plainString('lesser major wondrous item'), lesser_major_wand, mult(3, gemPicker(5)), gemPicker(4)]),
-	new TreasureTypeAllocation('I', 300000, [makeCoinPicker(8, 4, 10000, cp), makeCoinPicker(12, 6, 1000, sp), makeCoinPicker(8, 4, 100, gp), makeCoinPicker(2, 8, 10, pp), plainString('greater major weapon'), plainString('lesser major ring'), plainString('greater major staff'), plainString('greater major wondrous item'), greater_medium_wand, gemPicker(6), artPicker(6)])
+	new TreasureTypeAllocation('I', 150000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 8, 10, pp), plainString('greater medium armor'), plainString('lesser major ring'), greater_major_wondrous_item, greater_major_wand]),
+	new TreasureTypeAllocation('I', 200000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 8, 10, pp), plainString('greater major weapon'), mult(2, plainString('lesser medium rings')), plainString('lesser major staff'), lesser_major_wondrous_item, lesser_major_wand, mult(3, gemPicker(5)), gemPicker(4)]),
+	new TreasureTypeAllocation('I', 300000, [makeCoinPicker(8, 4, 10000, cp), makeCoinPicker(12, 6, 1000, sp), makeCoinPicker(8, 4, 100, gp), makeCoinPicker(2, 8, 10, pp), plainString('greater major weapon'), plainString('lesser major ring'), plainString('greater major staff'), greater_major_wondrous_item, greater_medium_wand, gemPicker(6), artPicker(6)])
 	];
 	
 	// find the innermost enclosing node that has a "controller" object
@@ -3716,8 +4972,8 @@ picker.add(100, 100, 'Legend lore', 33500, 'CR');
 						<TD id="pp_value" class="money">0.00</TD>
 					</tr>
 					<tr>
-						<TD>Subtotal</TD>
-						<TD colspan="2" id="currency_value" class="money">0.00</TD>
+						<TD>Total coins</TD>
+						<TD colspan="2" id="currency_value" class="money" style="font-weight: bold;">0.00</TD>
 					</tr>
 					<tr>
 						<TD>Gems</TD>
@@ -3728,7 +4984,15 @@ picker.add(100, 100, 'Legend lore', 33500, 'CR');
 						<TD colspan="2" id="art_value" class="money">0.00</TD>
 					</tr>
 					<tr>
-						<TD>Total</TD>
+						<TD>Total currency</TD>
+						<TD colspan="2" id="total_currency" class="money" style="font-weight: bold;">0.00</TD>
+					</tr>
+					<tr>
+						<TD>Items</TD>
+						<TD colspan="2" id="total_items" class="money">0.00</TD>
+					</tr>
+					<tr>
+						<TD>Total value</TD>
 						<TD colspan="2" id="total_value" class="money" style="font-weight: bold;">0.00</TD>
 					</tr>
 				</table>
@@ -3755,7 +5019,17 @@ picker.add(100, 100, 'Legend lore', 33500, 'CR');
 				<div style="margin: 1em; padding: 0em;">
 					<table border="0" cellspacing="0" cellpadding="0">
 						<caption>Items</caption>
+						<tbody id="potion_table">
+						</tbody>
+						<tbody id="scroll_table">
+						</tbody>
+						<tbody id="wand_table">
+						</tbody>
+						<tbody id="wondrous_table">
+						</tbody>
 						<tbody id="item_table">
+						</tbody>
+						<tbody id="itemtotal_table">
 						</tbody>
 					</table>
 				</div>
