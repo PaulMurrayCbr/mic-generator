@@ -400,11 +400,38 @@
 		}
 		for(var i = 0; i<treasure.generatedItems.length; i++) {
 			var generatedItem = treasure.generatedItems[i]
-			var span = document.createElement("div");
-			span.style.margin = "2px";
-			span.style.padding = "2px";
-			span.appendChild(document.createTextNode(generatedItem));
-			document.getElementById('item_table').appendChild(span);
+			var tr = document.createElement("tr");
+
+			if(generatedItem.isItemPickerTableResult) {
+				var td = document.createElement("td");
+				td.setAttribute("class", "cell");
+				td.appendChild(document.createTextNode(
+						generatedItem.itemPickerTable.tableset.lbl 
+						+ " of "
+						+ generatedItem.item.lbl 
+				));
+				var src = document.createElement("span");
+				src.style.fontSize = "50%";
+				src.style.fontWeight = "bold";
+				src.style.fontFamily = "sans-serif";
+				src.appendChild(document.createTextNode(" " + generatedItem.item.src))
+				td.appendChild(src);
+				tr.appendChild(td);
+				var td = document.createElement("td");
+				td.setAttribute("class", "money");
+				td.appendChild(document.createTextNode(cpToString(generatedItem.item.val*100)));
+				tr.appendChild(td);
+				
+				
+			}
+			else {
+				var td = document.createElement("td");
+				td.setAttribute("class", "cell");
+				td.appendChild(document.createTextNode(generatedItem));
+				tr.appendChild(td);
+								
+			}
+			document.getElementById('item_table').appendChild(tr);
 		}
 		for(var i = 0; i<treasure.generatedWeapons.length; i++) {
 			var generatedWeapon = treasure.generatedWeapons[i]
@@ -1478,6 +1505,10 @@ function ItemPickerRow(lbl, val, src) {
 	this.src = src;
 }
 
+ItemPickerRow.prototype.toString = function() {
+	return "ItemPickerRow(" + this.lbl + " " + this.val + " " + this.src + ")";
+}
+
 function ItemPickerTableset(lbl) {
 	this.lbl = lbl;
 	this.gradeToLevel = new Object();
@@ -1485,13 +1516,14 @@ function ItemPickerTableset(lbl) {
 	this.typeAndLevelToPicker = new Object();
 }
 
+ItemPickerTableset.prototype.toString = function() {
+	return this.lbl + " table set";
+}
+
 ItemPickerTableset.prototype.gen = function(grade) {
 	var level = this.gradeToLevel[grade].gen().item;
 	var type = this.chooseType.gen().item;
-	var ret = grade + " " + this.lbl + " level " + level + " " + type;  
-	return ret;
-	
-	return this.typeAndLevelToPicker[type][level].picker.gen().item;
+	return new ItemPickerTableResult(grade, this.typeAndLevelToPicker[type][level].picker.gen());
 }
 
 ItemPickerTableset.prototype.setGradeToLevel = function(a, b, grade, level) {
@@ -1501,10 +1533,71 @@ ItemPickerTableset.prototype.setGradeToLevel = function(a, b, grade, level) {
 	this.gradeToLevel[grade].add(a, b, level);
 }
 
+ItemPickerTableset.prototype.setupItemPickerTables = function() {
+	var knownTypes = new Object();
+	var knownLevels = new Object();
+
+	for(var grade in this.gradeToLevel) {
+		for(var i = 1; i<=100; i++) {
+			knownLevels[this.gradeToLevel[grade].v[i].item] = 'known';
+		}
+	}
+
+	for(var i = 1; i<=100; i++) {
+		knownTypes[this.chooseType.v[i].item] = 'yes'; 
+	}
+		
+	for(var type in knownTypes) {
+		this.typeAndLevelToPicker[type] = [];
+		for(var level in knownLevels) {
+			this.typeAndLevelToPicker[type][level] = new ItemPickerTable(this, type, level); 
+			this.typeAndLevelToPicker[type][level].picker.add(1, 100, 
+				new ItemPickerRow("undefined " + this.lbl, 0, 'DEV'));
+		}
+	}
+}
+
+function ItemPickerTable(tableset, type, level) {
+	this.tableset = tableset
+	this.type = type
+	this.level = level
+	this.picker = new D100Picker(this);
+}
+
+ItemPickerTable.prototype.toString = function() {
+	return this.type + " level " + this.level + " " + this.tableset.lbl + " table"
+}
+
+
+ItemPickerTable.add = function(a, b, lbl, val, src) {
+	var row = new ItemPickerRow(lbl, val, src);
+	this.picker.add(a, b, row);
+}
+
+function ItemPickerTableResult(grade, roll) {
+	this.isItemPickerTableResult = true
+	this.grade = grade;
+	this.itemPickerTable = roll.gen.v;
+	this.item = roll.item;
+	this.generated = roll.generated;
+}
+
+ItemPickerTableResult.prototype.toString = function() {
+	return this.grade + " "
+	+ this.itemPickerTable.tableset.lbl + ": "
+	+ this.itemPickerTable.type + " level "
+	+ this.itemPickerTable.level + ": "
+	+ this.item.lbl + " " 
+	+ this.item.val + "gp (" + this.item.src + ")"
+}
 
 function ItemPicker(tableset, grade) {
 	this.tableset = tableset;
 	this.grade = grade;
+}
+
+ItemPicker.prototype.toString = function() {
+	this.tableset.lbl + " grade " + this.grade + " picker"
 }
 
 ItemPicker.prototype.reroll = function(treasureBlock) {
@@ -1550,17 +1643,10 @@ potions.setGradeToLevel(1,10,'greater major', 2);
 potions.setGradeToLevel(11,100,'greater major', 3);
 
 potions.chooseType.add(1,75, 'common');
-potions.chooseType.add(25,100, 'uncommon');
+potions.chooseType.add(76,100, 'uncommon');
 
+potions.setupItemPickerTables();
 
-function ItemPickerTable() {
-	this.picker = new D100Picker(this);
-}
-
-ItemPickerTable.add = function(a, b, lbl, val, src) {
-	var row = new ItemPickerRow(lbl, val, src);
-	this.picker.add(a, b, row);
-}
 
 
 
@@ -1940,14 +2026,14 @@ ItemPickerTable.add = function(a, b, lbl, val, src) {
 			</div>
 
 			<div style="float: left;"">
-				<div style="margin: 1em; padding: 1em; border: thin solid black;">
+				<div style="margin: 1em; padding: 0em;">
 					<table border="0" cellspacing="0" cellpadding="0">
 						<caption>Gems</caption>
 						<tbody id="gem_table">
 						</tbody>
 					</table>
 				</div>
-				<div style="margin: 1em; padding: 1em; border: thin solid black;">
+				<div style="margin: 1em; padding: 0em;">
 					<table border="0" cellspacing="0" cellpadding="0">
 						<caption>Art Objects</caption>
 						<tbody id="art_table">
@@ -1956,16 +2042,18 @@ ItemPickerTable.add = function(a, b, lbl, val, src) {
 				</div>
 			</div>
 
-			<div style="float: left; margin: 1em; padding: 1em; border: thin solid black;">
-				<table border="0" cellspacing="0" cellpadding="0">
-					<caption>Items</caption>
-					<tbody id="item_table">
-					</tbody>
-				</table>
+			<div style="float: left;"">
+				<div style="margin: 1em; padding: 0em;">
+					<table border="0" cellspacing="0" cellpadding="0">
+						<caption>Items</caption>
+						<tbody id="item_table">
+						</tbody>
+					</table>
+				</div>
 			</div>
 
 			<div style="float: left;">
-				<div style="margin: 1em; padding: 1em; border: thin solid black;">
+				<div style="margin: 1em; padding: 0em;">
 					<table border="0" cellspacing="0" cellpadding="0">
 						<caption>Weapons</caption>
 						<tbody id="weapon_table">
@@ -1973,7 +2061,7 @@ ItemPickerTable.add = function(a, b, lbl, val, src) {
 					</table>
 				</div>
 
-				<div style="margin: 1em; padding: 1em; border: thin solid black;">
+				<div style="margin: 1em; padding: 0em;">
 					<table border="0" cellspacing="0" cellpadding="0">
 						<caption>Armour</caption>
 						<tbody id="armour_table">
