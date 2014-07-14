@@ -486,6 +486,16 @@
 		};
 		div.appendChild(e);
 
+		e = document.createElement("button");
+		e.innerHTML = "reroll each";
+		e.onclick = function() {
+			var otb = controller(this);
+			for(var i = 0; i<otb.treasuresCount; i++) {
+				otb.treasures[i].reroll();
+			}
+		};
+		div.appendChild(e);
+
 		if(isNPCBlock) {
 			e = document.createElement("button");
 			e.innerHTML = "delete NPC";
