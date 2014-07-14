@@ -319,6 +319,30 @@
 		for(var i = 0; i<npcCount;i++) {
 			addTreasureBlockToSummary(npcList[i]);
 		}
+		
+		if(summaryGEMS > 0) {
+			var tr = document.createElement("tr");
+			var td = document.createElement("td");
+			td.setAttribute("class", "cell");
+			tr.appendChild(td);
+			var td = document.createElement("td");
+			td.setAttribute("class", "money");
+			td.appendChild(document.createTextNode(cpToString(summaryGEMS*100)));
+			tr.appendChild(td);
+			document.getElementById('gem_table').appendChild(tr);
+		}
+		
+		if(summaryART > 0) {
+			var tr = document.createElement("tr");
+			var td = document.createElement("td");
+			td.setAttribute("class", "cell");
+			tr.appendChild(td);
+			var td = document.createElement("td");
+			td.setAttribute("class", "money");
+			td.appendChild(document.createTextNode(cpToString(summaryART*100)));
+			tr.appendChild(td);
+			document.getElementById('art_table').appendChild(tr);
+		}
 	}
 	
 	function addTreasureBlockToSummary(treasureBlock) {
@@ -343,29 +367,35 @@
 			else if(generatedGold.picker.denom == pp) {
 				summaryPP += generatedGold.picker.mul * generatedGold.roll.amt;
 			}
-			else {
-				document.getElementById('sp_value').innerHTML = new Date() 
-			}
-			
-			
 		}
 
 		for(var i = 0; i<treasure.generatedGems.length; i++) {
 			var generatedGems = treasure.generatedGems[i]
-			var span = document.createElement("div");
-			span.style.margin = "2px";
-			span.style.padding = "2px";
-			span.appendChild(document.createTextNode(generatedGems));
-			document.getElementById('gem_table').appendChild(span);
+			var tr = document.createElement("tr");
+			var td = document.createElement("td");
+			td.setAttribute("class", "cell");
+			td.appendChild(document.createTextNode(generatedGems.gemType + (generatedGems.worked?'':' (unworked)')));
+			tr.appendChild(td);
+			var td = document.createElement("td");
+			td.setAttribute("class", "money");
+			td.appendChild(document.createTextNode(cpToString(generatedGems.getValue()*100)));
+			tr.appendChild(td);
+			document.getElementById('gem_table').appendChild(tr);
 			summaryGEMS += generatedGems.getValue();
 		}
+		
 		for(var i = 0; i<treasure.generatedArt.length; i++) {
 			var generatedArt = treasure.generatedArt[i]
-			var span = document.createElement("div");
-			span.style.margin = "2px";
-			span.style.padding = "2px";
-			span.appendChild(document.createTextNode(generatedArt));
-			document.getElementById('art_table').appendChild(span);
+			var tr = document.createElement("tr");
+			var td = document.createElement("td");
+			td.setAttribute("class", "cell");
+			td.appendChild(document.createTextNode(generatedArt.artObject.lbl));
+			tr.appendChild(td);
+			var td = document.createElement("td");
+			td.setAttribute("class", "money");
+			td.appendChild(document.createTextNode(cpToString(generatedArt.getValue()*100)));
+			tr.appendChild(td);
+			document.getElementById('art_table').appendChild(tr);
 			summaryART += generatedArt.getValue();
 		}
 		for(var i = 0; i<treasure.generatedItems.length; i++) {
