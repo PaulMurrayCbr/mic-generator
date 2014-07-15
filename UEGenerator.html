@@ -541,19 +541,9 @@
 			if(generatedItem.isItemPickerTableResult) {
 				var td = document.createElement("td");
 				td.setAttribute("class", "cell");
-				td.appendChild(document.createTextNode(
-						generatedItem.itemPickerTable.tableset.itemPrefix 
-						+ generatedItem.item.lbl 
-				));
-				if(generatedItem.item.src != 'CR' && generatedItem.item.src != 'UE') {
-					var src = document.createElement("span");
-					src.style.fontSize = "50%";
-					src.style.fontWeight = "bold";
-					src.style.fontFamily = "sans-serif";
-					src.appendChild(document.createTextNode(" " + generatedItem.item.src))
-					td.appendChild(src);
-				}
+				td.appendChild(generatedItem.getSummary());
 				tr.appendChild(td);
+
 				var td = document.createElement("td");
 				td.setAttribute("class", "money");
 				td.appendChild(document.createTextNode(cpToString(generatedItem.item.val*100)));
@@ -562,29 +552,29 @@
 				var tbl
 				if(generatedItem.itemPickerTable.tableset.lbl == 'potion') {
 					tbl = document.getElementById('potion_table')
-					summaryPOTIONS += generatedItem.item.val
+					summaryPOTIONS += generatedItem.getValue()
 					summaryPOTIONSCT++
 				}
 				else if(generatedItem.itemPickerTable.tableset.lbl == 'scroll') {
 					tbl = document.getElementById('scroll_table')
-					summarySCROLLS += generatedItem.item.val
+					summarySCROLLS += generatedItem.getValue()
 					summarySCROLLSCT++
 				}
 				else if(generatedItem.itemPickerTable.tableset.lbl == 'wand')  {
 					tbl = document.getElementById('wand_table')
-					summaryWANDS += generatedItem.item.val
+					summaryWANDS += generatedItem.getValue()
 					summaryWANDSCT++
 				}
 				else if(generatedItem.itemPickerTable.tableset.lbl == 'wondrous') {
 					tbl = document.getElementById('wondrous_table')
-					summaryWONDROUS += generatedItem.item.val
+					summaryWONDROUS += generatedItem.getValue()
 					summaryWONDROUSCT++
 				}
 				else if(generatedItem.itemPickerTable.tableset.lbl == 'staff'
 						|| generatedItem.itemPickerTable.tableset.lbl == 'rod'
 						|| generatedItem.itemPickerTable.tableset.lbl == 'ring') {
 					tbl = document.getElementById('rsr_table')
-					summaryRSR += generatedItem.item.val
+					summaryRSR += generatedItem.getValue()
 					summaryRSRCT++
 				}
 				else {
@@ -592,7 +582,8 @@
 					summaryITEMS += generatedItem.item.val
 					summaryITEMSCT++
 				}
-				summaryITEMSTOTAL += generatedItem.item.val
+				
+				summaryITEMSTOTAL += generatedItem.getValue()
 				
 				tbl.appendChild(tr);
 				
@@ -1794,6 +1785,31 @@ ItemPickerTableResult.prototype.toString = function() {
 	+ this.itemPickerTable.level + ": "
 	+ this.item.lbl + " " 
 	+ this.item.val + "gp (" + this.item.src + ")"
+}
+
+ItemPickerTableResult.prototype.getSummary = function() {
+	var summary = document.createElement('span')
+	
+	var prefix = document.createElement('span')
+	prefix.style.fontSize = "75%";
+	prefix.appendChild(document.createTextNode(this.itemPickerTable.tableset.itemPrefix));
+	summary.appendChild(prefix);
+		
+	summary.appendChild(document.createTextNode( this.item.lbl));
+	
+	if(this.item.src != 'CR' && this.item.src != 'UE') {
+		var src = document.createElement("span");
+		src.style.fontSize = "50%";
+		src.style.fontWeight = "bold";
+		src.style.fontFamily = "sans-serif";
+		src.appendChild(document.createTextNode(" " + this.item.src))
+		summary.appendChild(src);
+	}
+	return summary
+}
+
+ItemPickerTableResult.prototype.getValue = function() {
+	return this.item.val
 }
 
 function ItemPicker(tableset, grade) {
