@@ -1827,6 +1827,26 @@ ItemPicker.prototype.reroll = function(treasureBlock) {
 	treasureBlock.generatedSpan.appendChild(document.createTextNode(result));
 }
 
+function MetamagicRodTableRow(level, grade, val, src) {
+	this.level = level;
+	this.grade = grade;
+	this.val = val;
+	this.src = src;
+}
+
+var metamagic_rod_names = [
+	null,
+	new D100Picker([]),
+	new D100Picker([]),
+	new D100Picker([])
+                  ];
+
+MetamagicRodTableRow.prototype.toString = function() {
+	return 'MetamagicRodTableRow ' + this.grade + ' level ' + level;
+}
+
+
+
 function potion(grade) {
 	return new ItemPicker(potions, grade);
 }
@@ -4860,8 +4880,7 @@ picker.add(71, 75, "Rod of alertness", 85000, 'UE');
 picker.add(76, 95, "Metamagic (+3 spell level), greater", 121500, 'UE');
 picker.add(96, 100, "Metamagic, quicken, greater", 170000, 'UE');
 
-var metamagic_rod_1 = new D100Picker([]);
-picker = metamagic_rod_1;
+picker = metamagic_rod_names[1];
 
 picker.add(1, 4, "Bouncing Spell");
 picker.add(5, 9, "Disruptive Spell");
@@ -4880,8 +4899,7 @@ picker.add(79, 83, "Selective Spell");
 picker.add(84, 95, "Silent Spell");
 picker.add(96, 100, "Toppling Spell");
 
-var metamagic_rod_2 = new D100Picker([]);
-picker = metamagic_rod_2;
+picker = metamagic_rod_names[2];
 
 picker.add(1, 11, "Burning Spell");
 picker.add(12, 22, "Concussive Spell");
@@ -4892,8 +4910,7 @@ picker.add(63, 75, "Thanatopic Spell");
 picker.add(76, 88, "Threnodic Spell");
 picker.add(89, 100, "Thundering Spell");
 
-var metamagic_rod_3 = new D100Picker([]);
-picker = metamagic_rod_3;
+picker = metamagic_rod_names[3];
 
 picker.add(1, 20, "Dazing Spell");
 picker.add(21, 40, "Echoing Spell");
@@ -5052,6 +5069,7 @@ picker.add(98, 100, "Ring of spell storing, major", 200000, 'UE');
 
 
 	treasureTypeAllocations.A = [
+    new TreasureTypeAllocation('A',     1, [lesser_medium_rod, greater_medium_rod,lesser_major_rod, greater_major_rod]),
 	new TreasureTypeAllocation('A',     5, [makeCoinPicker(2, 6, 10, cp), makeCoinPicker(4, 8, 1, sp), makeCoinPicker(1, 4, 1, gp)]),
 	new TreasureTypeAllocation('A',    10, [makeCoinPicker(5, 10, 10, cp), makeCoinPicker(5, 10, 1, sp), makeCoinPicker(1, 8, 1, gp)]),
 	new TreasureTypeAllocation('A',    25, [makeCoinPicker(2, 4, 100, cp), makeCoinPicker(3, 6, 10, sp), makeCoinPicker(4, 4, 1, gp)]),
