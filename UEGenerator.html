@@ -546,7 +546,7 @@
 
 				var td = document.createElement("td");
 				td.setAttribute("class", "money");
-				td.appendChild(document.createTextNode(cpToString(generatedItem.item.val*100)));
+				td.appendChild(document.createTextNode(cpToString(generatedItem.getValue()*100)));
 				tr.appendChild(td);
 				
 				var tbl
@@ -579,7 +579,7 @@
 				}
 				else {
 					tbl = document.getElementById('item_table')
-					summaryITEMS += generatedItem.item.val
+					summaryITEMS += generatedItem.getValue()
 					summaryITEMSCT++
 				}
 				
@@ -1706,6 +1706,18 @@ ItemPickerRow.prototype.toString = function() {
 	return "ItemPickerRow(" + this.lbl + " " + this.val + " " + this.src + ")";
 }
 
+ItemPickerRow.prototype.getLabel = function() {
+	return this.lbl;
+}
+
+ItemPickerRow.prototype.getValue = function() {
+	return this.val;
+}
+
+ItemPickerRow.prototype.getSource = function() {
+	return this.src;
+}
+
 function ItemPickerTableset(lbl) {
 	this.lbl = lbl;
 	this.gradeToLevel = new Object();
@@ -1783,8 +1795,8 @@ ItemPickerTableResult.prototype.toString = function() {
 	+ this.itemPickerTable.tableset.lbl + ": "
 	+ this.itemPickerTable.type + " level "
 	+ this.itemPickerTable.level + ": "
-	+ this.item.lbl + " " 
-	+ this.item.val + "gp (" + this.item.src + ")"
+	+ this.generated.getLabel() + " " 
+	+ this.generated.getValue() + "gp (" + this.generated.getSource() + ")"
 }
 
 ItemPickerTableResult.prototype.getSummary = function() {
@@ -1795,21 +1807,29 @@ ItemPickerTableResult.prototype.getSummary = function() {
 	prefix.appendChild(document.createTextNode(this.itemPickerTable.tableset.itemPrefix));
 	summary.appendChild(prefix);
 		
-	summary.appendChild(document.createTextNode( this.item.lbl));
+	summary.appendChild(document.createTextNode(this.getLabel()));
 	
-	if(this.item.src != 'CR' && this.item.src != 'UE') {
+	if(this.getSource() != 'CR' && this.getSource() != 'UE') {
 		var src = document.createElement("span");
 		src.style.fontSize = "50%";
 		src.style.fontWeight = "bold";
 		src.style.fontFamily = "sans-serif";
-		src.appendChild(document.createTextNode(" " + this.item.src))
+		src.appendChild(document.createTextNode(" " + this.getSource()))
 		summary.appendChild(src);
 	}
 	return summary
 }
 
 ItemPickerTableResult.prototype.getValue = function() {
-	return this.item.val
+	return this.generated.getValue()
+}
+
+ItemPickerTableResult.prototype.getLabel =  function() {
+	return this.generated.getLabel();
+}
+
+ItemPickerTableResult.prototype.getSource = function() {
+	return this.generated.getSource();
 }
 
 function ItemPicker(tableset, grade) {
@@ -1842,9 +1862,34 @@ var metamagic_rod_names = [
                   ];
 
 MetamagicRodTableRow.prototype.toString = function() {
-	return 'MetamagicRodTableRow ' + this.grade + ' level ' + level;
+	return 'MetamagicRodTableRow ' + this.grade + ' level ' + this.level;
 }
 
+MetamagicRodTableRow.prototype.gen = function() {
+	console.log("ok! gen() got called on " + this);
+	return new MetamagicRodTableRowResult(this.grade, this.level);
+}
+
+function MetamagicRodTableRowResult(grade, level) {
+	this.grade = grade;
+	this.level = level;
+}
+
+MetamagicRodTableRowResult.prototype.toString = function() {
+	return 'MetamagicRodTableRowResult(' + this.grade + ', ' + this.level + ")";
+}
+
+MetamagicRodTableRowResult.prototype.getValue = function() {
+	return 1;
+}
+
+MetamagicRodTableRowResult.prototype.getLabel =  function() {
+	return 'omg MMR LABEL';
+}
+
+MetamagicRodTableRowResult.prototype.getSource = function() {
+	return 'omg MMR SRC';
+}
 
 
 function potion(grade) {
@@ -4816,14 +4861,14 @@ picker.add(100, 100, "Staff of power", 235000, 'UE');
 picker = rods.typeAndLevelToPicker['rod']['lesser medium'];
 
 picker.add(1, 1, "Metamagic, merciful, minor", 1500, 'UE');
-picker.add(2, 34, "Metamagic (+1 spell level), minor", 3000, 'UE');
+picker.picker.add(2, 34, new MetamagicRodTableRow(1, 'minor'));
 picker.add(35, 49, "Immovable rod", 5000, 'UE');
 picker.add(50, 59, "Rod of thunderous force", 5400, 'UE');
 picker.add(60, 60, "Metamagic, merciful, normal", 5500, 'UE');
 picker.add(61, 61, "Rod of ice", 8500, 'UE');
-picker.add(62, 71, "Metamagic (+2 spell level), minor", 9000, 'UE');
+picker.picker.add(62, 71, new MetamagicRodTableRow(2, 'minor'));
 picker.add(72, 81, "Rod of metal and mineral detection", 10500, 'UE');
-picker.add(82, 86, "Metamagic (+1 spell level), normal", 11000, 'UE');
+picker.picker.add(82, 86, new MetamagicRodTableRow(1, 'normal'));
 picker.add(87, 100, "Rod of cancellation", 11000, 'UE');
 
 picker = rods.typeAndLevelToPicker['rod']['greater medium'];
@@ -4835,7 +4880,7 @@ picker.add(11, 18, "Rod of wonder", 12000, 'UE');
 picker.add(19, 19, "Metamagic, merciful, greater", 12250, 'UE');
 picker.add(20, 29, "Rod of the python", 13000, 'UE');
 picker.add(30, 33, "Trap-stealer’s rod", 13500, 'UE');
-picker.add(34, 55, "Metamagic (+3 spell level), minor", 14000, 'UE');
+picker.picker.add(34, 55, new MetamagicRodTableRow(+3, 'minor'));
 picker.add(56, 59, "Rod of balance", 15000, 'UE');
 picker.add(60, 63, "Rod of escape", 15000, 'UE');
 picker.add(64, 72, "Rod of flame extinguishing", 15000, 'UE');
@@ -4850,13 +4895,13 @@ picker = rods.typeAndLevelToPicker['rod']['lesser major'];
 picker.add(1, 4, "Suzerain scepter", 20000, 'UE');
 picker.add(5, 6, "Fiery nimbus rod", 22305, 'UE');
 picker.add(7, 13, "Rod of enemy detection", 23500, 'UE');
-picker.add(14, 27, "Metamagic (+1 spell level), greater", 24500, 'UE');
+picker.picker.add(14, 27, new MetamagicRodTableRow(+1, 'greater'));
 picker.add(28, 36, "Rod of splendor", 25000, 'UE');
 picker.add(37, 44, "Rod of withering", 25000, 'UE');
 picker.add(45, 50, "Earthbind rod", 26500, 'UE');
 picker.add(51, 56, "Rod of the aboleth", 29000, 'UE');
 picker.add(57, 63, "Liberator’s rod", 30000, 'UE');
-picker.add(64, 70, "Metamagic (+2 spell level), normal", 32500, 'UE');
+picker.picker.add(64, 70, new MetamagicRodTableRow(+2, 'normal'));
 picker.add(71, 79, "Rod of thunder and lightning", 33000, 'UE');
 picker.add(80, 83, "Metamagic, quicken, minor", 35000, 'UE');
 picker.add(84, 94, "Rod of negation", 37000, 'UE');
@@ -4866,18 +4911,18 @@ picker = rods.typeAndLevelToPicker['rod']['greater major'];
 
 picker.add(1, 8, "Rod of absorption", 50000, 'UE');
 picker.add(9, 11, "Rod of flailing", 50000, 'UE');
-picker.add(12, 26, "Metamagic (+3 spell level), normal", 54000, 'UE');
+picker.picker.add(12, 26, new MetamagicRodTableRow(+3, 'normal'));
 picker.add(27, 28, "Rod of rulership", 60000, 'UE');
 picker.add(29, 30, "Rod of security", 61000, 'UE');
 picker.add(31, 32, "Rod of shadows", 64305, 'UE');
 picker.add(33, 34, "Rod of mind mastery", 67000, 'UE');
 picker.add(35, 37, "Rod of lordly might", 70000, 'UE');
-picker.add(38, 57, "Metamagic (+2 spell level), greater", 73000, 'UE');
+picker.picker.add(38, 57, new MetamagicRodTableRow(+2, 'greater'));
 picker.add(58, 58, "Scepter of heaven", 74000, 'UE');
 picker.add(59, 68, "Metamagic, quicken, normal", 75500, 'UE');
 picker.add(69, 70, "Rod of dwarven might", 80000, 'UE');
 picker.add(71, 75, "Rod of alertness", 85000, 'UE');
-picker.add(76, 95, "Metamagic (+3 spell level), greater", 121500, 'UE');
+picker.picker.add(76, 95, new MetamagicRodTableRow(+3, 'greater'));
 picker.add(96, 100, "Metamagic, quicken, greater", 170000, 'UE');
 
 picker = metamagic_rod_names[1];
