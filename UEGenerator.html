@@ -1861,18 +1861,26 @@ var metamagic_rod_names = [
 	new D100Picker([])
                   ];
 
+
+var metamagic_rod_values = {
+		minor: [0,3000,9000,14000],
+		normal: [0,11000,32500,54000],
+		greater: [0,24500,73000,121500]
+}
+
 MetamagicRodTableRow.prototype.toString = function() {
 	return 'MetamagicRodTableRow ' + this.grade + ' level ' + this.level;
 }
 
 MetamagicRodTableRow.prototype.gen = function() {
-	console.log("ok! gen() got called on " + this);
 	return new MetamagicRodTableRowResult(this.grade, this.level);
 }
 
 function MetamagicRodTableRowResult(grade, level) {
 	this.grade = grade;
 	this.level = level;
+	this.rodName =  metamagic_rod_names[level].gen().item.toLowerCase();
+	
 }
 
 MetamagicRodTableRowResult.prototype.toString = function() {
@@ -1880,15 +1888,21 @@ MetamagicRodTableRowResult.prototype.toString = function() {
 }
 
 MetamagicRodTableRowResult.prototype.getValue = function() {
-	return 1;
+	return metamagic_rod_values[this.grade][this.level];
+}
+
+function toTitleCase(s) {
+	return s.substr(0,1).toUpperCase() + s.substr(1).toLowerCase()
 }
 
 MetamagicRodTableRowResult.prototype.getLabel =  function() {
-	return 'omg MMR LABEL';
+	var n = this.rodName;
+	if(n.substr(n.length-6, 6)==' spell') {n=n.substr(0, n.length-6);}
+	return 'Metamagic, ' + n.toLowerCase() + ', ' + this.grade;
 }
 
 MetamagicRodTableRowResult.prototype.getSource = function() {
-	return 'omg MMR SRC';
+	return 'UE'; // for now. Ideally, the various rod types would have the book ther are defined ing
 }
 
 
@@ -5114,7 +5128,6 @@ picker.add(98, 100, "Ring of spell storing, major", 200000, 'UE');
 
 
 	treasureTypeAllocations.A = [
-    new TreasureTypeAllocation('A',     1, [lesser_medium_rod, greater_medium_rod,lesser_major_rod, greater_major_rod]),
 	new TreasureTypeAllocation('A',     5, [makeCoinPicker(2, 6, 10, cp), makeCoinPicker(4, 8, 1, sp), makeCoinPicker(1, 4, 1, gp)]),
 	new TreasureTypeAllocation('A',    10, [makeCoinPicker(5, 10, 10, cp), makeCoinPicker(5, 10, 1, sp), makeCoinPicker(1, 8, 1, gp)]),
 	new TreasureTypeAllocation('A',    25, [makeCoinPicker(2, 4, 100, cp), makeCoinPicker(3, 6, 10, sp), makeCoinPicker(4, 4, 1, gp)]),
