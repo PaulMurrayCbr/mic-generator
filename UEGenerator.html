@@ -2028,6 +2028,8 @@ wands.chooseType.add(76,100, 'uncommon');
 
 wands.setupItemPickerTables();
 
+var least_minor_wondrous_item_table = new ItemPickerTable(wondrous, 'Slotless', 'least');
+
 var lesser_minor_wondrous_item = new ItemPicker(wondrous, 'lesser minor');
 var greater_minor_wondrous_item = new ItemPicker(wondrous, 'greater minor');
 var lesser_medium_wondrous_item = new ItemPicker(wondrous, 'lesser medium');
@@ -2037,7 +2039,6 @@ var greater_major_wondrous_item = new ItemPicker(wondrous, 'greater major');
 
 // there is no mapping here as with the spell level items
 
-wondrous.setGradeToLevel(1,100,'least minor', 'least minor');
 wondrous.setGradeToLevel(1,100,'lesser minor', 'lesser minor');
 wondrous.setGradeToLevel(1,100,'greater minor', 'greater minor');
 wondrous.setGradeToLevel(1,100,'lesser medium', 'lesser medium');
@@ -4406,7 +4407,7 @@ picker = wondrous.typeAndLevelToPicker['Wrists']['greater major'];
 picker.add(1, 60, "Bracers of armor +7", 49000, 'UE');
 picker.add(61, 100, "Bracers of armor +8", 64000, 'UE');
 
-picker = wondrous.typeAndLevelToPicker['Slotless']['least minor'];
+picker = least_minor_wondrous_item_table;
 
 picker.add(1, 1, "Feather token (anchor)", 50, 'UE');
 picker.add(2, 2, "Universal solvent", 50, 'UE');
@@ -4457,7 +4458,11 @@ picker.add(98, 100, "Dust of dryness", 850, 'UE');
 
 picker = wondrous.typeAndLevelToPicker['Slotless']['lesser minor'];
 
-picker.add(1, 3, "TODO: Roll on the Least Minor table", 250, 'UE');
+picker.picker.add(1, 3,  {
+	toString : function() { return 'least wondrous item picker';}	,
+	gen : function() { return least_minor_wondrous_item_table.picker.gen().generated;}	
+});
+
 picker.add(4, 4, "Anatomy doll", 1000, 'UE');
 picker.add(5, 5, "Bead of newt prevention", 1000, 'UE');
 picker.add(6, 6, "Beast-bond brand", 1000, 'UE');
@@ -5125,9 +5130,12 @@ picker.add(98, 100, "Ring of spell storing, major", 200000, 'UE');
 		}
 	}
 	
-
-
 	treasureTypeAllocations.A = [
+	// these three rows are not from the MIC - I built them	                             
+    new TreasureTypeAllocation('A', 1, [makeCoinPicker(1, 1, 1, gp)]),
+    new TreasureTypeAllocation('A', 1, [makeCoinPicker(2, 9, 1, sp)]), // average roll of a d9 is 5.
+    new TreasureTypeAllocation('A', 1, [makeCoinPicker(2, 9, 10, cp)]), // average roll of a d9 is 5.
+	                        	
 	new TreasureTypeAllocation('A',     5, [makeCoinPicker(2, 6, 10, cp), makeCoinPicker(4, 8, 1, sp), makeCoinPicker(1, 4, 1, gp)]),
 	new TreasureTypeAllocation('A',    10, [makeCoinPicker(5, 10, 10, cp), makeCoinPicker(5, 10, 1, sp), makeCoinPicker(1, 8, 1, gp)]),
 	new TreasureTypeAllocation('A',    25, [makeCoinPicker(2, 4, 100, cp), makeCoinPicker(3, 6, 10, sp), makeCoinPicker(4, 4, 1, gp)]),
@@ -5142,6 +5150,11 @@ picker.add(98, 100, "Ring of spell storing, major", 200000, 'UE');
 	];
 	
 	treasureTypeAllocations.B = [
+	// these three rows are not from the MIC - I built them	                             
+	new TreasureTypeAllocation('A', 1, [makeCoinPicker(1, 1, 1, gp)]),
+	new TreasureTypeAllocation('A', 1, [makeCoinPicker(2, 9, 1, sp)]), // average roll of a d9 is 5.
+	new TreasureTypeAllocation('A', 1, [makeCoinPicker(2, 9, 10, cp)]), // average roll of a d9 is 5.
+	                        	                        	
 	new TreasureTypeAllocation('B',   10, [gemPicker(1)]),
 	new TreasureTypeAllocation('B',   15, [makeCoinPicker(2, 6, 10, cp), makeCoinPicker(4, 8, 1, sp), makeCoinPicker(1, 4, 1, gp), gemPicker(1)]),
 	new TreasureTypeAllocation('B',   25, [makeCoinPicker(5, 10, 1, sp), makeCoinPicker(1, 4, 1, gp), mult(2, gemPicker(1))]),
