@@ -5283,7 +5283,7 @@ var masterwork_weapon = {
 function MagicWeaponTable() {
 	this.picker = new D100Picker(this);
 	
-	var sampleObject = new MagicWeaponBuilder(0, [0,0]);
+	var sampleObject = new MagicWeaponBuilder(0, []);
 	
 	this.picker.add(1,100,sampleObject)
 }
@@ -5321,7 +5321,7 @@ MagicWeaponBuilder.prototype.gen = function() {
 	var chosenType;
 	for(var max = 0; max < 100; max ++) { // try 100 times, then give up
 		chosenType = weaponType.gen();
-		if(chosenType != '?') break;
+		if(chosenType.type != '?') break;
 	}
 	
 	var totalbonus = this.bonus;
@@ -5333,7 +5333,18 @@ MagicWeaponBuilder.prototype.gen = function() {
 	
 	console.log("MagicWeaponBuilder.prototype.gen generated " + result);
 	
-	// TODO! add special qualities
+	// if an item is marked as both melee and ranged, it may potentially get 
+	// a thown and a melee bonus. THis is ok.
+	
+	for(var i =0 ; i< this.specials.length; i++) {
+		if(chosenType.type == 'R'  || (chosenType.type='MR' && rnd(2)==0)) {
+			result.specialAbilities.push(ranged_weapon_special_abilities[this.specials[i]].gen());
+		}	
+		else {
+			console.log("getting melee_weapon_special_abilities["+this.specials[i]+"]");
+			result.specialAbilities.push(melee_weapon_special_abilities[this.specials[i]].gen());
+		}
+	}
 	
 	return result;
 } 
@@ -5392,16 +5403,19 @@ ArmsAndArmourResult.prototype.toString = function() {
 }
 
 ArmsAndArmourResult.prototype.getLabel = function() {
-	return (this.bonus==0?"Masterwork":"+"+this.bonus) 
-		+ (this.specialAbilities.length > 0 ? " [" + this.specialAbilities + "]": "") + " " 
-		+ (this.bonus==0||this.specialAbilities.length > 0 ? this.type.name.toLowerCase() : this.type.name);
+	var result = (this.bonus==0?"Masterwork":"+"+this.bonus) ;
+	for(var i = 0 ; i<this.specialAbilities.length; i++) {
+		result = result + " " + this.specialAbilities[i].name;
+	}
+	result = result + " " +  this.type.name;
+	return result;
 }
 
 ArmsAndArmourResult.prototype.getValue = function() {
 	var value = this.type.cost;
 	var bonus = this.bonus;
 	
-	for(i in specialAbilities) {
+	for(i in this.specialAbilities) {
 		this.bonus += i.bonus;
 		this.cost += i.cost;
 	}
@@ -5468,7 +5482,7 @@ function ArmsAndArmourSpecialAbilityTable() {
 	this.picker = new D100Picker(this);
 }
 
-ArmsAndArmourSpecialAbilityTable.prototype.gen = function() { return picker.gen().generated; }
+ArmsAndArmourSpecialAbilityTable.prototype.gen = function() { return this.picker.gen().generated; }
 
 ArmsAndArmourSpecialAbilityTable.prototype.add = function(a,b,name,bonus) { this.picker.add(a,b,new ArmsAndArmourSpecialAbility(name,bonus,0)); }
 ArmsAndArmourSpecialAbilityTable.prototype.addGP = function(a,b,name,cost) { this.picker.add(a,b,new ArmsAndArmourSpecialAbility(name,0,cost)); }
