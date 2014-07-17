@@ -5093,43 +5093,35 @@ picker.add(98, 100, "Ring of spell storing, major", 200000, 'UE');
 //Armour and shields
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function ArmourAndShieldTable() {
-	this.picker = new D100Picker(this);
-}
+var armourAndShieldType = {
+	picker: new D100Picker(this),
+	toString: function() {
+		return 'ArmourAndShieldTable';
+	},
+	add: function(a, b, name, weight, cost) {
+		this.picker.add(a, b, new ArmourAndShieldTableRow(name, weight))
+	},
+	gen: function() { this.picker.gen().item; }
+};
 
-ArmourAndShieldTable.prototype.toString = function() {
-	return 'ArmourAndShieldTable';
-}
-
-ArmourAndShieldTable.prototype.add = function(a, b, name, isSheild, weight) {
-	this.picker.add(a, b, new ArmourAndShieldTableRow(name, isShield, weight))
-}
-
-ArmourAndShieldTable.prototype.gen = function() { this.picker.gen().item; }
-
-function ArmourAndShieldTableRow(name, isShield, weight) {
+function ArmourAndShieldTableRow(name, weight, cost) {
 	this.name = name;
-	this.shield = shield; // boolean
-	this.weight = weight; // H, M, L or null
+	this.weight = weight; // H, M, L or S for shield
+	this.cost=cost;
 }
 
 ArmourAndShieldTableRow.prototype.toString = function() {
 	return "ArmourAndShieldTableRow("+this.name +")"
 }
 
-function WeaponTable() {
-	this.picker = new D100Picker(this);
-}
-
-WeaponTable.prototype.toString = function() {
-	return 'WeaponTable';
-}
-
-WeaponTable.prototype.add = function(a, b, name, type) {
-	this.picker.add(a, b, new WeaponTableRow(name, type))
-}
-
-WeaponTable.prototype.gen = function() { this.picker.gen().item; }
+var weaponType  = {
+	picker: new D100Picker(this),
+	toString: function() { return 'WeaponTable';},
+	add: function(a, b, name, type) {
+		this.picker.add(a, b, new WeaponTypeTableRow(name, type))
+	},
+	gen: function() { this.picker.gen().item; }
+};
 
 function WeaponTableRow(name, type) {
 	this.name = name;
@@ -5139,6 +5131,32 @@ function WeaponTableRow(name, type) {
 WeaponTableRow.prototype.toString = function() {
 	return "WeaponTableRow("+this.name +")"
 }
+
+armourAndShieldType.add( 1, 4, 'Banded mail','H',250);
+armourAndShieldType.add( 5,11, 'Breastplate','M',200);
+armourAndShieldType.add(12,14, 'Buckler','S',15);
+armourAndShieldType.add(15,21, 'Chain shirt','L',100);
+armourAndShieldType.add(22,27, 'Chainmail','M',150);
+armourAndShieldType.add(28,34, 'Full plate','H',2500);
+armourAndShieldType.add(35,39, 'Half-plate','H',600);
+armourAndShieldType.add(40,45, 'Heavy steel shield','S',20);
+armourAndShieldType.add(46,51, 'Heavy wooden shield','S',7);
+armourAndShieldType.add(52,55, 'Hide','M',15);
+armourAndShieldType.add(56,61, 'Leather armor','L',10);
+armourAndShieldType.add(62,65, 'Light steel shield','S',9);
+armourAndShieldType.add(66,69, 'Light wooden shield','S',3);
+armourAndShieldType.add(70,72, 'Padded armor','L',5);
+armourAndShieldType.add(73,77, 'Scale mail','M',50);
+armourAndShieldType.add(78,81, 'Splint mail','H',200);
+armourAndShieldType.add(82,87, 'Studded leather armor','L',25);
+armourAndShieldType.add(88,90, 'Tower shield','S',30);
+// using the median price for these
+armourAndShieldType.add(91,93, 'Other light armor','L',50);
+armourAndShieldType.add(94,95, 'Other medium armor','M',100);
+armourAndShieldType.add(96,98, 'Other heavy armor','H',425);
+armourAndShieldType.add(99,100, 'Other shield','S',15);
+
+
 
 //for specific weaponms, we will use an ItemTableResult.
 
@@ -5155,6 +5173,9 @@ ArmsAndArmourResult.prototype.toString = function() {
 ArmsAndArmourResult.prototype.getLabel = function() {
 	return (this.bonus==0?"masterwork":"+"+this.bonus) + (this.specialAbilities.length > 0 ? " " + this.specialAbilities : "") + " " + this.type
 }
+
+
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Treasure Type Allocaiton. TABLE 7-1 to 7-11.
