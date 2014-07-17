@@ -1595,7 +1595,7 @@ picker.add(39, 41, new ArtObject('Gold censer with silver filigree', 90));
 picker.add(42, 44, new ArtObject('Gold and silver chess set', 100));
 picker.add(45, 45, new ArtObject('Gold baby rattle', 100));
 picker.add(46, 53, new ArtObject('Gold holy symbol', 100));
-picker.add(54, 56, new ArtObject('Masterwork lyre', 100));
+picker.add(54, 56, new ArtObject('masterwork lyre', 100));
 picker.add(57, 58, new ArtObject('Painting of a princess', 100));
 picker.add(59, 61, new ArtObject('Silver cup with royal crest', 100));
 picker.add(62, 65, new ArtObject('Decorated electrum plate', 110));
@@ -1613,7 +1613,7 @@ picker.add(98, 100, new ArtObject('Gold candelabra with holy symbol', 200));
 picker = artTypeTable[3];
 picker.add(1, 3, new ArtObject('Gilded demon skull', 300));
 picker.add(4, 13, new ArtObject('Marble idol', 300));
-picker.add(14, 19, new ArtObject('Masterwork darkwood lute', 300));
+picker.add(14, 19, new ArtObject('masterwork darkwood lute', 300));
 picker.add(20, 24, new ArtObject('Engraved mithral scarab', 400));
 picker.add(25, 28, new ArtObject('Gold and ivory decanter', 400));
 picker.add(29, 32, new ArtObject('Gold bowl with dragon engravings', 400));
@@ -2106,6 +2106,10 @@ rings.setGradeToLevel(1,100,'greater major', 'greater major');
 rings.chooseType.add(1,100, 'ring');
 
 rings.setupItemPickerTables();
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 // OK! Now load the data
 picker = potions.typeAndLevelToPicker['common'][0];
@@ -2974,7 +2978,7 @@ picker.add(92, 93, 'Wood shape', 150, 'CR');
 picker.add(94, 95, 'Consecrate', 175, 'CR');
 picker.add(96, 97, 'Desecrate', 175, 'CR');
 picker.add(98, 99, 'Fire trap', 175, 'CR');
-picker.add(100, 100, 'Masterwork transformation', 450, 'UM');
+picker.add(100, 100, 'masterwork transformation', 450, 'UM');
 
 picker = scrolls.typeAndLevelToPicker['common divine'][3];
 picker.add(1, 3, 'Bestow curse', 375, 'CR');
@@ -4790,7 +4794,7 @@ picker.add(100, 100, "Mirror of life trapping", 200000, 'UE');
 
 
 
-picker = staves.typeAndLevelToPicker['staff']['lesser medium'];
+picker =  staves.typeAndLevelToPicker['staff']['lesser medium'];
 
 picker.add(1, 10, "Staff of blessed relief", 7200, 'UE');
 picker.add(11, 20, "Staff of minor arcana", 8000, 'UE');
@@ -5085,6 +5089,73 @@ picker.add(91, 93, "Ring of djinni calling", 125000, 'UE');
 picker.add(94, 97, "Ring of elemental command", 200000, 'UE');
 picker.add(98, 100, "Ring of spell storing, major", 200000, 'UE');
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Armour and shields
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function ArmourAndShieldTable() {
+	this.picker = new D100Picker(this);
+}
+
+ArmourAndShieldTable.prototype.toString = function() {
+	return 'ArmourAndShieldTable';
+}
+
+ArmourAndShieldTable.prototype.add = function(a, b, name, isSheild, weight) {
+	this.picker.add(a, b, new ArmourAndShieldTableRow(name, isShield, weight))
+}
+
+ArmourAndShieldTable.prototype.gen = function() { this.picker.gen().item; }
+
+function ArmourAndShieldTableRow(name, isShield, weight) {
+	this.name = name;
+	this.shield = shield; // boolean
+	this.weight = weight; // H, M, L or null
+}
+
+ArmourAndShieldTableRow.prototype.toString = function() {
+	return "ArmourAndShieldTableRow("+this.name +")"
+}
+
+function WeaponTable() {
+	this.picker = new D100Picker(this);
+}
+
+WeaponTable.prototype.toString = function() {
+	return 'WeaponTable';
+}
+
+WeaponTable.prototype.add = function(a, b, name, type) {
+	this.picker.add(a, b, new WeaponTableRow(name, type))
+}
+
+WeaponTable.prototype.gen = function() { this.picker.gen().item; }
+
+function WeaponTableRow(name, type) {
+	this.name = name;
+	this.type = type; // M, R, A -> Melee, Ranged, Ammo
+}
+
+WeaponTableRow.prototype.toString = function() {
+	return "WeaponTableRow("+this.name +")"
+}
+
+//for specific weaponms, we will use an ItemTableResult.
+
+function ArmsAndArmourResult(bonus, type) {
+	this.bonus = bonus; // 0 means masterwork
+	this.type = type; // a ArmourAndShieldTableRow or a WeaponTableRow
+	this.specialAbilities = [];
+}
+
+ArmsAndArmourResult.prototype.toString = function() {
+	return "ArmsAndArmourResult("+this.bonus + ", " + this.type + ", " + this.specialAbilities + ")"
+}
+
+ArmsAndArmourResult.prototype.getLabel = function() {
+	return (this.bonus==0?"masterwork":"+"+this.bonus) + (this.specialAbilities.length > 0 ? " " + this.specialAbilities : "") + " " + this.type
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Treasure Type Allocaiton. TABLE 7-1 to 7-11.
 // an allocation row has a declared budget and an array of pickers which, when rerolled should generate
@@ -5240,14 +5311,14 @@ picker.add(98, 100, "Ring of spell storing, major", 200000, 'UE');
 	];
 
 	treasureTypeAllocations.E = [
-	new TreasureTypeAllocation('E', 200, [plainString('Masterwork light armor or shield')]),
-	new TreasureTypeAllocation('E', 300, [plainString('Masterwork medium armor')]),
-	new TreasureTypeAllocation('E', 350, [plainString('Masterwork weapon')]),
-	new TreasureTypeAllocation('E', 1000, [plainString('Masterwork heavy armor')]),
+	new TreasureTypeAllocation('E', 200, [plainString('masterwork light armor or shield')]),
+	new TreasureTypeAllocation('E', 300, [plainString('masterwork medium armor')]),
+	new TreasureTypeAllocation('E', 350, [plainString('masterwork weapon')]),
+	new TreasureTypeAllocation('E', 1000, [plainString('masterwork heavy armor')]),
 	new TreasureTypeAllocation('E', 1500, [plainString('lesser minor armor')]),
 	new TreasureTypeAllocation('E', 2500, [plainString('lesser minor weapon')]),
 	new TreasureTypeAllocation('E', 3000, [plainString('greater minor armor')]),
-	new TreasureTypeAllocation('E', 3000, [plainString('Masterwork medium armor'), plainString('masterwork shield'), plainString('lesser minor weapon')]),
+	new TreasureTypeAllocation('E', 3000, [plainString('masterwork medium armor'), plainString('masterwork shield'), plainString('lesser minor weapon')]),
 	new TreasureTypeAllocation('E', 4000, [plainString('lesser minor armor'), plainString('lesser minor weapon')]),
 	new TreasureTypeAllocation('E', 5500, [plainString('greater minor armor'), plainString('lesser minor weapon')]),
 	new TreasureTypeAllocation('E', 6000, [plainString('greater minor weapon')]),
@@ -5275,14 +5346,14 @@ picker.add(98, 100, "Ring of spell storing, major", 200000, 'UE');
 	new TreasureTypeAllocation('F', 250, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), plainString('masterwork light armor or shield'), lesser_minor_potion]),
 	new TreasureTypeAllocation('F', 350, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), plainString('masterwork medium armor'), lesser_minor_potion]),
 	new TreasureTypeAllocation('F', 400, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), plainString('masterwork weapon'), lesser_minor_potion]),
-	new TreasureTypeAllocation('F', 500, [plainString('Masterwork weapon'), greater_minor_potion]),
+	new TreasureTypeAllocation('F', 500, [plainString('masterwork weapon'), greater_minor_potion]),
 	new TreasureTypeAllocation('F', 750, [makeCoinPicker(6, 6, 1, gp), plainString('masterwork medium armor'), plainString('masterwork weapon'), mult(2, lesser_minor_potion)]),
-	new TreasureTypeAllocation('F', 1000, [plainString('Masterwork heavy armor')]),
-	new TreasureTypeAllocation('F', 1500, [plainString('Masterwork heavy armor'), plainString('masterwork weapon'), greater_minor_potion]),
+	new TreasureTypeAllocation('F', 1000, [plainString('masterwork heavy armor')]),
+	new TreasureTypeAllocation('F', 1500, [plainString('masterwork heavy armor'), plainString('masterwork weapon'), greater_minor_potion]),
 	new TreasureTypeAllocation('F', 2000, [plainString('lesser minor armor'), plainString('masterwork weapon'), mult(2, greater_minor_potion)]),
-	new TreasureTypeAllocation('F', 3000, [plainString('Masterwork medium armor'), plainString('lesser minor weapon'), greater_minor_potion]),
+	new TreasureTypeAllocation('F', 3000, [plainString('masterwork medium armor'), plainString('lesser minor weapon'), greater_minor_potion]),
 	new TreasureTypeAllocation('F', 4000, [plainString('lesser minor armor'), plainString('masterwork weapon'), lesser_minor_wondrous_item, greater_minor_potion]),
-	new TreasureTypeAllocation('F', 5000, [plainString('Masterwork medium armor'), plainString('lesser minor weapon'), lesser_minor_wondrous_item, greater_minor_potion]),
+	new TreasureTypeAllocation('F', 5000, [plainString('masterwork medium armor'), plainString('lesser minor weapon'), lesser_minor_wondrous_item, greater_minor_potion]),
 	new TreasureTypeAllocation('F', 6000, [plainString('lesser minor armor'), plainString('lesser minor weapon'), lesser_minor_wondrous_item]),
 	new TreasureTypeAllocation('F', 7500, [plainString('greater minor armor'), plainString('lesser minor weapon'), lesser_minor_ring]),
 	new TreasureTypeAllocation('F', 10000, [plainString('greater minor armor'), plainString('lesser minor weapon'), lesser_minor_ring, lesser_minor_wondrous_item, mult(3, greater_minor_potion)]),
