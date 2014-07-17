@@ -149,7 +149,7 @@
 	D100Picker.prototype.toString = function() {return "D100Picker( " + this.v +")";}
 
 	D100Picker.prototype.add = function(a, b, item) {
-		if(item==null) throw "no item passed to D100Picker.add("+a+","+b+","+item+")";
+		if(item==null) throw "no item passed to "+this+".add("+a+","+b+","+item+")";
 		var row = new D100Row(this, a, b, item);
 		for(var i = a; i<= b; i++) {
 			this.v[i] = row;
@@ -257,6 +257,8 @@
 	var summaryWONDROUS;
 	var summaryRSR;
 	var summaryITEMS;
+	var summaryARMOUR;
+	var summaryWEAPONS;
 	var summaryITEMSTOTAL;
 	
 	var summaryPOTIONSCT;
@@ -265,6 +267,8 @@
 	var summaryWONDROUSCT;
 	var summaryRSRCT;
 	var summaryITEMSCT;
+	var summaryARMOURCT;
+	var summaryWEAPONSCT;
 	
 
 	function recalcTotalTreasureBudget() {
@@ -313,6 +317,8 @@
 		summaryWONDROUS=0;
 		summaryRSR=0;
 		summaryITEMS=0;
+		summaryARMOUR = 0;
+		summaryWEAPONS = 0;
 		summaryITEMSTOTAL=0;
 		
 		summaryPOTIONSCT = 0;
@@ -321,6 +327,8 @@
 		summaryWONDROUSCT = 0;
 		summaryRSRCT = 0;
 		summaryITEMSCT = 0;
+		summaryARMOURCT = 0;
+		summaryWEAPONSCT = 0;
 
 		
 		document.getElementById('cp_amt').innerHTML = '0';
@@ -337,6 +345,8 @@
 		document.getElementById('art_value').innerHTML = '0.00';
 		document.getElementById('total_currency').innerHTML = '0.00';
 		document.getElementById('total_items').innerHTML = '0.00';
+		document.getElementById('total_armour').innerHTML = '0.00';
+		document.getElementById('total_weapons').innerHTML = '0.00';
 		document.getElementById('total_value').innerHTML = '0.00';
 		
 		clearElement(document.getElementById('gem_table'));
@@ -475,9 +485,29 @@
 			tr.appendChild(td);
 			document.getElementById('itemtotal_table').appendChild(tr);
 		}
-		
-		if(summaryITEMS > 0) {
-			
+		if(summaryWEAPONSCT > 0) {
+			var tr = document.createElement("tr");
+			var td = document.createElement("td");
+			td.setAttribute("class", "cell");
+			tr.appendChild(td);
+			var td = document.createElement("td");
+			td.setAttribute("class", "money");
+			td.style.fontWeight = 'bold';
+			td.appendChild(document.createTextNode(cpToString(summaryWEAPONS*100)));
+			tr.appendChild(td);
+			document.getElementById('weapon_table').appendChild(tr);
+		}
+		if(summaryARMOURCT > 0) {
+			var tr = document.createElement("tr");
+			var td = document.createElement("td");
+			td.setAttribute("class", "cell");
+			tr.appendChild(td);
+			var td = document.createElement("td");
+			td.setAttribute("class", "money");
+			td.style.fontWeight = 'bold';
+			td.appendChild(document.createTextNode(cpToString(summaryARMOUR*100)));
+			tr.appendChild(td);
+			document.getElementById('armour_table').appendChild(tr);
 		}
 	}
 	
@@ -608,11 +638,22 @@
 		}
 		for(var i = 0; i<treasure.generatedArmour.length; i++) {
 			var generatedArmour = treasure.generatedArmour[i]
-			var span = document.createElement("div");
-			span.style.margin = "2px";
-			span.style.padding = "2px";
-			span.appendChild(document.createTextNode(generatedArmour));
-			document.getElementById('armour_table').appendChild(span);
+			var tr = document.createElement("tr");
+
+			var td = document.createElement("td");
+			td.setAttribute("class", "cell");
+			td.appendChild(document.createTextNode(generatedArmour.getLabel()));
+			tr.appendChild(td);
+
+			var td = document.createElement("td");
+			td.setAttribute("class", "money");
+			td.appendChild(document.createTextNode(cpToString(generatedArmour.getValue()*100)));
+			tr.appendChild(td);
+
+			document.getElementById('armour_table').appendChild(tr);
+			
+			summaryARMOUR += generatedArmour.getValue();
+			summaryARMOURCT ++;
 		}
 		
 		document.getElementById('cp_amt').innerHTML = summaryCP;
@@ -638,14 +679,21 @@
 				+summaryGEMS*100
 				+summaryART*100);
 		document.getElementById('total_items').innerHTML = cpToString(summaryITEMSTOTAL*100);
+		document.getElementById('total_weapons').innerHTML = cpToString(summaryWEAPONS*100);
+		document.getElementById('total_armour').innerHTML = cpToString(summaryARMOUR*100);
 		document.getElementById('total_value').innerHTML = cpToString(
 				summaryCP
 				+summarySP*10
 				+summaryGP*100
 				+summaryPP*1000
-				+summaryGEMS*100
-				+summaryART*100
-				+summaryITEMSTOTAL*100);
+				+ (
+				+summaryGEMS
+				+summaryART
+				+summaryITEMSTOTAL
+				+summaryARMOUR
+				+summaryWEAPONS
+				) * 100
+				);
 		
 	}
 
@@ -5094,20 +5142,22 @@ picker.add(98, 100, "Ring of spell storing, major", 200000, 'UE');
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var armourAndShieldType = {
-	picker: new D100Picker(this),
 	toString: function() {
-		return 'ArmourAndShieldTable';
+		return 'ArmourAndShieldTypeTable';
 	},
 	add: function(a, b, name, weight, cost) {
-		this.picker.add(a, b, new ArmourAndShieldTableRow(name, weight))
+		this.picker.add(a, b, new ArmourAndShieldTableRow(name, weight, cost))
 	},
-	gen: function() { this.picker.gen().item; }
+	gen: function() {  return this.picker.gen().generated;},
+	isArmour : true,
+	isWeapon: false
 };
+armourAndShieldType.picker = new D100Picker(armourAndShieldType);
 
 function ArmourAndShieldTableRow(name, weight, cost) {
 	this.name = name;
 	this.weight = weight; // H, M, L or S for shield
-	this.cost=cost;
+	this.cost = cost;
 }
 
 ArmourAndShieldTableRow.prototype.toString = function() {
@@ -5115,17 +5165,20 @@ ArmourAndShieldTableRow.prototype.toString = function() {
 }
 
 var weaponType  = {
-	picker: new D100Picker(this),
-	toString: function() { return 'WeaponTable';},
-	add: function(a, b, name, type) {
-		this.picker.add(a, b, new WeaponTypeTableRow(name, type))
+	toString: function() { return 'WeaponTypeTable';},
+	add: function(a, b, name, type, cost) {
+		this.picker.add(a, b, new WeaponTypeTableRow(name, type, cost))
 	},
-	gen: function() { this.picker.gen().item; }
+	gen: function() { return this.picker.gen().generated;},
+	isArmour : false,
+	isWeapon: true
 };
+weaponType.picker = new D100Picker(weaponType);
 
-function WeaponTableRow(name, type) {
+function WeaponTableRow(name, type, cost) {
 	this.name = name;
 	this.type = type; // M, R, A -> Melee, Ranged, Ammo
+	this.cost = cost;
 }
 
 WeaponTableRow.prototype.toString = function() {
@@ -5151,27 +5204,80 @@ armourAndShieldType.add(78,81, 'Splint mail','H',200);
 armourAndShieldType.add(82,87, 'Studded leather armor','L',25);
 armourAndShieldType.add(88,90, 'Tower shield','S',30);
 // using the median price for these
-armourAndShieldType.add(91,93, 'Other light armor','L',50);
-armourAndShieldType.add(94,95, 'Other medium armor','M',100);
-armourAndShieldType.add(96,98, 'Other heavy armor','H',425);
-armourAndShieldType.add(99,100, 'Other shield','S',15);
+armourAndShieldType.add(91,93, 'Other light armor (GM\'s choice)','L',50);
+armourAndShieldType.add(94,95, 'Other medium armor (GM\'s choice)','M',100);
+armourAndShieldType.add(96,98, 'Other heavy armor (GM\'s choice)','H',425);
+armourAndShieldType.add(99,100, 'Other shield (GM\'s choice)','S',15);
 
+function reroll_masterwork_armour(treasureBlock, weight) {
+	var chosenType;
+	for(var max = 0; max < 100; max ++) { // try 100 times, then give up
+		chosenType = armourAndShieldType.gen();
+		if(weight.indexOf(chosenType.weight)!=-1) {
+			break;
+		}		
+	}
+	
+	var result = new ArmsAndArmourResult(0, chosenType, 0);
+	
+	treasureBlock.generatedArmour.push(result)
+	treasureBlock.generatedSpan.appendChild(document.createTextNode(result.getLabel()));
+}
 
+var masterwork_light_armour_or_shield = {
+	reroll: function (treasureBlock) { return reroll_masterwork_armour(treasureBlock, "LS"); },
+	toString: function() { return 'masterwork_light_armour_or_shield picker'; }
+};
+
+var masterwork_shield = {
+	reroll: function (treasureBlock) { return reroll_masterwork_armour(treasureBlock, "S"); },
+	toString: function() { return 'masterwork_shield picker'; }
+};
+
+var masterwork_light_armour = {
+	reroll: function (treasureBlock) { return reroll_masterwork_armour(treasureBlock, "L"); },
+	toString: function() { return 'masterwork_light_armour picker'; }
+};
+
+var masterwork_medium_armour = {
+	reroll: function (treasureBlock) { return reroll_masterwork_armour(treasureBlock, "M"); },
+	toString: function() { return 'masterwork_medium_armour picker'; }
+};
+
+var masterwork_heavy_armour = {
+	reroll: function (treasureBlock) { return reroll_masterwork_armour(treasureBlock, "H"); },
+	toString: function() { return 'masterwork_heavy_armour picker'; }
+};
 
 //for specific weaponms, we will use an ItemTableResult.
 
-function ArmsAndArmourResult(bonus, type) {
-	this.bonus = bonus; // 0 means masterwork
+function ArmsAndArmourResult(totalBonus, type, bonus) {
+	this.totalBonus = totalBonus; // 0 means masterwork
 	this.type = type; // a ArmourAndShieldTableRow or a WeaponTableRow
+	this.bonus = bonus; // 0 means masterwork
 	this.specialAbilities = [];
 }
 
 ArmsAndArmourResult.prototype.toString = function() {
-	return "ArmsAndArmourResult("+this.bonus + ", " + this.type + ", " + this.specialAbilities + ")"
+	return "ArmsAndArmourResult("+this.totalBonus + " equivalent: +" + this.bonus + " "+ this.type + ", [" + this.specialAbilities + "])"
 }
 
 ArmsAndArmourResult.prototype.getLabel = function() {
-	return (this.bonus==0?"masterwork":"+"+this.bonus) + (this.specialAbilities.length > 0 ? " " + this.specialAbilities : "") + " " + this.type
+	return (this.bonus==0?"Masterwork":"+"+this.bonus) 
+		+ (this.specialAbilities.length > 0 ? " [" + this.specialAbilities + "]": "") + " " 
+		+ (this.bonus==0||this.specialAbilities.length > 0 ? this.type.name.toLowerCase() : this.type.name);
+}
+
+ArmsAndArmourResult.prototype.getValue = function() {
+	var value;
+	
+	value = this.type.cost;
+	
+	if(this.bonus == 0) { value += this.type.isArmour ? 150 : 300; } // masterwork
+	else {
+		value += this.bonus * this.bonus * (this.type.isArmour ? 1000 : 2000);
+	}
+	return value;
 }
 
 
@@ -5332,14 +5438,14 @@ ArmsAndArmourResult.prototype.getLabel = function() {
 	];
 
 	treasureTypeAllocations.E = [
-	new TreasureTypeAllocation('E', 200, [plainString('masterwork light armor or shield')]),
-	new TreasureTypeAllocation('E', 300, [plainString('masterwork medium armor')]),
+	new TreasureTypeAllocation('E', 200, [masterwork_light_armour_or_shield]),
+	new TreasureTypeAllocation('E', 300, [masterwork_medium_armour]),
 	new TreasureTypeAllocation('E', 350, [plainString('masterwork weapon')]),
-	new TreasureTypeAllocation('E', 1000, [plainString('masterwork heavy armor')]),
+	new TreasureTypeAllocation('E', 1000, [masterwork_heavy_armour]),
 	new TreasureTypeAllocation('E', 1500, [plainString('lesser minor armor')]),
 	new TreasureTypeAllocation('E', 2500, [plainString('lesser minor weapon')]),
 	new TreasureTypeAllocation('E', 3000, [plainString('greater minor armor')]),
-	new TreasureTypeAllocation('E', 3000, [plainString('masterwork medium armor'), plainString('masterwork shield'), plainString('lesser minor weapon')]),
+	new TreasureTypeAllocation('E', 3000, [masterwork_medium_armour, masterwork_shield, plainString('lesser minor weapon')]),
 	new TreasureTypeAllocation('E', 4000, [plainString('lesser minor armor'), plainString('lesser minor weapon')]),
 	new TreasureTypeAllocation('E', 5500, [plainString('greater minor armor'), plainString('lesser minor weapon')]),
 	new TreasureTypeAllocation('E', 6000, [plainString('greater minor weapon')]),
@@ -5364,17 +5470,17 @@ ArmsAndArmourResult.prototype.getLabel = function() {
 
 	treasureTypeAllocations.F = [
 	new TreasureTypeAllocation('F', 50, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), lesser_minor_potion]),
-	new TreasureTypeAllocation('F', 250, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), plainString('masterwork light armor or shield'), lesser_minor_potion]),
-	new TreasureTypeAllocation('F', 350, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), plainString('masterwork medium armor'), lesser_minor_potion]),
+	new TreasureTypeAllocation('F', 250, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), masterwork_light_armour_or_shield, lesser_minor_potion]),
+	new TreasureTypeAllocation('F', 350, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), masterwork_medium_armour, lesser_minor_potion]),
 	new TreasureTypeAllocation('F', 400, [makeCoinPicker(2, 4, 10, sp), makeCoinPicker(2, 4, 1, gp), plainString('masterwork weapon'), lesser_minor_potion]),
 	new TreasureTypeAllocation('F', 500, [plainString('masterwork weapon'), greater_minor_potion]),
-	new TreasureTypeAllocation('F', 750, [makeCoinPicker(6, 6, 1, gp), plainString('masterwork medium armor'), plainString('masterwork weapon'), mult(2, lesser_minor_potion)]),
-	new TreasureTypeAllocation('F', 1000, [plainString('masterwork heavy armor')]),
-	new TreasureTypeAllocation('F', 1500, [plainString('masterwork heavy armor'), plainString('masterwork weapon'), greater_minor_potion]),
+	new TreasureTypeAllocation('F', 750, [makeCoinPicker(6, 6, 1, gp), masterwork_medium_armour, plainString('masterwork weapon'), mult(2, lesser_minor_potion)]),
+	new TreasureTypeAllocation('F', 1000, [masterwork_heavy_armour]),
+	new TreasureTypeAllocation('F', 1500, [masterwork_heavy_armour, plainString('masterwork weapon'), greater_minor_potion]),
 	new TreasureTypeAllocation('F', 2000, [plainString('lesser minor armor'), plainString('masterwork weapon'), mult(2, greater_minor_potion)]),
-	new TreasureTypeAllocation('F', 3000, [plainString('masterwork medium armor'), plainString('lesser minor weapon'), greater_minor_potion]),
+	new TreasureTypeAllocation('F', 3000, [masterwork_medium_armour, plainString('lesser minor weapon'), greater_minor_potion]),
 	new TreasureTypeAllocation('F', 4000, [plainString('lesser minor armor'), plainString('masterwork weapon'), lesser_minor_wondrous_item, greater_minor_potion]),
-	new TreasureTypeAllocation('F', 5000, [plainString('masterwork medium armor'), plainString('lesser minor weapon'), lesser_minor_wondrous_item, greater_minor_potion]),
+	new TreasureTypeAllocation('F', 5000, [masterwork_medium_armour, plainString('lesser minor weapon'), lesser_minor_wondrous_item, greater_minor_potion]),
 	new TreasureTypeAllocation('F', 6000, [plainString('lesser minor armor'), plainString('lesser minor weapon'), lesser_minor_wondrous_item]),
 	new TreasureTypeAllocation('F', 7500, [plainString('greater minor armor'), plainString('lesser minor weapon'), lesser_minor_ring]),
 	new TreasureTypeAllocation('F', 10000, [plainString('greater minor armor'), plainString('lesser minor weapon'), lesser_minor_ring, lesser_minor_wondrous_item, mult(3, greater_minor_potion)]),
@@ -5425,7 +5531,7 @@ ArmsAndArmourResult.prototype.getLabel = function() {
 	treasureTypeAllocations.H = [
 	new TreasureTypeAllocation('H', 500, [makeCoinPicker(4, 4, 100, cp), makeCoinPicker(3, 6, 10, sp), makeCoinPicker(2, 4, 10, gp), plainString('masterwork weapon'), lesser_minor_potion, lesser_minor_scroll, gemPicker(2)]),
 	new TreasureTypeAllocation('H', 1000, [makeCoinPicker(2, 4, 100, cp), makeCoinPicker(2, 6, 100, sp), makeCoinPicker(6, 6, 1, gp), greater_minor_potion, greater_minor_scroll, lesser_minor_wand, mult(3, gemPicker(1))]),
-	new TreasureTypeAllocation('H', 2500, [makeCoinPicker(3, 6, 10, sp), makeCoinPicker(2, 4, 1, gp), plainString('masterwork heavy armor'), plainString('masterwork weapon'), mult(2, lesser_medium_potion), mult(2, greater_minor_scroll), gemPicker(2)]),
+	new TreasureTypeAllocation('H', 2500, [makeCoinPicker(3, 6, 10, sp), makeCoinPicker(2, 4, 1, gp), masterwork_heavy_armour, plainString('masterwork weapon'), mult(2, lesser_medium_potion), mult(2, greater_minor_scroll), gemPicker(2)]),
 	new TreasureTypeAllocation('H', 5000, [makeCoinPicker(2, 4, 10, gp), makeCoinPicker(4, 6, 1, pp), plainString('masterwork weapon'), lesser_minor_ring, greater_medium_potion, lesser_medium_scroll, greater_minor_wand]),
 	new TreasureTypeAllocation('H', 7500, [makeCoinPicker(4, 4, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser minor weapon'), lesser_minor_wondrous_item, mult(2, greater_medium_potion), greater_minor_wand, mult(2, gemPicker(3))]),
 	new TreasureTypeAllocation('H', 10000, [makeCoinPicker(4, 8, 10, gp), makeCoinPicker(6, 10, 1, pp), plainString('greater minor armor'), lesser_minor_ring, lesser_minor_wondrous_item, lesser_medium_scroll, greater_minor_wand, gemPicker(4)]),
@@ -5559,6 +5665,14 @@ ArmsAndArmourResult.prototype.getLabel = function() {
 					<tr>
 						<TD>Items</TD>
 						<TD colspan="2" id="total_items" class="money">0.00</TD>
+					</tr>
+					<tr>
+						<TD>Armour</TD>
+						<TD colspan="2" id="total_armour" class="money">0.00</TD>
+					</tr>
+					<tr>
+						<TD>Weapons</TD>
+						<TD colspan="2" id="total_weapons" class="money">0.00</TD>
 					</tr>
 					<tr>
 						<TD>Total value</TD>
