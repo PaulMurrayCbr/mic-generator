@@ -5148,9 +5148,7 @@ var armourAndShieldType = {
 	add: function(a, b, name, weight, cost) {
 		this.picker.add(a, b, new ArmourAndShieldTableRow(name, weight, cost))
 	},
-	gen: function() {  return this.picker.gen().generated;},
-	isArmour : true,
-	isWeapon: false
+	gen: function() {  return this.picker.gen().generated;}
 };
 armourAndShieldType.picker = new D100Picker(armourAndShieldType);
 
@@ -5159,6 +5157,9 @@ function ArmourAndShieldTableRow(name, weight, cost) {
 	this.weight = weight; // H, M, L or S for shield
 	this.cost = cost;
 }
+
+ArmourAndShieldTableRow.prototype.isArmour = true;
+ArmourAndShieldTableRow.prototype.isWeapon = false;
 
 ArmourAndShieldTableRow.prototype.toString = function() {
 	return "ArmourAndShieldTableRow("+this.name +")"
@@ -5169,9 +5170,7 @@ var weaponType  = {
 	add: function(a, b, name, type, cost) {
 		this.picker.add(a, b, new WeaponTypeTableRow(name, type, cost))
 	},
-	gen: function() { return this.picker.gen().generated;},
-	isArmour : false,
-	isWeapon: true
+	gen: function() { return this.picker.gen().generated;}
 };
 weaponType.picker = new D100Picker(weaponType);
 
@@ -5180,6 +5179,9 @@ function WeaponTableRow(name, type, cost) {
 	this.type = type; // M, R, A -> Melee, Ranged, Ammo
 	this.cost = cost;
 }
+
+WeaponTableRow.prototype.isArmour = false;
+WeaponTableRow.prototype.isWeapon = true;
 
 WeaponTableRow.prototype.toString = function() {
 	return "WeaponTableRow("+this.name +")"
@@ -5279,9 +5281,6 @@ ArmsAndArmourResult.prototype.getValue = function() {
 	}
 	return value;
 }
-
-
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Treasure Type Allocaiton. TABLE 7-1 to 7-11.
