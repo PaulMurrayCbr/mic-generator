@@ -5470,8 +5470,8 @@ function ArmsAndArmourSpecialAbilityTable() {
 
 ArmsAndArmourSpecialAbilityTable.prototype.gen = function() { return picker.gen().generated; }
 
-ArmsAndArmourSpecialAbilityTable.prototype.add = function(a,b,name,bonus) { picker.add(a,b,new ArmsAndArmourSpecialAbility(name,bonus,0)); }
-ArmsAndArmourSpecialAbilityTable.prototype.addGP = function(a,b,name,cost) { picker.add(a,b,new ArmsAndArmourSpecialAbility(name,0,cost)); }
+ArmsAndArmourSpecialAbilityTable.prototype.add = function(a,b,name,bonus) { this.picker.add(a,b,new ArmsAndArmourSpecialAbility(name,bonus,0)); }
+ArmsAndArmourSpecialAbilityTable.prototype.addGP = function(a,b,name,cost) { this.picker.add(a,b,new ArmsAndArmourSpecialAbility(name,0,cost)); }
 
 // some special abilities have a bonus price, some have a gp price
 function ArmsAndArmourSpecialAbility(name, bonus, cost) {
@@ -5522,6 +5522,268 @@ new ArmsAndArmourSpecialAbilityTable(),
 new ArmsAndArmourSpecialAbilityTable(), 
 new ArmsAndArmourSpecialAbilityTable()
 ];
+
+
+picker = melee_weapon_special_abilities[1];
+
+picker.addGP(1,1,"Impervious",3000);
+picker.addGP(2,2,"Glamered",4000);
+picker.add(3,3,"Allying",1);
+picker.add(4,8,"Bane",1);
+picker.add(9,9,"Benevolent",1);
+picker.add(10,10,"Called",1);
+picker.add(11,12,"Conductive",1);
+picker.add(13,16,"Corrosive",1);
+picker.add(17,17,"Countering",1);
+picker.add(18,18,"Courageous",1);
+picker.add(19,19,"Cruel",1);
+picker.add(20,21,"Cunning",1);
+picker.add(22,22,"Deadly",1);
+picker.add(23,26,"Defending",1);
+picker.add(27,27,"Dispelling",1);
+picker.add(28,33,"Flaming",1);
+picker.add(34,39,"Frost",1);
+picker.add(40,41,"Furious",1);
+picker.add(42,45,"Ghost touch",1);
+picker.add(46,47,"Grayflame",1);
+picker.add(48,48,"Grounding",1);
+picker.add(49,49,"Guardian",1);
+picker.add(50,50,"Heartseeker",1);
+picker.add(51,52,"Huntsman",1);
+picker.add(53,54,"Jurist",1);
+picker.add(55,59,"Keen3",1);
+picker.add(60,61,"Ki focus",1);
+picker.add(62,62,"Limning",1);
+picker.add(63,64,"Menacing",1);
+picker.add(65,65,"Merciful",1);
+picker.add(66,68,"Mighty cleaving",1);
+picker.add(69,69,"Mimetic",1);
+picker.add(70,70,"Neutralizing",1);
+picker.add(71,71,"Ominous",1);
+picker.add(72,72,"Planar",1);
+picker.add(73,73,"Quenching",1);
+picker.add(74,74,"Seaborne",1);
+picker.add(75,80,"Shock",1);
+picker.add(81,85,"Spell storing",1);
+picker.add(86,86,"Thawing",1);
+picker.add(87,91,"Throwing",1);
+picker.add(92,96,"Thundering",1);
+picker.add(97,97,"Valiant",1);
+picker.add(98,100,"Vicious",1);
+
+picker = melee_weapon_special_abilities[2];
+
+picker.add(1,1,"Advancing",2);
+picker.add(2,10,"Anarchic",2);
+picker.add(11,19,"Anchoring",2);
+picker.add(20,20,"Axiomatic",2);
+picker.add(21,27,"Corrosive burst",2);
+picker.add(28,28,"Defiant",2);
+picker.add(29,29,"Dispelling burst",2);
+picker.add(30,38,"Disruption2",2);
+picker.add(39,47,"Flaming burst",2);
+picker.add(48,48,"Furyborn",2);
+picker.add(49,49,"Glorious",2);
+picker.add(50,58,"Holy",2);
+picker.add(59,67,"Icy burst",2);
+picker.add(68,68,"Igniting",2);
+picker.add(69,69,"Impact",2);
+picker.add(70,70,"Invigorating",2);
+picker.add(71,71,"Ki intensifying",2);
+picker.add(72,72,"Lifesurge",2);
+picker.add(73,73,"Negating",2);
+picker.add(74,74,"Phase locking",2);
+picker.add(75,83,"Shocking burst",2);
+picker.add(84,84,"Stalking",2);
+picker.add(85,91,"Unholy",2);
+picker.add(92,100,"Wounding",2);
+
+picker = melee_weapon_special_abilities[3];
+
+picker.add(1,20,"Nullifying",3);
+picker.add(21,40,"Repositioning",3);
+picker.add(41,80,"Speed",3);
+picker.add(81,100,"Spellstealing",3);
+
+picker = melee_weapon_special_abilities[4];
+
+picker.add(1,40,"Brilliant energy",4);
+picker.add(41,80,"Dancing",4);
+picker.add(81,90,"Vorpal3",5);
+picker.addGP(91,95,"Transformative",10000);
+picker.addGP(96,100,"Dueling",14000);
+
+picker = ranged_weapon_special_abilities[1];
+
+picker.addGP(1,1,"Adaptive2",1000);
+picker.addGP(2,2,"Impervious",3000);
+picker.addGP(3,3,"Glamered",4000);
+picker.add(4,6,"Allying",1);
+picker.add(7,15,"Bane3",1);
+picker.add(16,16,"Called",1);
+picker.add(17,19,"Conductive",1);
+picker.add(20,20,"Conserving4",1);
+picker.add(21,24,"Corrosive3",1);
+picker.add(25,25,"Cruel",1);
+picker.add(26,28,"Cunning",1);
+picker.add(29,36,"Distance",1);
+picker.add(37,45,"Flaming3",1);
+picker.add(46,54,"Frost3",1);
+picker.add(55,58,"Huntsman",1);
+picker.add(59,62,"Jurist",1);
+picker.add(63,63,"Limning",1);
+picker.add(64,64,"Lucky5",1);
+picker.add(65,66,"Merciful3",1);
+picker.add(67,67,"Planar",1);
+picker.add(68,68,"Reliable5",1);
+picker.add(69,76,"Returning6",1);
+picker.add(77,84,"Seeking",1);
+picker.add(85,92,"Shock3",1);
+picker.add(93,100,"Thundering3",1);
+
+picker = ranged_weapon_special_abilities[2];
+
+picker.add(1,10,"Anarchic3",2);
+picker.add(11,13,"Anchoring6",2);
+picker.add(14,23,"Axiomatic3",2);
+picker.add(24,31,"Corrosive burst3",2);
+picker.add(32,34,"Designating, lesser3",2);
+picker.add(35,37,"Endless ammunition7",2);
+picker.add(38,48,"Flaming burst3",2);
+picker.add(49,58,"Holy3",2);
+picker.add(59,69,"Icy burst3",2);
+picker.add(70,73,"Igniting3",2);
+picker.add(74,76,"Phase locking3",2);
+picker.add(77,86,"Shocking burst3",2);
+picker.add(87,90,"Stalking",2);
+picker.add(91,100,"Unholy3",2);
+
+picker = ranged_weapon_special_abilities[3];
+
+picker.add(1,25,"Lucky, greater5",3);
+picker.add(26,45,"Reliable, greater5",3);
+picker.add(46,85,"Speed",3);
+picker.add(86,94,"Brilliant energy3",4);
+picker.add(95,96,"Designating, greater",4);
+picker.add(97,98,"Nimble shot",4);
+picker.add(99,100,"Second chance3",4);
+
+picker = armour_special_abilities[1];
+
+picker.addGP(1,6,"Benevolent",2000);
+picker.addGP(7,12,"Poison-resistant",2250);
+picker.add(13,18,"Balanced",1);
+picker.add(19,24,"Bitter",1);
+picker.add(25,30,"Bolstering",1);
+picker.add(31,36,"Brawling",1);
+picker.add(37,42,"Champion",1);
+picker.add(43,48,"Dastard",1);
+picker.add(49,54,"Deathless",1);
+picker.add(55,60,"Defiant",1);
+picker.add(61,66,"Fortification (light)",1);
+picker.add(67,71,"Grinding",1);
+picker.add(72,76,"Impervious",1);
+picker.add(77,82,"Mirrored",1);
+picker.add(83,88,"Spell storing",1);
+picker.add(89,94,"Stanching",1);
+picker.add(95,100,"Warding",1);
+
+picker = armour_special_abilities[2];
+
+picker.addGP(1,12,"Glamered",2700);
+picker.addGP(13,24,"Jousting",3750);
+picker.addGP(25,38,"Shadow",3750);
+picker.addGP(39,52,"Slick",3750);
+picker.addGP(53,64,"Expeditious",4000);
+picker.addGP(65,76,"Creeping",5000);
+picker.addGP(77,88,"Rallying",5000);
+picker.add(89,100,"Spell resistance (13)",2);
+
+picker = armour_special_abilities[3];
+
+picker.addGP(1,8,"Adhesive",7000);
+picker.addGP(9,17,"Hosteling",7500);
+picker.addGP(18,26,"Radiant",7500);
+picker.addGP(27,36,"Delving",10000);
+picker.addGP(37,45,"Putrid",10000);
+picker.add(46,55,"Fortification (moderate)",3);
+picker.add(56,65,"Ghost touch",3);
+picker.add(66,74,"Invulnerability",3);
+picker.add(75,84,"Spell resistance (15)",3);
+picker.add(85,92,"Titanic",3);
+picker.add(93,100,"Wild",3);
+
+picker = armour_special_abilities[4];
+
+picker.addGP(1,16,"Harmonizing",15000);
+picker.addGP(17,33,"Shadow, improved",15000);
+picker.addGP(34,50,"Slick, improved",15000);
+picker.addGP(51,67,"Energy resistance",18000);
+picker.addGP(68,83,"Martyring",18000);
+picker.add(84,100,"Spell resistance (17)",4);
+
+picker = armour_special_abilities[5];
+
+picker.addGP(1,8,"Righteous",27000);
+picker.addGP(9,15,"Unbound",27000);
+picker.addGP(16,23,"Unrighteous",27000);
+picker.addGP(24,30,"Vigilant",27000);
+picker.addGP(31,37,"Determination",30000);
+picker.addGP(38,45,"Shadow, greater",33750);
+picker.addGP(46,53,"Slick, greater",33750);
+picker.addGP(54,61,"Energy resistance, improved",42000);
+picker.addGP(62,69,"Etherealness",49000);
+picker.addGP(70,76,"Undead controlling",49000);
+picker.addGP(77,84,"Energy resistance, greater",66000);
+picker.add(85,92,"Fortification (heavy)",5);
+picker.add(93,100,"Spell resistance (19)",5);
+
+picker = shield_special_abilities[1];
+
+picker.addGP(1,10,"Poison-resistant",2250);
+picker.add(11,19,"Arrow catching",1);
+picker.add(20,28,"Bashing",1);
+picker.add(29,37,"Blinding",1);
+picker.add(38,46,"Clangorous",1);
+picker.add(47,55,"Defiant",1);
+picker.add(56,64,"Fortification (light)",1);
+picker.add(65,73,"Grinding",1);
+picker.add(74,82,"Impervious",1);
+picker.add(83,91,"Mirrored",1);
+picker.add(92,100,"Ramming",1);
+
+picker = shield_special_abilities[2];
+
+picker.addGP(1,15,"Rallying",5000);
+picker.addGP(16,30,"Wyrmsbreath",5000);
+picker.add(31,50,"Animated",2);
+picker.add(51,67,"Arrow deflection",2);
+picker.add(68,82,"Merging",2);
+picker.add(83,100,"Spell resistance (13)",2);
+
+picker = shield_special_abilities[3];
+
+picker.addGP(1,15,"Hosteling",7500);
+picker.addGP(16,32,"Radiant",7500);
+picker.add(33,49,"Fortification (moderate)",3);
+picker.add(50,66,"Ghost touch",3);
+picker.add(67,83,"Spell resistance (15)",3);
+picker.add(84,98,"Wild",3);
+
+picker = shield_special_abilities[4];
+
+picker.addGP(1,50,"Energy resistance",18000);
+picker.add(51,100,"Spell resistance (17)",4);
+
+picker = shield_special_abilities[5];
+
+picker.addGP(1,11,"Determination",30000);
+picker.addGP(12,27,"Energy resistance, improved",42000);
+picker.addGP(28,38,"Undead controlling",49000);
+picker.addGP(39,55,"Energy resistance, greater",66000);
+picker.add(56,70,"Fortification (heavy)",5);
+picker.add(71,85,"Reflecting",5);
+picker.add(86,100,"Spell resistance (19)",5);
 
 
 
