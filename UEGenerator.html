@@ -5416,16 +5416,16 @@ ArmsAndArmourResult.prototype.getValue = function() {
 	var bonus = this.bonus;
 	
 	for(i in this.specialAbilities) {
-		this.bonus += i.bonus;
-		this.cost += i.cost;
+		if(i.bonus) bonus += i.bonus;
+		if(i.cost) value += i.cost;
 	}
 	
-	if(this.bonus == 0) { 
+	if(bonus == 0) { 
 		// masterwork
 		value += this.type.isArmour ? 150 : 300; 
 	}
 	else {
-		value += this.bonus * this.bonus * (this.type.isArmour ? 1000 : 2000);
+		value += bonus * bonus * (this.type.isArmour ? 1000 : 2000);
 	}
 	return value;
 }
@@ -5490,8 +5490,8 @@ ArmsAndArmourSpecialAbilityTable.prototype.addGP = function(a,b,name,cost) { thi
 // some special abilities have a bonus price, some have a gp price
 function ArmsAndArmourSpecialAbility(name, bonus, cost) {
 	this.name = name;
-	this.bonus = bonus;
-	this.cost = cost;
+	this.bonus = bonus ? bonus : 0;
+	this.cost = cost ? cost : 0;
 }
 
 ArmsAndArmourSpecialAbility.prototype.toString = function() {
