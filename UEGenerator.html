@@ -1841,6 +1841,12 @@ ItemPickerTable.prototype.add = function(a, b, lbl, val, src) {
 	this.picker.add(a, b, row);
 }
 
+ItemPickerTable.prototype.gen = function() {
+	return this.picker.gen().generated;
+}
+
+
+
 function ItemPickerTableResult(grade, roll) {
 	this.isItemPickerTableResult = true
 	this.grade = grade;
@@ -5259,7 +5265,7 @@ weaponType.add( 59, 60, "Morningstar",'M',8);
 weaponType.add( 61, 61, "Nunchaku",'M',0);
 weaponType.add( 62, 63, "Quarterstaff",'M',0);
 weaponType.add( 64, 65, "Rapier",'M',20);
-weaponType.add( 66, 84, "UE missing weapons 66-84. GM's choice.",'?',20);
+weaponType.add( 66, 84, "UE Table 7-13: 66-84.",'?',20);
 weaponType.add( 85, 87, "Spear",'MR',2);
 weaponType.add( 88, 88, "Trident",'MR',15);
 weaponType.add( 89, 91, "Warhammer",'MR',12);
@@ -5299,9 +5305,8 @@ function MagicWeaponTable() {
 MagicWeaponTable.prototype.toString = function() { return "MagicWeaponTable";}
 
 MagicWeaponTable.prototype.reroll = function (treasureBlock) { 
-	console.log(this + " about to generate weapon");
 	result = this.picker.gen().generated;
-	console.log("generated "+result);
+	
 	treasureBlock.generatedWeapons.push(result)
 	treasureBlock.generatedSpan.appendChild(document.createTextNode(result.getLabel()));
 }
@@ -5310,6 +5315,9 @@ MagicWeaponTable.prototype.add = function(a,b,bonus,specials) {
 	 this.picker.add(a,b, new MagicWeaponBuilder(bonus, specials));
 }
  
+MagicWeaponTable.prototype.addSpecific = function(a,b,table) {
+	 this.picker.add(a,b, table);
+}
 lesser_minor_weapon = new MagicWeaponTable();
 greater_minor_weapon = new MagicWeaponTable();
 lesser_medium_weapon = new MagicWeaponTable();
@@ -5339,8 +5347,6 @@ MagicWeaponBuilder.prototype.gen = function() {
 	
 	var result = new ArmsAndArmourResult(0, chosenType, this.bonus);
 	
-	console.log("MagicWeaponBuilder.prototype.gen generated " + result);
-	
 	// if an item is marked as both melee and ranged, it may potentially get 
 	// a thown and a melee bonus. THis is ok.
 	
@@ -5349,7 +5355,6 @@ MagicWeaponBuilder.prototype.gen = function() {
 			result.specialAbilities.push(ranged_weapon_special_abilities[this.specials[i]].gen());
 		}	
 		else {
-			console.log("getting melee_weapon_special_abilities["+this.specials[i]+"]");
 			result.specialAbilities.push(melee_weapon_special_abilities[this.specials[i]].gen());
 		}
 	}
@@ -5370,15 +5375,17 @@ function MagicArmourTable() {
 MagicArmourTable.prototype.toString = function() { return "MagicArmourTable";}
 
 MagicArmourTable.prototype.reroll = function (treasureBlock) { 
-	console.log(this + " about to generate armour");
 	result = this.picker.gen().generated;
-	console.log("generated "+result);
 	treasureBlock.generatedArmour.push(result)
 	treasureBlock.generatedSpan.appendChild(document.createTextNode(result.getLabel()));
 }
 
 MagicArmourTable.prototype.add = function(a,b,bonus,specials) {
 	 this.picker.add(a,b, new MagicArmourBuilder(bonus, specials));
+}
+
+MagicArmourTable.prototype.addSpecific = function(a,b,table) {
+	 this.picker.add(a,b, table);
 }
 
 function MagicArmourBuilder(bonus, specials) {
@@ -5398,8 +5405,6 @@ MagicArmourBuilder.prototype.gen = function() {
 	}
 	
 	var result = new ArmsAndArmourResult(0, chosenType, this.bonus);
-	
-	console.log("MagicArmourBuilder.prototype.gen generated " + result);
 	
 	for(var i =0 ; i< this.specials.length; i++) {
 		if(chosenType.weight == 'S') {
@@ -5503,12 +5508,32 @@ ArmsAndArmourResult.prototype.getValue = function() {
 	return value;
 }
 
+/// SPECIFIC ARMS AND ARMOUR
+
+var specific_lesser_minor_weapon = new ItemPickerTable();
+var specific_greater_minor_weapon = new ItemPickerTable();
+var specific_lesser_medium_weapon = new ItemPickerTable();
+var specific_greater_medium_weapon = new ItemPickerTable();
+var specific_lesser_major_weapon = new ItemPickerTable();
+var specific_greater_major_weapon = new ItemPickerTable();
+
+var specific_lesser_minor_armour = new ItemPickerTable();
+var specific_greater_minor_armour = new ItemPickerTable();
+var specific_lesser_medium_armour = new ItemPickerTable();
+var specific_greater_medium_armour = new ItemPickerTable();
+var specific_lesser_major_armour = new ItemPickerTable();
+var specific_greater_major_armour = new ItemPickerTable();
+
 lesser_minor_weapon.add(1, 80, 1, []);
-//81–100 Lesser minor specific weapon
+lesser_minor_weapon.add(81, 100, specific_lesser_minor_weapon);
+
+// DEBUGGING
+lesser_minor_weapon.addSpecific(1, 100, specific_lesser_minor_weapon);
+
 
 greater_minor_weapon.add(1, 26, 1, []);
 greater_minor_weapon.add(54, 80, 1, [1]);
-//81–100 Greater minor specific weapon
+greater_minor_weapon.addSpecific(81, 100, specific_greater_minor_weapon);
 
 lesser_medium_weapon.add(1,10, 1, []);
 lesser_medium_weapon.add(11,20, 2 , []);
@@ -5517,7 +5542,7 @@ lesser_medium_weapon.add(33,44, 1 , [1]);
 lesser_medium_weapon.add(45,56, 1 , [1,1]);
 lesser_medium_weapon.add(57,68, 1 , [2]);
 lesser_medium_weapon.add(69,80, 2 , [1]);
-//81–100 Lesser medium specific weapon
+lesser_medium_weapon.addSpecific(81, 100, specific_lesser_medium_weapon);
 
 greater_medium_weapon.add(1,10, 2 , []);
 greater_medium_weapon.add(11,22, 3 , []);
@@ -5526,7 +5551,7 @@ greater_medium_weapon.add(33,44, 1 , [2]);
 greater_medium_weapon.add(45,56, 2 , [1]);
 greater_medium_weapon.add(57,68, 2 , [2]);
 greater_medium_weapon.add(69,80, 3 , [1]);
-// 81–100 Greater medium specific weapon
+greater_medium_weapon.addSpecific(81, 100, specific_greater_medium_weapon);
 
 lesser_major_weapon.add(1,10, 3 , []);
 lesser_major_weapon.add(11,22, 4 , []);
@@ -5535,7 +5560,7 @@ lesser_major_weapon.add(33,44, 1 , [3]);
 lesser_major_weapon.add(45,56, 2 , [2]);
 lesser_major_weapon.add(57,68, 3 , [1]);
 lesser_major_weapon.add(69,80, 4 , [1]);
-//81–100 Lesser major specific weapon
+lesser_major_weapon.addSpecific(81, 100, specific_lesser_major_weapon);
 
 greater_major_weapon.add(1,10, 4 , []);
 greater_major_weapon.add(11,20, 5 , []);
@@ -5549,17 +5574,17 @@ greater_major_weapon.add(68,71, 5 , [3]);
 greater_major_weapon.add(72,74, 5 , [4]);
 greater_major_weapon.add(75,77, 5 , [4,1]);
 greater_major_weapon.add(78,80, 5 , [3,2]);
-//81–100 Greater major specific weapon
+greater_major_weapon.addSpecific(81, 100, specific_greater_major_weapon);
 
 picker = lesser_minor_armour;
 picker.add(1, 80, 1, []);
-//picker.add(81, 100, Lesser minor specific armor or shield
+picker.addSpecific(81, 100, specific_lesser_minor_armour);
 
 picker = greater_minor_armour;
 picker.add(1, 26, 1, []);
 picker.add(27, 53, 2, []);
 picker.add(54, 80, 1, [1]);
-//picker.add(81, 100, Greater minor specific armor or shield
+picker.addSpecific(81, 100, specific_greater_minor_armour);
 
 picker = lesser_medium_armour;
 picker.add(1, 10, 1, []);
@@ -5569,7 +5594,7 @@ picker.add(33, 44, 1, [1]);
 picker.add(45, 56, 1, [1,1]);
 picker.add(57, 68, 1, [2]);
 picker.add(69, 80, 2, [1]);
-//picker.add(81, 100, Lesser medium specific armor or shield
+picker.addSpecific(81, 100, specific_lesser_medium_armour);
 
 picker = greater_medium_armour;
 picker.add(1, 10, 2, []);
@@ -5579,7 +5604,7 @@ picker.add(33, 44, 1, [2]);
 picker.add(45, 56, 2, [1]);
 picker.add(57, 68, 2, [2]);
 picker.add(69, 80, 3, [1]);
-//picker.add(81, 100, Greater medium specific armor or shield
+picker.addSpecific(81, 100, specific_greater_medium_armour);
 
 picker = lesser_major_armour;
 picker.add(1, 10, 3, []);
@@ -5589,7 +5614,7 @@ picker.add(33, 44, 1, [3]);
 picker.add(45, 56, 2, [2]);
 picker.add(57, 68, 3, [1]);
 picker.add(69, 80, 4, [1]);
-//picker.add(81, 100, Lesser major specific armor or shield
+picker.addSpecific(81, 100, specific_lesser_major_armour);
 
 picker = greater_major_armour;
 picker.add(1, 10, 4, []);
@@ -5604,8 +5629,7 @@ picker.add(68, 71, 5, [3]);
 picker.add(72, 74, 5, [2,2]);
 picker.add(75, 77, 5, [4]);
 picker.add(78, 80, 5, [5]);
-//picker.add(81, 100, Greater major specific armor or shield
-
+picker.addSpecific(81, 100, specific_greater_major_armour);
 
 function ArmsAndArmourSpecialAbilityTable() {
 	this.picker = new D100Picker(this);
@@ -5930,6 +5954,19 @@ picker.add(86,100,"Spell resistance (19)",5);
 
 
 
+specific_lesser_minor_weapon.add  (1,100,'specific',5);
+specific_greater_minor_weapon.add (1,100,'specific',5);
+specific_lesser_medium_weapon.add (1,100,'specific',5);
+specific_greater_medium_weapon.add(1,100,'specific',5);
+specific_lesser_major_weapon.add  (1,100,'specific',5);
+specific_greater_major_weapon.add (1,100,'specific',5);
+specific_lesser_minor_armour.add  (1,100,'specific',5);
+specific_greater_minor_armour.add (1,100,'specific',5);
+specific_lesser_medium_armour.add (1,100,'specific',5);
+specific_greater_medium_armour.add(1,100,'specific',5);
+specific_lesser_major_armour.add  (1,100,'specific',5);
+specific_greater_major_armour.add (1,100,'specific',5);
+
 
 
 
@@ -6225,7 +6262,7 @@ picker.add(86,100,"Spell resistance (19)",5);
 	}
 </script>
 <body onload="initAll()">
-	<div style="margin: 1em; padding: 1em; border: thick solid red;">
+	<div style="margin: 1em; padding: 1em; border: 2px solid red;">
 	This generator is unfinished. <br>
 	Done: overall budget manager, NPC blocks, treasure allocation groups; 
 	gold, gems; 
@@ -6235,6 +6272,9 @@ picker.add(86,100,"Spell resistance (19)",5);
 	masterwork arms and armour; magic arms an armour</br>
 	<strong>TODO: </strong>specific magic weapons and armour, bane and energy resistance
 	</div>
+	<p style="color: #C04040; font-size: 80%;">
+	<strong>Known Issue: </strong>Table 7-13 in Ultimate Equipment is missing entries for 66-84. When you see "UE Table 7-13: 66-84", just pick something.
+	</p>
 
 	<div id="summary"margin:1em; ></div>
 
