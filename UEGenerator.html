@@ -5510,6 +5510,8 @@ ArmsAndArmourResult.prototype.getValue = function() {
 
 /// SPECIFIC ARMS AND ARMOUR
 
+// UE says "specific less armour or shield", but doesn't say which. so I am going for 20/80% chance.
+
 var specific_lesser_minor_weapon = new ItemPickerTable();
 var specific_greater_minor_weapon = new ItemPickerTable();
 var specific_lesser_medium_weapon = new ItemPickerTable();
@@ -5517,19 +5519,45 @@ var specific_greater_medium_weapon = new ItemPickerTable();
 var specific_lesser_major_weapon = new ItemPickerTable();
 var specific_greater_major_weapon = new ItemPickerTable();
 
-var specific_lesser_minor_armour = new ItemPickerTable();
-var specific_greater_minor_armour = new ItemPickerTable();
-var specific_lesser_medium_armour = new ItemPickerTable();
-var specific_greater_medium_armour = new ItemPickerTable();
-var specific_lesser_major_armour = new ItemPickerTable();
-var specific_greater_major_armour = new ItemPickerTable();
+var specific_lesser_minor_armour_A = new ItemPickerTable();
+var specific_greater_minor_armour_A = new ItemPickerTable();
+var specific_lesser_medium_armour_A = new ItemPickerTable();
+var specific_greater_medium_armour_A = new ItemPickerTable();
+var specific_lesser_major_armour_A = new ItemPickerTable();
+var specific_greater_major_armour_A = new ItemPickerTable();
+
+var specific_lesser_minor_armour_S = new ItemPickerTable();
+var specific_greater_minor_armour_S = new ItemPickerTable();
+var specific_lesser_medium_armour_S = new ItemPickerTable();
+var specific_greater_medium_armour_S = new ItemPickerTable();
+var specific_lesser_major_armour_S = new ItemPickerTable();
+var specific_greater_major_armour_S = new ItemPickerTable();
+
+function ChooseSpecificArmourOrShieldTable(A, S) {
+	this.A = A;
+	this.S = S;
+}
+
+ChooseSpecificArmourOrShieldTable.prototype.gen = function() {
+	if(rnd(5)==0) {
+		return this.S.gen();
+	}
+	else {
+		return this.A.gen();
+	}
+}
+
+ChooseSpecificArmourOrShieldTable.prototype.toString = function() { return "ChooseSpecificArmourOrShieldTable";}
+
+var specific_lesser_minor_armour = new ChooseSpecificArmourOrShieldTable(specific_lesser_minor_armour_A,specific_lesser_minor_armour_S);
+var specific_greater_minor_armour = new ChooseSpecificArmourOrShieldTable(specific_greater_minor_armour_A,specific_greater_minor_armour_S);
+var specific_lesser_medium_armour = new ChooseSpecificArmourOrShieldTable(specific_lesser_medium_armour_A,specific_lesser_medium_armour_S);
+var specific_greater_medium_armour = new ChooseSpecificArmourOrShieldTable(specific_greater_medium_armour_A,specific_greater_medium_armour_S);
+var specific_lesser_major_armour = new ChooseSpecificArmourOrShieldTable(specific_lesser_major_armour_A, specific_lesser_major_armour_S);
+var specific_greater_major_armour = new ChooseSpecificArmourOrShieldTable(specific_greater_major_armour_A,specific_greater_major_armour_S);
 
 lesser_minor_weapon.add(1, 80, 1, []);
 lesser_minor_weapon.add(81, 100, specific_lesser_minor_weapon);
-
-// DEBUGGING
-lesser_minor_weapon.addSpecific(1, 100, specific_lesser_minor_weapon);
-
 
 greater_minor_weapon.add(1, 26, 1, []);
 greater_minor_weapon.add(54, 80, 1, [1]);
@@ -5952,22 +5980,203 @@ picker.add(56,70,"Fortification (heavy)",5);
 picker.add(71,85,"Reflecting",5);
 picker.add(86,100,"Spell resistance (19)",5);
 
+picker = specific_lesser_minor_weapon;
+picker.add(1, 2, "Tracer bullet", 100);
+picker.add(3, 8, "Sleep arrow", 132);
+picker.add(9, 10, "Dustburst bullet", 196);
+picker.add(11, 16, "Tangle bolt", 226);
+picker.add(17, 22, "Screaming bolt", 267);
+picker.add(23, 32, "Masterwork silver dagger", 322);
+picker.add(33, 34, "Alchemist’s bullet", 330);
+picker.add(35, 44, "Cold iron masterwork longsword", 330);
+picker.add(45, 50, "Hushing arrow", 547);
+picker.add(51, 56, "Hushing arrow, greater", 1047);
+picker.add(57, 66, "Javelin of lightning", 1500);
+picker.add(67, 74, "Searing arrow", 1516);
+picker.add(75, 82, "Sizzling arrow", 1516);
+picker.add(83, 84, "Burrowing bullet, lesser", 1722);
+picker.add(85, 92, "Dust bolt", 1730);
+picker.add(93, 100, "Slaying arrow", 2282);
+
+picker = specific_greater_minor_weapon;
+picker.add(1, 20, "Adamantine dagger", 3002);
+picker.add(21, 40, "Adamantine battleaxe", 3010);
+picker.add(41, 50, "Burrowing bullet, greater", 3447);
+picker.add(51, 70, "Slaying arrow, greater", 4057);
+picker.add(71, 80, "Lance of jousting", 4310);
+picker.add(81, 100, "Shatterspike", 4315);
+
+picker = specific_lesser_medium_weapon;
+picker.add(1, 3, "Bloodletting kukri", 6308);
+picker.add(4, 9, "Boulderhead mace", 6812);
+picker.add(10, 14, "Beaststrike club", 7300);
+picker.add(15, 20, "Fighter’s fork", 7315);
+picker.add(21, 23, "Everflowing aspergillum", 7805);
+picker.add(24, 28, "Hurricane quarterstaff", 7840);
+picker.add(29, 34, "Dagger of venom", 8302);
+picker.add(35, 39, "Gloom blade", 8810);
+picker.add(40, 44, "Frostbite sling", 9380);
+picker.add(45, 49, "Trident of stability", 9815);
+picker.add(50, 54, "Trident of warning", 10115);
+picker.add(55, 60, "Assassin’s dagger", 10302);
+picker.add(61, 66, "Dagger of doubling", 10302);
+picker.add(67, 71, "Earthenflail", 11315);
+picker.add(72, 79, "Swift obsidian greataxe", 11320);
+picker.add(80, 85, "Polarity hammer", 12310);
+picker.add(86, 93, "Blade of binding", 12350);
+picker.add(94, 100, "Shifter’s sorrow", 12780);
+
+picker = specific_greater_medium_weapon;
+picker.add(1, 7, "Dragoncatch guisarme", 13308);
+picker.add(8, 15, "Ten-ring sword", 14315);
+picker.add(16, 21, "Triton’s trident", 15065);
+picker.add(22, 29, "Mace of smiting, lesser", 16012);
+picker.add(30, 37, "Disarming blade", 17820);
+picker.add(38, 42, "Lash of the howler", 18305);
+picker.add(43, 47, "Shieldsplitter lance", 18310);
+picker.add(48, 53, "Trident of fish command", 18650);
+picker.add(54, 59, "Quarterstaff of vaulting", 19100);
+picker.add(60, 65, "Firedrake pistol", 20300);
+picker.add(66, 71, "Ricochet hammer", 20301);
+picker.add(72, 77, "Flame tongue", 20715);
+picker.add(78, 85, "Sparkwake starknife", 21324);
+picker.add(86, 90, "Luck blade (0 wishes)", 22060);
+picker.add(91, 95, "Sword of subtlety", 22310);
+picker.add(96, 100, "Sword of the planes", 22315);
+
+picker = specific_lesser_major_weapon;
+picker.add(1, 12, "Nine lives stealer", 23057);
+picker.add(13, 26, "Undercutting axe", 23310);
+picker.add(27, 40, "Spirit caller", 25302);
+picker.add(41, 55, "Dwarfbond hammer", 25312);
+picker.add(56, 70, "Oathbow", 25600);
+picker.add(71, 85, "Sword of life stealing", 25715);
+picker.add(86, 100, "Cutthroat’s apprentice", 33910);
+
+picker = specific_greater_major_weapon;
+picker.add(1, 2, "Ghoul’s lament", 35312);
+picker.add(3, 5, "Mace of terror", 38552);
+picker.add(6, 7, "Hellscourge", 39305);
+picker.add(8, 9, "Dragon’s doom", 40310);
+picker.add(10, 13, "Life-drinker", 40320);
+picker.add(14, 16, "Valor’s minion", 41335);
+picker.add(17, 18, "Summoner’s sorrow", 42816);
+picker.add(19, 21, "Sylvan scimitar", 47315);
+picker.add(22, 23, "Spirit blade", 48502);
+picker.add(24, 26, "Heartswood spear", 50302);
+picker.add(27, 29, "Rapier of puncturing", 50320);
+picker.add(30, 32, "Sun blade", 50335);
+picker.add(33, 37, "Blade of the rising sun", 51850);
+picker.add(38, 40, "Frost brand", 54475);
+picker.add(41, 45, "Dwarven thrower", 60312);
+picker.add(46, 50, "Bloodthirst dagger", 60802);
+picker.add(51, 53, "Warbringer", 61375);
+picker.add(54, 57, "Luck blade (1 wish)", 62360);
+picker.add(58, 61, "Guarding blade", 65310);
+picker.add(62, 64, "Pistol of the infinite sky", 73300);
+picker.add(65, 69, "Mace of smiting", 75312);
+picker.add(70, 73, "Blade of the sword-saint", 75350);
+picker.add(74, 76, "Scimitar of the spellthief", 75815);
+picker.add(77, 79, "Spider’s fang", 79102);
+picker.add(80, 82, "Demonsorrow curve blade", 90469);
+picker.add(83, 85, "Void scythe", 95318);
+picker.add(86, 89, "Luck blade (2 wishes)", 102660);
+picker.add(90, 92, "Holy avenger", 120630);
+picker.add(93, 96, "Bastard’s sting", 123035);
+picker.add(97, 100, "Luck blade (3 wishes)", 142960);
+
+picker = specific_lesser_minor_armour_A;
+picker.add(1, 50, "Mithral shirt", 1100);
+//51-100 Masterwork armor or nonmagical armor made with special material varies
+picker.add(50, 100, "Mithral shirt", 1100); // screw it
+
+picker = specific_greater_minor_armour_A;
+picker.add(1, 33, "Mistmail", 2250);
+picker.add(34, 66, "Otyugh hide", 2565);
+picker.add(67, 100, "Dragonhide plate", 3300);
+
+picker = specific_lesser_medium_armour_A;
+picker.add(1, 33, "Elven chain", 5150);
+picker.add(34, 66, "Rhino hide", 5165);
+picker.add(67, 100, "Morlock hide", 8910);
+
+picker = specific_greater_medium_armour_A;
+picker.add(1, 15, "Adamantine breastplate", 10200);
+picker.add(16, 25, "Soothsayer’s raiment", 10300);
+picker.add(26, 38, "Equestrian plate", 10650);
+picker.add(39, 50, "Enchanted eelskin", 11160);
+picker.add(51, 62, "Boneless leather", 12160);
+picker.add(63, 72, "Murderer’s blackcloth", 12405);
+picker.add(73, 86, "Folding plate", 12650);
+picker.add(87, 100, "Breastplate of vanishing", 15200);
+
+picker = specific_lesser_major_armour_A;
+picker.add(1, 13, "Armor of insults", 16175);
+picker.add(14, 29, "Dwarven plate", 16500);
+picker.add(30, 45, "Banded mail of luck", 18900);
+picker.add(46, 58, "Catskin leather", 18910);
+picker.add(59, 71, "Celestial armor", 22400);
+picker.add(72, 84, "Buccaneer’s breastplate", 23850);
+picker.add(85, 100, "Plate armor of the deep", 24650);
+
+picker = specific_greater_major_armour_A;
+picker.add(1, 10, "Breastplate of command", 25400);
+picker.add(11, 14, "Forsaken banded mail", 25400);
+picker.add(15, 24, "Mithral full plate of speed", 26500);
+picker.add(25, 28, "Warden of the woods", 29350);
+picker.add(29, 32, "Scarab breastplate", 32350);
+picker.add(33, 38, "Giant-hide armor (ogre)", 39165);
+picker.add(39, 42, "Hamatula hide", 44215);
+picker.add(43, 48, "Giant-hide armor (hill giant)", 46665);
+picker.add(49, 52, "Demon armor", 52260);
+picker.add(53, 58, "Giant-hide armor (stone, fire, or frost giant)", 54165);
+picker.add(59, 64, "Giant-hide armor (troll)", 59165);
+picker.add(65, 70, "Mail of malevolence", 61300);
+picker.add(71, 76, "Giant-hide armor (cloud giant)", 69165);
+picker.add(77, 82, "Giant-hide armor (storm giant)", 76665);
+picker.add(83, 88, "Daystar half-plate", 81250);
+picker.add(89, 96, "Invincible armor", 137650);
+picker.add(97, 100, "Prismatic plate", 160650);
 
 
-specific_lesser_minor_weapon.add  (1,100,'specific',5);
-specific_greater_minor_weapon.add (1,100,'specific',5);
-specific_lesser_medium_weapon.add (1,100,'specific',5);
-specific_greater_medium_weapon.add(1,100,'specific',5);
-specific_lesser_major_weapon.add  (1,100,'specific',5);
-specific_greater_major_weapon.add (1,100,'specific',5);
-specific_lesser_minor_armour.add  (1,100,'specific',5);
-specific_greater_minor_armour.add (1,100,'specific',5);
-specific_lesser_medium_armour.add (1,100,'specific',5);
-specific_greater_medium_armour.add(1,100,'specific',5);
-specific_lesser_major_armour.add  (1,100,'specific',5);
-specific_greater_major_armour.add (1,100,'specific',5);
+picker = specific_lesser_minor_armour_S;
+picker.add(1, 20, "Living steel heavy shield", 120);
+picker.add(21, 45, "Darkwood buckler", 203);
+picker.add(46, 70, "Darkwood shield", 257);
+picker.add(71, 100, "Mithral heavy shield", 1020);
 
+picker = specific_greater_minor_armour_S;
+picker.add(1, 30, "Zombie skin shield", 2159);
+picker.add(31, 75, "Caster’s shield", 3153);
+picker.add(76, 100, "Burglar’s buckler", 4655);
 
+picker = specific_lesser_medium_armour_S;
+picker.add(1, 35, "Spined shield", 5580);
+picker.add(36, 50, "Dragonslayer’s shield", 7170);
+picker.add(51, 65, "Collapsible tower", 8170);
+picker.add(66, 100, "Lion’s shield", 9170);
+
+picker = specific_greater_medium_armour_S;
+picker.add(1, 20, "Caster shield, greater", 10153);
+picker.add(21, 40, "Celestial shield", 13170);
+picker.add(41, 60, "Maelstrom shield", 14170);
+picker.add(61, 80, "Volcanic shield", 14170);
+picker.add(81, 100, "Tempest shield", 15170);
+
+picker = specific_lesser_major_armour_S;
+picker.add(1, 20, "Battlement shield", 16180);
+picker.add(21, 40, "Winged shield", 17257);
+picker.add(41, 60, "Avalanche shield", 19170);
+picker.add(61, 80, "Fortress shield", 19180);
+picker.add(81, 100, "Wyrmslayer’s shield", 20170);
+
+picker = specific_greater_major_armour_S;
+picker.add(1, 20, "Spell ward tower shield", 25180);
+picker.add(21, 35, "Quick block buckler", 36155);
+picker.add(36, 50, "Belligerent shield", 36170);
+picker.add(51, 65, "Force tower", 46030);
+picker.add(66, 85, "Absorbing shield", 50170);
+picker.add(86, 100, "Elysian shield", 52620);
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6262,17 +6471,20 @@ specific_greater_major_armour.add (1,100,'specific',5);
 	}
 </script>
 <body onload="initAll()">
-	<div style="margin: 1em; padding: 1em; border: 2px solid red;">
+	<div style="display:none;">
 	This generator is unfinished. <br>
 	Done: overall budget manager, NPC blocks, treasure allocation groups; 
 	gold, gems; 
 	potions, scrolls, wands; 
 	wondrous items (inc least wondrous); 
 	rods (inc metamagic), staves, rings; 
-	masterwork arms and armour; magic arms an armour</br>
-	<strong>TODO: </strong>specific magic weapons and armour, bane and energy resistance
+	masterwork arms and armour; magic arms an armour;
+	specific armour and sheild</br>
 	</div>
 	<p style="color: #C04040; font-size: 80%;">
+	<strong>TODO: </strong>Bane weapon type.<br>
+	<strong>TODO: </strong>Energy resistance type.<br>
+	<strong>TODO: </strong>Masterwork armour of a specific material (subbing in mithril chain shirt instead).<br>
 	<strong>Known Issue: </strong>Table 7-13 in Ultimate Equipment is missing entries for 66-84. When you see "UE Table 7-13: 66-84", just pick something.
 	</p>
 
