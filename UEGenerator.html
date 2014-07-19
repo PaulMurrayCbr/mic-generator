@@ -5152,28 +5152,32 @@ picker.add(98, 100, "Ring of spell storing, major", 200000, 'UE');
 //Armour and shields
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+// First, the armour weapon types.
+
+
 var armourAndShieldType = {
 	toString: function() {
 		return 'ArmourAndShieldTypeTable';
 	},
 	add: function(a, b, name, weight, cost) {
-		this.picker.add(a, b, new ArmourAndShieldTableRow(name, weight, cost))
+		this.picker.add(a, b, new ArmourAndShieldTypeTableRow(name, weight, cost))
 	},
 	gen: function() {  return this.picker.gen().generated;}
 };
 armourAndShieldType.picker = new D100Picker(armourAndShieldType);
 
-function ArmourAndShieldTableRow(name, weight, cost) {
+function ArmourAndShieldTypeTableRow(name, weight, cost) {
 	this.name = name;
 	this.weight = weight; // H, M, L or S for shield
 	this.cost = cost;
 }
 
-ArmourAndShieldTableRow.prototype.isArmour = true;
-ArmourAndShieldTableRow.prototype.isWeapon = false;
+ArmourAndShieldTypeTableRow.prototype.isArmour = true;
+ArmourAndShieldTypeTableRow.prototype.isWeapon = false;
 
-ArmourAndShieldTableRow.prototype.toString = function() {
-	return "ArmourAndShieldTableRow("+this.name +")"
+ArmourAndShieldTypeTableRow.prototype.toString = function() {
+	return "ArmourAndShieldTypeTableRow("+this.name +")"
 }
 
 var weaponType  = {
@@ -5266,6 +5270,10 @@ weaponType.add( 95, 96, "Other one-handed melee weapon (GM's  choice)",'M',20);
 weaponType.add( 97, 98, "Other two-handed melee weapon (GM's  choice)",'M',50);
 weaponType.add( 99, 100, "Other ranged weapon (GM's  choice)",'R',40);
 
+
+// next, the weapon pickers
+
+
 var masterwork_weapon = {
 	reroll: function (treasureBlock) { 
 		var chosenType;
@@ -5349,6 +5357,67 @@ MagicWeaponBuilder.prototype.gen = function() {
 	return result;
 } 
 
+// and now the armour pickers
+
+function MagicArmourTable() {
+	this.picker = new D100Picker(this);
+	
+	var sampleObject = new MagicArmourBuilder(0, []);
+	
+	this.picker.add(1,100,sampleObject)
+}
+
+MagicArmourTable.prototype.toString = function() { return "MagicArmourTable";}
+
+MagicArmourTable.prototype.reroll = function (treasureBlock) { 
+	console.log(this + " about to generate armour");
+	result = this.picker.gen().generated;
+	console.log("generated "+result);
+	treasureBlock.generatedArmour.push(result)
+	treasureBlock.generatedSpan.appendChild(document.createTextNode(result.getLabel()));
+}
+
+MagicArmourTable.prototype.add = function(a,b,bonus,specials) {
+	 this.picker.add(a,b, new MagicArmourBuilder(bonus, specials));
+}
+
+function MagicArmourBuilder(bonus, specials) {
+	this.bonus = bonus;
+	if(!specials) specials=[];
+	this.specials = specials;
+}
+
+MagicArmourBuilder.prototype.toString = function() { return "MagicArmourBuilder("+this.bonus+", ["+this.specials+"])";}
+
+MagicArmourBuilder.prototype.gen = function() {
+	var chosenType = armourType.gen();
+	
+	var totalbonus = this.bonus;
+	for(var i in this.specials) {
+		totalbonus += i;
+	}
+	
+	var result = new ArmsAndArmourResult(0, chosenType, this.bonus);
+	
+	console.log("MagicArmourBuilder.prototype.gen generated " + result);
+	
+//	// if an item is marked as both melee and ranged, it may potentially get 
+//	// a thown and a melee bonus. THis is ok.
+//	
+//	for(var i =0 ; i< this.specials.length; i++) {
+//		if(chosenType.type == 'R'  || (chosenType.type='MR' && rnd(2)==0)) {
+//			result.specialAbilities.push(ranged_weapon_special_abilities[this.specials[i]].gen());
+//		}	
+//		else {
+//			console.log("getting melee_weapon_special_abilities["+this.specials[i]+"]");
+//			result.specialAbilities.push(melee_weapon_special_abilities[this.specials[i]].gen());
+//		}
+//	}
+	
+	return result;
+} 
+
+
 function reroll_masterwork_armour(treasureBlock, weight) {
 	var chosenType;
 	for(var max = 0; max < 100; max ++) { // try 100 times, then give up
@@ -5388,6 +5457,14 @@ var masterwork_heavy_armour = {
 	reroll: function (treasureBlock) { return reroll_masterwork_armour(treasureBlock, "H"); },
 	toString: function() { return 'masterwork_heavy_armour picker'; }
 };
+
+
+lesser_minor_armour = new MagicArmourTable();
+greater_minor_armour = new MagicArmourTable();
+lesser_medium_armour = new MagicArmourTable();
+greater_medium_armour = new MagicArmourTable();
+lesser_major_armour = new MagicArmourTable();
+greater_major_armour = new MagicArmourTable();
 
 //for specific weaponms, we will use an ItemTableResult.
 
@@ -5971,7 +6048,7 @@ picker.add(86,100,"Spell resistance (19)",5);
 	new TreasureTypeAllocation('E', 5500, [plainString('greater minor armor'), lesser_minor_weapon]),
 	new TreasureTypeAllocation('E', 6000, [greater_minor_weapon]),
 	new TreasureTypeAllocation('E', 7500, [plainString('lesser minor armor'), greater_minor_weapon]),
-	new TreasureTypeAllocation('E', 8000, [plainString('greater minor armor'), mult(2, lesser_minor_weapons)]),
+	new TreasureTypeAllocation('E', 8000, [plainString('greater minor armor'), mult(2, lesser_minor_weapon)]),
 	new TreasureTypeAllocation('E', 9000, [plainString('greater minor armor'), greater_minor_weapon]),
 	new TreasureTypeAllocation('E', 10000, [plainString('lesser medium armor'), lesser_minor_weapon]),
 	new TreasureTypeAllocation('E', 13000, [lesser_medium_weapon]),
@@ -6074,7 +6151,7 @@ picker.add(86,100,"Spell resistance (19)",5);
 	new TreasureTypeAllocation('I', 25000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), lesser_medium_staff, mult(2, lesser_minor_wondrous_item), greater_medium_potion, lesser_medium_wand, mult(2, gemPicker(2)), mult(2, gemPicker(3)), gemPicker(4)]),
 	new TreasureTypeAllocation('I', 30000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser medium armor'), greater_minor_weapon, lesser_medium_wondrous_item, mult(2, lesser_major_scroll), artPicker(4)]),
 	new TreasureTypeAllocation('I', 40000, [makeCoinPicker(4, 4, 1000, cp), makeCoinPicker(6, 6, 100, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(6, 6, 1, pp), lesser_medium_weapon, greater_medium_rod, greater_major_potion, greater_medium_scroll, lesser_medium_wand, mult(3, artPicker(3)), mult(2, artPicker(4))]),
-	new TreasureTypeAllocation('I', 50000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('greater minor armor'), mult(2, greater_minor_weapons), greater_medium_staff, greater_minor_wondrous_item, gemPicker(5)]),
+	new TreasureTypeAllocation('I', 50000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('greater minor armor'), mult(2, greater_minor_weapon), greater_medium_staff, greater_minor_wondrous_item, gemPicker(5)]),
 	new TreasureTypeAllocation('I', 60000, [makeCoinPicker(2, 4, 10000, cp), makeCoinPicker(2, 4, 1000, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), greater_medium_weapon, greater_medium_rod, lesser_medium_wondrous_item, greater_major_scroll, mult(2, greater_minor_wand), gemPicker(4), mult(5, artPicker(2))]),
 	new TreasureTypeAllocation('I', 75000, [makeCoinPicker(2, 4, 10000, cp), makeCoinPicker(2, 4, 1000, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('lesser major armor'), greater_medium_ring, lesser_medium_staff, greater_medium_wand, gemPicker(6), artPicker(4)]),
 	new TreasureTypeAllocation('I', 100000, [makeCoinPicker(2, 4, 10000, cp), makeCoinPicker(2, 4, 1000, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), lesser_medium_weapon, greater_medium_ring, lesser_major_rod, greater_medium_wondrous_item, mult(2, greater_major_potion), lesser_medium_scroll, mult(2, artPicker(4))]),
