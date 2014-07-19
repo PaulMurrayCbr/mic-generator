@@ -5852,8 +5852,8 @@ picker.add(86,100,"Spell resistance (19)",5);
 	treasureTypeAllocations.A = [
 	// these three rows are not from the MIC - I built them	                             
     new TreasureTypeAllocation('A', 1, [makeCoinPicker(1, 1, 1, gp)]),
-    new TreasureTypeAllocation('A', 1, [makeCoinPicker(2, 9, 1, sp)]), // average roll of a d9 is 5.
-    new TreasureTypeAllocation('A', 1, [makeCoinPicker(2, 9, 10, cp)]), // average roll of a d9 is 5.
+    new TreasureTypeAllocation('A', 1, [makeCoinPicker(2, 10, 1, sp)]),
+    new TreasureTypeAllocation('A', 1, [makeCoinPicker(2, 10, 10, cp)]),
 	                        	
 	new TreasureTypeAllocation('A',     5, [makeCoinPicker(2, 6, 10, cp), makeCoinPicker(4, 8, 1, sp), makeCoinPicker(1, 4, 1, gp)]),
 	new TreasureTypeAllocation('A',    10, [makeCoinPicker(5, 10, 10, cp), makeCoinPicker(5, 10, 1, sp), makeCoinPicker(1, 8, 1, gp)]),
@@ -5892,9 +5892,9 @@ picker.add(86,100,"Spell resistance (19)",5);
 	new TreasureTypeAllocation('B', 1000, [makeCoinPicker(3, 6, 10, gp), makeCoinPicker(4, 4, 1, pp), mult(3, gemPicker(3)), gemPicker(4)]),
 	new TreasureTypeAllocation('B', 2500, [makeCoinPicker(2, 4, 100, gp), mult(2, gemPicker(4)), gemPicker(5)]),
 	new TreasureTypeAllocation('B', 5000, [gemPicker(6)]),
-	new TreasureTypeAllocation('B', 5000, [makeCoinPicker(2, 4, 100, gp), plainString('2d4x10 pp'), mult(2, gemPicker(4)), mult(3, gemPicker(5))]),
+	new TreasureTypeAllocation('B', 5000, [makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), mult(2, gemPicker(4)), mult(3, gemPicker(5))]),
 	new TreasureTypeAllocation('B',10000, [mult(5, gemPicker(5)), gemPicker(6)]),
-	new TreasureTypeAllocation('B',20000, [makeCoinPicker(4, 8, 100, gp), plainString('6d10x10 pp'), mult(3, gemPicker(6))]),
+	new TreasureTypeAllocation('B',20000, [makeCoinPicker(4, 8, 100, gp), makeCoinPicker(6, 10, 10, pp), mult(3, gemPicker(6))]),
 	new TreasureTypeAllocation('B',50000, [makeCoinPicker(4, 4, 10, pp), mult(10, gemPicker(3)), mult(4, gemPicker(4)), mult(6, gemPicker(5)), mult(8, gemPicker(6))])
 	];
 	
@@ -5951,7 +5951,7 @@ picker.add(86,100,"Spell resistance (19)",5);
 	new TreasureTypeAllocation('D', 10000, [makeCoinPicker(4, 6, 1, pp), greater_major_potion, greater_major_scroll, lesser_medium_wand]),
 	new TreasureTypeAllocation('D', 15000, [lesser_major_wand]),
 	new TreasureTypeAllocation('D', 15000, [makeCoinPicker(9, 10, 1, pp), mult(3, greater_major_potion), mult(2, lesser_major_scroll), greater_medium_wand]),
-	new TreasureTypeAllocation('D', 20000, [makeCoinPicker(4, 4, 10, gp), plainString('2d4x10 pp'), mult(2, greater_major_potion), greater_major_scroll, lesser_major_wand]),
+	new TreasureTypeAllocation('D', 20000, [makeCoinPicker(4, 4, 10, gp), makeCoinPicker(2, 4, 10, pp), mult(2, greater_major_potion), greater_major_scroll, lesser_major_wand]),
 	new TreasureTypeAllocation('D', 20000, [makeCoinPicker(6, 6, 10, gp), mult(3, lesser_major_potion), greater_major_wand]),
 	new TreasureTypeAllocation('D', 25000, [mult(5, greater_major_scroll), greater_medium_wand]),
 	new TreasureTypeAllocation('D', 30000, [makeCoinPicker(6, 6, 1, pp), mult(4, greater_major_potion), mult(3, greater_major_scroll), greater_major_wand]),
@@ -5971,7 +5971,7 @@ picker.add(86,100,"Spell resistance (19)",5);
 	new TreasureTypeAllocation('E', 5500, [plainString('greater minor armor'), lesser_minor_weapon]),
 	new TreasureTypeAllocation('E', 6000, [greater_minor_weapon]),
 	new TreasureTypeAllocation('E', 7500, [plainString('lesser minor armor'), greater_minor_weapon]),
-	new TreasureTypeAllocation('E', 8000, [plainString('greater minor armor'), mult(2, plainString('lesser minor weapons'))]),
+	new TreasureTypeAllocation('E', 8000, [plainString('greater minor armor'), mult(2, lesser_minor_weapons)]),
 	new TreasureTypeAllocation('E', 9000, [plainString('greater minor armor'), greater_minor_weapon]),
 	new TreasureTypeAllocation('E', 10000, [plainString('lesser medium armor'), lesser_minor_weapon]),
 	new TreasureTypeAllocation('E', 13000, [lesser_medium_weapon]),
@@ -6074,7 +6074,7 @@ picker.add(86,100,"Spell resistance (19)",5);
 	new TreasureTypeAllocation('I', 25000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), lesser_medium_staff, mult(2, lesser_minor_wondrous_item), greater_medium_potion, lesser_medium_wand, mult(2, gemPicker(2)), mult(2, gemPicker(3)), gemPicker(4)]),
 	new TreasureTypeAllocation('I', 30000, [makeCoinPicker(2, 4, 1000, cp), makeCoinPicker(6, 4, 100, sp), makeCoinPicker(3, 6, 10, gp), makeCoinPicker(6, 6, 1, pp), plainString('lesser medium armor'), greater_minor_weapon, lesser_medium_wondrous_item, mult(2, lesser_major_scroll), artPicker(4)]),
 	new TreasureTypeAllocation('I', 40000, [makeCoinPicker(4, 4, 1000, cp), makeCoinPicker(6, 6, 100, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(6, 6, 1, pp), lesser_medium_weapon, greater_medium_rod, greater_major_potion, greater_medium_scroll, lesser_medium_wand, mult(3, artPicker(3)), mult(2, artPicker(4))]),
-	new TreasureTypeAllocation('I', 50000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('greater minor armor'), mult(2, plainString('greater minor weapons')), greater_medium_staff, greater_minor_wondrous_item, gemPicker(5)]),
+	new TreasureTypeAllocation('I', 50000, [makeCoinPicker(4, 4, 10000, cp), makeCoinPicker(6, 6, 1000, sp), makeCoinPicker(4, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('greater minor armor'), mult(2, greater_minor_weapons), greater_medium_staff, greater_minor_wondrous_item, gemPicker(5)]),
 	new TreasureTypeAllocation('I', 60000, [makeCoinPicker(2, 4, 10000, cp), makeCoinPicker(2, 4, 1000, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), greater_medium_weapon, greater_medium_rod, lesser_medium_wondrous_item, greater_major_scroll, mult(2, greater_minor_wand), gemPicker(4), mult(5, artPicker(2))]),
 	new TreasureTypeAllocation('I', 75000, [makeCoinPicker(2, 4, 10000, cp), makeCoinPicker(2, 4, 1000, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), plainString('lesser major armor'), greater_medium_ring, lesser_medium_staff, greater_medium_wand, gemPicker(6), artPicker(4)]),
 	new TreasureTypeAllocation('I', 100000, [makeCoinPicker(2, 4, 10000, cp), makeCoinPicker(2, 4, 1000, sp), makeCoinPicker(2, 4, 100, gp), makeCoinPicker(2, 4, 10, pp), lesser_medium_weapon, greater_medium_ring, lesser_major_rod, greater_medium_wondrous_item, mult(2, greater_major_potion), lesser_medium_scroll, mult(2, artPicker(4))]),
